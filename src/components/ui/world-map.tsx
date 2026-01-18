@@ -37,10 +37,13 @@ export default function WorldMap({
   };
 
   return (
-    <div className="w-full relative font-sans" style={{ perspective: "1000px" }}>
-      <div 
+    <div
+      className="w-full relative font-sans"
+      style={{ perspective: "1000px" }}
+    >
+      <div
         className="w-full"
-        style={{ 
+        style={{
           transform: "rotateX(30deg)",
           transformOrigin: "center center",
         }}
@@ -58,57 +61,53 @@ export default function WorldMap({
           viewBox="0 0 800 400"
           className="w-full h-full absolute inset-0 pointer-events-none select-none"
         >
-        {locations.map((location, i) => {
-          const point = projectPoint(location.lat, location.lng);
-          return (
-            <g key={`location-${i}`}>
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r="3"
-                fill={dotColor}
-              />
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r="3"
-                fill={dotColor}
-                opacity="0.4"
-              >
-                <animate
-                  attributeName="r"
-                  from="3"
-                  to="8"
-                  dur="1.5s"
-                  begin="0s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="0.4"
-                  to="0"
-                  dur="1.5s"
-                  begin="0s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-              {location.label && (
-                <text
-                  x={point.x}
-                  y={point.y - 8}
-                  textAnchor="middle"
-                  fill={theme === "dark" ? "#ffffff" : "#000000"}
-                  fontSize="10"
-                  fontWeight="500"
-                  className="select-none"
+          {locations.map((location, i) => {
+            const point = projectPoint(location.lat, location.lng);
+            return (
+              <g key={`location-${i}`}>
+                <circle cx={point.x} cy={point.y} r="3" fill={dotColor} />
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="3"
+                  fill={dotColor}
+                  opacity="0.4"
                 >
-                  {location.label}
-                </text>
-              )}
-            </g>
-          );
-        })}
-      </svg>
+                  <animate
+                    attributeName="r"
+                    from="3"
+                    to="8"
+                    dur="1.5s"
+                    begin="0s"
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    from="0.4"
+                    to="0"
+                    dur="1.5s"
+                    begin="0s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+                {location.label && (
+                  <text
+                  
+                    x={point.x}
+                    y={point.y - 8}
+                    textAnchor="middle"
+                    fill={theme === "dark" ? "#ffffff" : "#000000"}
+                    fontSize="10"
+                    fontWeight="500"
+                    className="select-none"
+                  >
+                    {location.label}
+                  </text>
+                )}
+              </g>
+            );
+          })}
+        </svg>
       </div>
     </div>
   );

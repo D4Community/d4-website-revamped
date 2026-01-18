@@ -2,7 +2,7 @@
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import { Button } from "@/components/ui/button";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
-import { MoveRight, PhoneCall } from "lucide-react";
+import { MoveRight, PhoneCall, Users } from "lucide-react";
 import { motion } from "motion/react";
 
 const HeroSection = () => {
@@ -31,10 +31,10 @@ const HeroSection = () => {
           </div>
           <div className="relative z-10 flex flex-row gap-3">
             <Button size="lg" className="gap-4" variant="outline">
-              Jump on a call <PhoneCall className="w-4 h-4" />
+              Join Community <Users className="w-4 h-4" />
             </Button>
             <Button size="lg" className="gap-4">
-              Sign up here <MoveRight className="w-4 h-4" />
+              Explore More <MoveRight className="w-4 h-4" />
             </Button>
           </div>
         </div>

@@ -1,16 +1,45 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users } from "lucide-react";
 import Link from "next/link";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 
 export function CTASection() {
+  const containerRef = useRef<HTMLElement>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"], // Track full scroll through the element
+  });
+
+  // When scroll progress reaches 80%, expand. When it goes below 80%, collapse.
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (latest >= 0.4 && !isExpanded) {
+      setIsExpanded(true);
+    } else if (latest < 0.4 && isExpanded) {
+      setIsExpanded(false);
+    }
+  });
+
   return (
-    <section className="relative z-10">
-      {/* CTA Container with rounded top corners */}
-      <div className="bg-black dark:bg-white rounded-[3rem] md:rounded-[4rem] min-h-[70vh] flex flex-col items-center justify-center px-6 py-20 md:py-32">
-        
+    <section ref={containerRef} className="relative z-10 flex justify-center">
+      {/* CTA Container with animated width */}
+      <motion.div 
+        animate={{ 
+          width: isExpanded ? "100%" : "85%",
+          borderRadius: isExpanded ? "3rem" : "4rem"
+        }}
+        transition={{ 
+          duration: 0.8, 
+          ease: [0.25, 0.1, 0.25, 1], // Smooth cubic bezier
+          width: { duration: 0.8, ease: [0.33, 1, 0.68, 1] },
+          borderRadius: { duration: 0.6, ease: "easeInOut" }
+        }}
+        className="bg-black dark:bg-white min-h-[70vh] flex flex-col items-center justify-center px-6 py-20 md:py-32"
+      >
         <div className="max-w-4xl mx-auto text-center space-y-8">
           {/* Main Heading */}
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white dark:text-black leading-tight">
@@ -39,7 +68,7 @@ export function CTASection() {
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
