@@ -1129,7 +1129,7 @@ export const Footer = () => {
   const tablet = useMediaQuery("(max-width: 1024px)");
 
   return (
-    <footer id="footer" className="w-full pb-0">
+    <footer id="footer" className="sticky bottom-0 w-full pb-0 bg-background">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between p-4">
         <div className="flex flex-col items-start justify-start gap-y-5 max-w-xs mx-0">
           <Link href="/" className="flex items-center gap-2">
@@ -1138,7 +1138,7 @@ export const Footer = () => {
           <p className="tracking-tight text-muted-foreground font-medium">
             {siteConfig.hero.description}
           </p>
-          <div className="flex items-center gap-2 dark:hidden">
+          {/* <div className="flex items-center gap-2 dark:hidden">
             <Icons.soc2 className="size-12" />
             <Icons.hipaa className="size-12" />
             <Icons.gdpr className="size-12" />
@@ -1147,7 +1147,7 @@ export const Footer = () => {
             <Icons.soc2Dark className="size-12" />
             <Icons.hipaaDark className="size-12" />
             <Icons.gdprDark className="size-12" />
-          </div>
+          </div> */}
         </div>
         <div className="pt-5 md:w-1/2">
           <div className="flex flex-col items-start justify-start md:flex-row md:items-center md:justify-between gap-y-5 lg:pl-10">

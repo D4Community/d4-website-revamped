@@ -28,42 +28,17 @@ export default function AboutSection() {
           Travellers.
         </p>
       </div>
-     <div className="max-w-5xl mx-auto">
-       <WorldMap
-        dots={[
-          {
-            start: {
-              lat: 64.2008,
-              lng: -149.4937,
-            }, // Alaska (Fairbanks)
-            end: {
-              lat: 34.0522,
-              lng: -118.2437,
-            }, // Los Angeles
-          },
-          {
-            start: { lat: 64.2008, lng: -149.4937 }, // Alaska (Fairbanks)
-            end: { lat: -15.7975, lng: -47.8919 }, // Brazil (Brasília)
-          },
-          {
-            start: { lat: -15.7975, lng: -47.8919 }, // Brazil (Brasília)
-            end: { lat: 38.7223, lng: -9.1393 }, // Lisbon
-          },
-          {
-            start: { lat: 51.5074, lng: -0.1278 }, // London
-            end: { lat: 28.6139, lng: 77.209 }, // New Delhi
-          },
-          {
-            start: { lat: 28.6139, lng: 77.209 }, // New Delhi
-            end: { lat: 43.1332, lng: 131.9113 }, // Vladivostok
-          },
-          {
-            start: { lat: 28.6139, lng: 77.209 }, // New Delhi
-            end: { lat: -1.2921, lng: 36.8219 }, // Nairobi
-          },
-        ]}
-      />
-     </div>
+      <div className="max-w-4xl mx-auto">
+        <WorldMap
+          locations={[
+            { lat: 40.7128, lng: -74.006, label: "New York" },
+            { lat: 51.5074, lng: -0.1278, label: "London" },
+            { lat: 35.6762, lng: 139.6503, label: "Tokyo" },
+            { lat: 12.1471, lng: 80.3412, label: "Punjab" },
+            { lat: 0.9416, lng: 85.5946, label: "Bangalore" },
+          ]}
+        />
+      </div>
     </div>
   );
 }
