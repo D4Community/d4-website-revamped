@@ -65,7 +65,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
               .trim();
             
             // Find the first meaningful paragraph (skip empty or very short lines)
-            const lines = textOnly.split(/[\n\r]+/).filter(line => line.trim().length > 20);
+            const lines = textOnly.split(/[\n\r]+/).filter((line: string) => line.trim().length > 20);
             const firstParagraph = lines[0]?.trim() || textOnly;
             
             // Extract first 150 characters or less

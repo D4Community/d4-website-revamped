@@ -80,9 +80,9 @@ export const Navbar = ({ children, className }: NavbarProps) => {
         React.isValidElement(child)
           ? React.cloneElement(
               child as React.ReactElement<{ visible?: boolean }>,
-              { visible }
+              { visible },
             )
-          : child
+          : child,
       )}
     </motion.div>
   );
@@ -104,7 +104,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
         "relative z-[60] mx-auto hidden max-w-7xl items-center justify-between rounded-xl px-4 py-2 lg:flex",
         visible &&
           "border border-black/10 bg-white/80 dark:border-white/10 dark:bg-neutral-950/80",
-        className
+        className,
       )}
     >
       {children}
@@ -122,7 +122,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
       onMouseLeave={() => setHovered(null)}
       className={cn(
         "absolute inset-0 hidden items-center justify-center space-x-2 lg:flex",
-        className
+        className,
       )}
     >
       {items.map((item, idx) => (
@@ -156,7 +156,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         "fixed top-3 left-1/2 z-50 w-[calc(100%-2rem)] -translate-x-1/2 rounded-xl px-3 py-2 lg:hidden",
         visible &&
           "border border-black/10 bg-white/80 dark:border-white/10 dark:bg-neutral-950/80",
-        className
+        className,
       )}
     >
       {children}
@@ -182,7 +182,7 @@ export const MobileNavMenu = ({
           exit={{ opacity: 0 }}
           className={cn(
             "absolute top-16 left-0 w-full rounded-lg bg-white p-6 shadow-lg dark:bg-neutral-950",
-            className
+            className,
           )}
         >
           {children}
@@ -198,8 +198,7 @@ export const MobileNavToggle = ({
 }: {
   isOpen: boolean;
   onClick: () => void;
-}) =>
-  isOpen ? <IconX onClick={onClick} /> : <IconMenu2 onClick={onClick} />;
+}) => (isOpen ? <IconX onClick={onClick} /> : <IconMenu2 onClick={onClick} />);
 
 /* ===================== LOGO (THEME AWARE) ===================== */
 
@@ -231,77 +230,12 @@ export const NavbarLogo = () => {
   );
 };
 
-/* ===================== THEME DROPDOWN ===================== */
-
-// export const ThemeToggle = () => {
-//   const [open, setOpen] = useState(false);
-
-//   const setTheme = (theme: "light" | "dark" | "system") => {
-//     const root = document.documentElement;
-//     root.classList.remove("light", "dark");
-
-//     if (theme === "system") {
-//       const isDark = window.matchMedia(
-//         "(prefers-color-scheme: dark)"
-//       ).matches;
-//       root.classList.add(isDark ? "dark" : "light");
-//     } else {
-//       root.classList.add(theme);
-//     }
-//     setOpen(false);
-//   };
-
-//   return (
-//     <div
-//       className="relative"
-//       onMouseEnter={() => setOpen(true)}
-//       onMouseLeave={() => setOpen(false)}
-//     >
-//       <button className="flex items-center gap-2 rounded-md p-2 text-neutral-600 dark:text-neutral-300 hover:bg-black/5 dark:hover:bg-white/10">
-//         <IconDeviceDesktop size={18} />
-//         <span className="text-sm font-medium">Theme</span>
-//       </button>
-
-//       <AnimatePresence>
-//         {open && (
-//           <motion.div
-//             initial={{ opacity: 0, y: 8 }}
-//             animate={{ opacity: 1, y: 0 }}
-//             exit={{ opacity: 0, y: 8 }}
-//             className="absolute right-0 mt-2 w-40 rounded-xl border border-black/10 bg-white p-1 shadow-xl dark:border-white/10 dark:bg-neutral-900"
-//           >
-//             <button
-//               onClick={() => setTheme("light")}
-//               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-800"
-//             >
-//               <IconSun size={16} /> Light
-//             </button>
-//             <button
-//               onClick={() => setTheme("dark")}
-//               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-800"
-//             >
-//               <IconMoon size={16} /> Dark
-//             </button>
-//             <button
-//               onClick={() => setTheme("system")}
-//               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-800"
-//             >
-//               <IconDeviceDesktop size={16} /> System
-//             </button>
-//           </motion.div>
-//         )}
-//       </AnimatePresence>
-//     </div>
-//   );
-// };
-
-/* ===================== THEME TOGGLE (SIMPLE) ===================== */
+/* ===================== THEME TOGGLE ===================== */
 
 export const ThemeToggle = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    // Sync initial state with HTML class
     if (document.documentElement.classList.contains("dark")) {
       setTheme("dark");
     }
@@ -354,6 +288,14 @@ export const ThemeToggle = () => {
 
 /* ===================== BUTTON ===================== */
 
+type NavbarButtonVariant = "primary" | "secondary";
+
+interface NavbarButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  href?: string;
+  as?: React.ElementType;
+  variant?: NavbarButtonVariant;
+}
+
 export const NavbarButton = ({
   href,
   as: Tag = "a",
@@ -361,8 +303,8 @@ export const NavbarButton = ({
   className,
   variant = "primary",
   ...props
-}: any) => {
-  const variants = {
+}: NavbarButtonProps) => {
+  const variants: Record<NavbarButtonVariant, string> = {
     primary: "bg-black text-white",
     secondary: "bg-transparent",
   };
@@ -373,7 +315,7 @@ export const NavbarButton = ({
       className={cn(
         "rounded-md px-4 py-2 text-sm font-semibold transition",
         variants[variant],
-        className
+        className,
       )}
       {...props}
     >
