@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Calendar, MapPin, Users, Clock, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 interface Event {
   id: number;
@@ -457,9 +458,11 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
                       <span>Register Now</span>
                       <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
-                    <button className="px-6 py-3 border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-medium rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
-                      Learn More
-                    </button>
+                    <Link href="https://hacknwin.d4community.com" target="_blank" rel="noopener noreferrer">
+                      <button className="px-6 py-3 border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-medium rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                        Learn More
+                      </button>
+                    </Link>
                   </div>
                 </motion.div>
               </AnimatePresence>
