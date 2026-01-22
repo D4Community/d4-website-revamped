@@ -191,7 +191,7 @@
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import { Button } from "@/components/ui/button";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
-import { MoveRight,  Users } from "lucide-react";
+import { MoveRight,  Users, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -203,7 +203,6 @@ const HeroSection = () => {
         <div className="flex gap-8 py-36 lg:py-40 items-center justify-center flex-col">
           <div className="relative z-10">
             <Button variant="secondary" size="sm" className="gap-4">
-              <Sparkles className="w-4 h-4 text-primary" />
               <Sparkles className="w-4 h-4 text-primary" />
               View our upcoming events
               <MoveRight className="w-4 h-4" />
