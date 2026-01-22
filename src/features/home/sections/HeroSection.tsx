@@ -192,8 +192,9 @@
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import { Button } from "@/components/ui/button";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
-import { MoveRight, PhoneCall, Users } from "lucide-react";
+import { MoveRight, PhoneCall, Users, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
+import Link from "next/link";
 
 const HeroSection = () => {
   return (
@@ -203,6 +204,7 @@ const HeroSection = () => {
         <div className="flex gap-8 py-36 lg:py-40 items-center justify-center flex-col">
           <div className="relative z-10">
             <Button variant="secondary" size="sm" className="gap-4">
+              <Sparkles className="w-4 h-4 text-primary" />
               View our upcoming events
               <MoveRight className="w-4 h-4" />
             </Button>
@@ -223,9 +225,11 @@ const HeroSection = () => {
             <Button size="lg" className="gap-4" variant="outline">
               Join Community <Users className="w-4 h-4" />
             </Button>
-            <Button size="lg" className="gap-4">
-              Explore More <MoveRight className="w-4 h-4" />
-            </Button>
+            <Link href="https://connect.d4community.com" target="_blank" rel="noopener noreferrer">
+              <Button size="lg" className="gap-4">
+                Explore More <MoveRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
