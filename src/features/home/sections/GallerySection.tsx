@@ -403,7 +403,7 @@ export function GallerySection({ className, showAllLink = true }: GallerySection
 
   return (
     <>
-      <div className={cn("w-full max-w-7xl mx-auto px-4 py-16 md:py-24", className)}>
+      <div className={cn("w-full max-w-6xl mx-auto px-4 py-16 md:py-24", className)}>
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
           <div>

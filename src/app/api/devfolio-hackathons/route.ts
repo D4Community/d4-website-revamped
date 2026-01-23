@@ -1,10 +1,10 @@
 export async function GET() {
   try {
     const hackathonUrls = [
-      "https://innosprint.devfolio.co/_next/data/HlzNB31Z09DiFYWqjU_fN/hackathon3/innosprint.devfolio.co/overview.json",
-      "https://hacknwin.devfolio.co/_next/data/HlzNB31Z09DiFYWqjU_fN/hackathon3/hacknwin.devfolio.co/overview.json",
-      "https://hacknwin-2-0.devfolio.co/_next/data/HlzNB31Z09DiFYWqjU_fN/hackathon3/hacknwin-2-0.devfolio.co/overview.json",
-      "https://hacknwin-3.devfolio.co/_next/data/HlzNB31Z09DiFYWqjU_fN/hackathon3/hacknwin-3.devfolio.co/overview.json"
+      "https://innosprint.devfolio.co/_next/data/ff9W3m0EDh9C-2EzENT45/hackathon3/innosprint.devfolio.co/overview.json",
+      "https://hacknwin.devfolio.co/_next/data/ff9W3m0EDh9C-2EzENT45/hackathon3/hacknwin.devfolio.co/overview.json",
+      "https://hacknwin-2-0.devfolio.co/_next/data/ff9W3m0EDh9C-2EzENT45/hackathon3/hacknwin-2-0.devfolio.co/overview.json",
+      "https://hacknwin-3.devfolio.co/_next/data/ff9W3m0EDh9C-2EzENT45/hackathon3/hacknwin-3.devfolio.co/overview.json"
     ];
 
     const hackathonPromises = hackathonUrls.map(async (url) => {
