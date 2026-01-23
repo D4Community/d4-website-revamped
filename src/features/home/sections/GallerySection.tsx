@@ -40,47 +40,47 @@ const getOptimizedDriveImageUrl = (fileId: string, width = 600) => {
 const ALBUMS = [
   {
     link: "https://photos.app.goo.gl/Wib85ubpFdJbZvJj8",
-    name: "Hackathon Events",
+    name: "D4 Moments",
     images: [
       {
         id: "hackathon-1",
         src: getOptimizedDriveImageUrl("1QepStOk3MxZ7iNLQ8VRvwNgAbZKCxFxs", 600),
-        alt: "Hackathon coding session",
+        alt: "Every frame tells a story of our D4 family",
         width: 600,
         height: 450,
       },
       {
         id: "hackathon-2",
         src: getOptimizedDriveImageUrl("1vQZdLxUXWXzUwWjn4fWTlRbWGWd4rub5", 600),
-        alt: "Team collaboration",
+        alt: "Small moments that quietly build something bigger",
         width: 600,
         height: 450,
       },
       {
         id: "hackathon-3",
         src: getOptimizedDriveImageUrl("13-3y_84no-tGxP2XAn3noeLf09bWoA4S", 600),
-        alt: "Hackathon winners",
+        alt: "Where Discite leads to Develop, Debug, and Deploy",
         width: 600,
         height: 338,
       },
       {
         id: "hackathon-4",
         src: getOptimizedDriveImageUrl("1iH5lWFI_u5MaHz0Op2QHtqKwA7UQFskT", 600),
-        alt: "Hackathon coding session",
+        alt: "Moments that matter",
         width: 600,
         height: 450,
       },
       {
         id: "hackathon-5",
         src: getOptimizedDriveImageUrl("1Z6JYJx-aD5p1lqSMlzF3fbUcyw3jByD7", 600),
-        alt: "Team collaboration",
+        alt: "A canvas of people and passion",
         width: 600,
         height: 750,
       },
       {
         id: "hackathon-6",
         src: getOptimizedDriveImageUrl("1plapE6m0LeGFM4i3C2T6T_XVBgrfKP_F", 600),
-        alt: "Hackathon winners",
+        alt: "Every frame holds a story",
         width: 600,
         height: 338,
       },
@@ -88,47 +88,47 @@ const ALBUMS = [
   },
   {
     link: "https://photos.app.goo.gl/RrAQXnrZ8FuYsbZZA",
-    name: "Workshops & Sessions",
+    name: "Through the D4 Lens",
     images: [
       {
         id: "workshop-1",
         src: getOptimizedDriveImageUrl("14tbHWOW6cHWtLqAH3NZB1VPxmmuks8zf", 600),
-        alt: "Technical workshop",
+        alt: "Celebrating the people and passion that make up our D4 community",
         width: 600,
         height: 525,
       },
       {
         id: "workshop-2",
         src: getOptimizedDriveImageUrl("1hvWSqq9HvorawF_1Ge6R8XiuRg4DzQMH", 600),
-        alt: "Speaker session",
+        alt: "Every frame tells a story of our D4 family",
         width: 600,
         height: 375,
       },
       {
         id: "workshop-3",
         src: getOptimizedDriveImageUrl("1m9M0iEyjVjNLW38mfsaPR1oV2jn0zQgl", 600),
-        alt: "Hands-on workshop",
+        alt: "Where Discite leads to Develop, Debug, and Deploy",
         width: 600,
         height: 675,
       },
       {
         id: "workshop-4",
         src: getOptimizedDriveImageUrl("1TeG28iv-g0E6no9YhFt5IIQagxf2bW7Z", 600),
-        alt: "Speaker session",
+        alt: "Moments that matter",
         width: 600,
         height: 375,
       },
       {
         id: "workshop-5",
         src: getOptimizedDriveImageUrl("1Hmx2qNyWo-cEefNWP_TO9iN6k2JQ_He0", 600),
-        alt: "Hands-on workshop",
+        alt: "A canvas of people and passion",
         width: 600,
         height: 675,
       },
       {
         id: "workshop-6",
         src: getOptimizedDriveImageUrl("11qNevKLHwwe58PXewxGo5bz4poLxUleH", 600),
-        alt: "Hands-on workshop",
+        alt: "Where ideas find people, and moments find meaning",
         width: 600,
         height: 675,
       },
@@ -136,47 +136,47 @@ const ALBUMS = [
   },
   {
     link: "https://photos.app.goo.gl/rDaR2ApLyi5tDUwM7",
-    name: "Community Gatherings",
+    name: "Our journey",
     images: [
       {
         id: "community-1",
         src: getOptimizedDriveImageUrl("1XJS93cIPge8AhC4WT2Fh74GScR77OPr-", 600),
-        alt: "Community meetup",
+        alt: "Where Discite leads to Develop, Debug, and Deploy",
         width: 600,
         height: 488,
       },
       {
         id: "community-2",
         src: getOptimizedDriveImageUrl("1j4N65m3yWapWLq5f45WHy4WtxgVFX1fQ", 600),
-        alt: "Networking event",
+        alt: "Celebrating the people and passion that make up our D4 community",
         width: 600,
         height: 413,
       },
       {
         id: "community-3",
         src: getOptimizedDriveImageUrl("1LbwPQ7LTj4kzquzTmBVFLACAlSCtZj_q", 600),
-        alt: "Group discussion",
+        alt: "Every frame tells a story of our D4 family",
         width: 600,
         height: 563,
       },
       {
         id: "community-4",
         src: getOptimizedDriveImageUrl("1ya71AecbxMZiwTv3ol8peR0pgLNy2PZw", 600),
-        alt: "Community meetup",
+        alt: "Moments that matter",
         width: 600,
         height: 488,
       },
       {
         id: "community-5",
         src: getOptimizedDriveImageUrl("1u96Il8AWXiyCVnOJqje6ZRC1yTvsWW7x", 600),
-        alt: "Networking event",
+        alt: "A canvas of people and passion",
         width: 600,
         height: 413,
       },
       {
         id: "community-6",
         src: getOptimizedDriveImageUrl("1HC7RGt9yPsAMIxUxVNo3mkIBcwaiIJ0b", 600),
-        alt: "Group discussion",
+        alt: "More than code",
         width: 600,
         height: 563,
       },
@@ -184,47 +184,47 @@ const ALBUMS = [
   },
   {
     link: "https://photos.app.goo.gl/NZfTe2TjWo8bc23M8",
-    name: "Special Events",
+    name: "D4 in Focus",
     images: [
       {
         id: "special-1",
         src: getOptimizedDriveImageUrl("1WOc7srIdU76qvQBw1i6uD7Jjta20jHCs", 600),
-        alt: "Special event setup",
+        alt: "Moments that matter",
         width: 600,
         height: 500,
       },
       {
         id: "special-2",
         src: getOptimizedDriveImageUrl("1kgd6WGgSZKOJVKflA4zuAH2YAOHpjYcx", 600),
-        alt: "Event keynote",
+        alt: "Where Discite leads to Develop, Debug, and Deploy",
         width: 600,
         height: 638,
       },
       {
         id: "special-3",
         src: getOptimizedDriveImageUrl("1DDUygBu_449jEke1kkc3NZfcqZAhl6XL", 600),
-        alt: "Award ceremony",
+        alt: "Celebrating the people and passion that make up our D4 community",
         width: 600,
         height: 338,
       },
       {
         id: "special-4",
         src: getOptimizedDriveImageUrl("1E3BcsP5y2qJRA3diOYCYdCeKgjvxLVLD", 600),
-        alt: "Event keynote",
+        alt: "A journey shaped by people, passion, and progress",
         width: 600,
         height: 638,
       },
       {
         id: "special-5",
         src: getOptimizedDriveImageUrl("11KJA0XwNvp40bofD_52wRRmtVZhzUAW-", 600),
-        alt: "Award ceremony",
+        alt: "A canvas of people and passion",
         width: 600,
         height: 360,
       },
       {
         id: "special-6",
         src: getOptimizedDriveImageUrl("1JFCp_vyFkJoVF7Oe7FhOSZgsSG9brSHQ", 600),
-        alt: "Award ceremony",
+        alt: "Shared moments from a journey we’re building together",
         width: 600,
         height: 360,
       },
@@ -552,7 +552,7 @@ export function GallerySection({ className, showAllLink = true }: GallerySection
                       />
                       
                       {/* View Album Button - Centered at Bottom */}
-                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                      {/* <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
                         <Link
                           href={selectedImage.albumLink}
                           target="_blank"
@@ -565,7 +565,7 @@ export function GallerySection({ className, showAllLink = true }: GallerySection
                           <ExternalLink className="w-4 h-4" />
                           <span className="text-sm font-medium">View Album</span>
                         </Link>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -654,7 +654,7 @@ export function GallerySection({ className, showAllLink = true }: GallerySection
                     </div>
 
                     {/* Full Album Link */}
-                    <Link
+                    {/* <Link
                       href={selectedImage.albumLink}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -662,7 +662,7 @@ export function GallerySection({ className, showAllLink = true }: GallerySection
                     >
                       <Maximize2 className="w-4 h-4" />
                       View Full Album
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
               </div>
