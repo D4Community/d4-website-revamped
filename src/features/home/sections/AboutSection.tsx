@@ -115,8 +115,8 @@ const mapData = {
   ],
   leads: [
     {
-      lat: 30.7589,
-      lng: 76.7686,
+      lat: 30.6869,
+      lng: 76.6813,
       city: "Chandigarh",
       country: "India",
       name: "Bhumika Varshney",
@@ -124,8 +124,8 @@ const mapData = {
       org: "CGC University",
     },
     {
-      lat: 30.67,
-      lng: 76.73,
+      lat: 30.7046,
+      lng: 76.6596,
       city: "Chandigarh",
       country: "India",
       name: "Ishita",
@@ -133,8 +133,8 @@ const mapData = {
       org: "CGC Landran",
     },
     {
-      lat: 30.7589,
-      lng: 76.7686,
+      lat: 30.7710,
+      lng: 76.5790,
       city: "Chandigarh",
       country: "India",
       name: "Pawan",
@@ -142,8 +142,8 @@ const mapData = {
       org: "Chandigarh University",
     },
     {
-      lat: 31.254,
-      lng: 75.7053,
+      lat: 31.2550,
+      lng: 75.7050,
       city: "Jalandhar",
       country: "India",
       name: "Gagandeep Singh",
@@ -171,8 +171,8 @@ const mapData = {
   ],
   events: [
     {
-      lat: 12.9716,
-      lng: 77.5946,
+      lat: 12.9352,
+      lng: 77.6245,
       city: "Bangalore",
       state: "Karnataka",
       country: "India",
