@@ -65,7 +65,7 @@ const ALBUMS = [
       },
       {
         id: "hackathon-4",
-        src: getOptimizedDriveImageUrl("1iH5lWFI_u5MaHz0Op2QHtqKwA7UQFskT", 600),
+        src: getOptimizedDriveImageUrl("11KJA0XwNvp40bofD_52wRRmtVZhzUAW-", 600),
         alt: "Moments that matter",
         width: 600,
         height: 450,
@@ -106,7 +106,7 @@ const ALBUMS = [
       },
       {
         id: "workshop-3",
-        src: getOptimizedDriveImageUrl("1m9M0iEyjVjNLW38mfsaPR1oV2jn0zQgl", 600),
+        src: getOptimizedDriveImageUrl("1HC7RGt9yPsAMIxUxVNo3mkIBcwaiIJ0b", 600),
         alt: "Where Discite leads to Develop, Debug, and Deploy",
         width: 600,
         height: 675,
@@ -127,7 +127,7 @@ const ALBUMS = [
       },
       {
         id: "workshop-6",
-        src: getOptimizedDriveImageUrl("11qNevKLHwwe58PXewxGo5bz4poLxUleH", 600),
+        src: getOptimizedDriveImageUrl("1DDUygBu_449jEke1kkc3NZfcqZAhl6XL", 600),
         alt: "Where ideas find people, and moments find meaning",
         width: 600,
         height: 675,
@@ -175,7 +175,8 @@ const ALBUMS = [
       },
       {
         id: "community-6",
-        src: getOptimizedDriveImageUrl("1HC7RGt9yPsAMIxUxVNo3mkIBcwaiIJ0b", 600),
+        // src: getOptimizedDriveImageUrl("1HC7RGt9yPsAMIxUxVNo3mkIBcwaiIJ0b", 600),
+        src: getOptimizedDriveImageUrl("1m9M0iEyjVjNLW38mfsaPR1oV2jn0zQgl", 600),
         alt: "More than code",
         width: 600,
         height: 563,
@@ -202,7 +203,7 @@ const ALBUMS = [
       },
       {
         id: "special-3",
-        src: getOptimizedDriveImageUrl("1DDUygBu_449jEke1kkc3NZfcqZAhl6XL", 600),
+        src: getOptimizedDriveImageUrl("11qNevKLHwwe58PXewxGo5bz4poLxUleH", 600),
         alt: "Celebrating the people and passion that make up our D4 community",
         width: 600,
         height: 338,
@@ -216,7 +217,7 @@ const ALBUMS = [
       },
       {
         id: "special-5",
-        src: getOptimizedDriveImageUrl("11KJA0XwNvp40bofD_52wRRmtVZhzUAW-", 600),
+        src: getOptimizedDriveImageUrl("1iH5lWFI_u5MaHz0Op2QHtqKwA7UQFskT", 600),
         alt: "A canvas of people and passion",
         width: 600,
         height: 360,
@@ -403,7 +404,7 @@ export function GallerySection({ className, showAllLink = true }: GallerySection
 
   return (
     <>
-      <div className={cn("w-full max-w-6xl mx-auto px-4 py-16 md:py-24", className)}>
+      <div className={cn("w-full max-w-7xl mx-auto px-4 py-16 md:py-24", className)}>
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
           <div>
@@ -492,7 +493,7 @@ export function GallerySection({ className, showAllLink = true }: GallerySection
         </div>
 
         {/* View More on Mobile */}
-        {showAllLink && (
+        {/* {showAllLink && (
           <div className="mt-8 text-center">
             <Link
               href="/gallery"
@@ -501,6 +502,23 @@ export function GallerySection({ className, showAllLink = true }: GallerySection
               View All Photos
               <ChevronRight className="w-4 h-4" />
             </Link>
+          </div>
+        )} */}
+        {showAllLink && (
+          <div className="mt-16 text-center">
+            <Link
+              href="/gallery"
+              className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#fd7d6e] to-[#ff9a8b] 
+                       text-white hover:from-[#e56d5e] hover:to-[#ff8a7b] 
+                       transition-all duration-300 rounded-4xl font-semibold
+                       shadow-xl hover:shadow-2xl transform hover:scale-105"
+            >
+              Explore D4 Gallery
+              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <p className="text-gray-500 dark:text-gray-400 mt-4 text-sm">
+              Discover moments from our D4 community journey
+            </p>
           </div>
         )}
       </div>

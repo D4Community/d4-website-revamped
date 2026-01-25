@@ -438,7 +438,7 @@ export function EventCarousel({ className }: { className?: string }) {
   }
 
   return (
-    <div className={cn("max-w-6xl mx-auto px-4", className)}>
+    <div className={cn("max-w-7xl mx-auto px-4", className)}>
       <div className="mb-8 flex flex-col md:items-center justify-between gap-4">
         <div>
           <h2 className="font-bold text-2xl md:text-4xl lg:text-5xl dark:text-white text-black tracking-tight text-center">Past Events & Hackathons</h2>

@@ -1129,7 +1129,7 @@ export const Footer = () => {
   const tablet = useMediaQuery("(max-width: 1024px)");
 
   return (
-    <footer id="footer" className="sticky bottom-0 w-full pb-0 bg-background">
+    <footer id="footer" className="sticky bottom-0 w-full pb-0 bg-background pt-28 md:pt-4">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between p-4">
         <div className="flex flex-col items-start justify-start gap-y-5 max-w-xs mx-0">
           <Link href="/" className="flex items-center gap-2">
@@ -1172,7 +1172,7 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="w-full h-48 md:h-64 relative mt-24 z-0">
+      <div className="w-full h-48 md:h-64 relative mt-8 md:mt-24 z-0 ">
         <div className="absolute inset-0 bg-gradient-to-t from-transparent to-background z-10 from-40%" />
         <div className="absolute inset-0">
           <FlickeringGrid

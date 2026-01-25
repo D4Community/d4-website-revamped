@@ -117,7 +117,7 @@ const LogosSlider = () => {
       ref={sectionRef}
       className="w-full bg-background py-12 overflow-hidden"
     >
-      <div className="mx-auto max-w-7xl px-6 mb-16 text-center">
+      <div className="mx-auto max-w-6xl px-6 mb-16 text-center">
         <h2 className="font-bold text-2xl md:text-4xl lg:text-5xl dark:text-white text-black tracking-tight">
           Our Tech Stack
         </h2>

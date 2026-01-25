@@ -1,8 +1,11 @@
 import React from 'react'
+import D4ContactPage from './sections/ContactForm';
 
 const ContactPage = () => {
   return (
-    <div>ContactPage</div>
+    <>
+      <D4ContactPage />
+    </>
   )
 }
 

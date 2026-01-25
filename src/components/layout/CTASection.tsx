@@ -56,7 +56,7 @@ export function CTASection() {
 
           {/* CTA Button */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link href="#" target="_blank">
+            <Link href="https://connect.d4community.com" target="_blank">
               <Button
                 size="lg"
                 className="bg-white dark:bg-black text-black dark:text-white hover:bg-white/90 dark:hover:bg-black/90 font-semibold px-8 py-6 text-lg rounded-full shadow-lg transition-all duration-300 group"

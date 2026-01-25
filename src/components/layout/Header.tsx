@@ -8,6 +8,7 @@ import {
   MobileNavToggle,
   Navbar,
   NavbarButton,
+  NavbarRegularButton,
   NavbarLogo,
   NavBody,
   NavItems,
@@ -19,28 +20,38 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Team", link: "#team" },
-    { name: "About", link: "#about" },
-    { name: "Events", link: "#events" },
+    { name: "Team", link: "/team" },
+    { name: "About", link: "/about" },
+    { name: "Events", link: "/events" },
   ];
+
+  const handleMobileItemClick = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <Navbar>
       {/* Desktop */}
       <NavBody>
-        <NavbarLogo />
-        <NavItems items={navItems} />
-        <div className="flex items-center gap-4">
+        <Link href="/" className="z-50">
+          <NavbarLogo />
+        </Link>
+        
+        <NavItems items={navItems} onItemClick={handleMobileItemClick} />
+
+        <div className="flex items-center gap-4 z-50">
           <ThemeToggle />
-          <NavbarButton variant="secondary">Contact</NavbarButton>
-          <NavbarButton variant="primary">Join Now</NavbarButton>
+          <NavbarButton href="/contact" variant="secondary">Contact</NavbarButton>
+          <NavbarButton href="/join" variant="primary">Join Now</NavbarButton>
         </div>
       </NavBody>
 
       {/* Mobile */}
       <MobileNav>
         <MobileNavHeader>
-          <NavbarLogo />
+          <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
+            <NavbarLogo />
+          </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <MobileNavToggle
@@ -59,7 +70,7 @@ const Header = () => {
               <Link
                 key={idx}
                 href={item.link}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={handleMobileItemClick}
                 className="text-lg font-medium text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white"
               >
                 {item.name}
@@ -68,10 +79,20 @@ const Header = () => {
           </div>
 
           <div className="mt-6 flex flex-col gap-3 border-t border-neutral-100 pt-6 dark:border-neutral-800">
-            <NavbarButton className="w-full text-center" variant="primary">
+            <NavbarButton 
+              href="/join" 
+              className="w-full text-center" 
+              variant="primary"
+              onClick={handleMobileItemClick}
+            >
               Join Now
             </NavbarButton>
-            <NavbarButton className="w-full text-center" variant="secondary">
+            <NavbarButton 
+              href="/contact" 
+              className="w-full text-center" 
+              variant="secondary"
+              onClick={handleMobileItemClick}
+            >
               Contact
             </NavbarButton>
           </div>

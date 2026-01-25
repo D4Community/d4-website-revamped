@@ -192,7 +192,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
 
   if (loading) {
     return (
-      <div className={cn("w-full max-w-6xl mx-auto px-4 py-8 md:py-12", className)}>
+      <div className={cn("w-full max-w-7xl mx-auto px-4 py-8 md:py-12", className)}>
         <div className="text-center mb-12">
           <h2 className="font-bold text-2xl md:text-4xl lg:text-5xl dark:text-white text-black tracking-tight">
             Upcoming Events

@@ -1,7 +1,14 @@
+import { UpcomingEvents } from "../home/sections/UpcomingEvents"
+import { EventCarousel } from "../home/sections/EventCarousel"
+
 
 const EventsPage = () => {
   return (
-    <div>EventsPage</div>
+    <>
+    <UpcomingEvents />
+    <EventCarousel />
+    </>
+
   )
 }
 

@@ -553,7 +553,7 @@ export default function AboutSection() {
 
   return (
     <section className="w-full px-4 py-12 sm:py-16 md:py-20 overflow-hidden bg-white dark:bg-neutral-950">
-      <div className="max-w-6xl mx-auto relative">
+      <div className="max-w-7xl mx-auto relative">
         {/* Header */}
         <div className="text-center mb-4 md:mb-6">
           <h2 className="font-bold text-2xl md:text-4xl lg:text-5xl dark:text-white text-black tracking-tight">

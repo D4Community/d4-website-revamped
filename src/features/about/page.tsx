@@ -1,8 +1,16 @@
 import React from 'react'
+import { AboutSection } from '../home'
+// import AboutContent from './sections/AboutContent'
+import FAQSection from '../home/sections/FAQSection'
 
 const AboutPage = () => {
   return (
-    <div>AboutPage</div>
+    <div>
+      {/* <AboutContent /> */}
+      <AboutSection />
+      <FAQSection />
+    </div>
+
   )
 }
 

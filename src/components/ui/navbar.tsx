@@ -6,7 +6,6 @@ import {
   IconX,
   IconSun,
   IconMoon,
-  IconDeviceDesktop,
 } from "@tabler/icons-react";
 import {
   motion,
@@ -17,6 +16,8 @@ import {
 import Image from "next/image";
 import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
+
+/* ===================== TYPES ===================== */
 
 interface NavbarProps {
   children: React.ReactNode;
@@ -171,6 +172,7 @@ export const MobileNavMenu = ({
   children,
   className,
   isOpen,
+  onClose,
 }: MobileNavMenuProps) => {
   return (
     <AnimatePresence>
@@ -201,7 +203,7 @@ export const MobileNavToggle = ({
 
 /* ===================== LOGO (THEME AWARE) ===================== */
 
-export const NavbarLogo = () => {
+export const NavbarLogo = ({ onClick }: { onClick?: () => void }) => {
   const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
@@ -217,12 +219,12 @@ export const NavbarLogo = () => {
   }, []);
 
   return (
-    <Link href="#" className="flex items-center">
+    <Link href="/" className="flex items-center cursor-pointer" onClick={onClick}>
       <Image
-        src={isDark ? "/d4logo.webp" : "/d4logo_black.png"}
+        src={isDark ? "/d4logo.webp" : "/d4logo_black.webp"}
         alt="D4 Logo"
-        width={60}
-        height={30}
+        width={70}
+        height={40}
         priority
       />
     </Link>
@@ -233,29 +235,64 @@ export const NavbarLogo = () => {
 
 export const ThemeToggle = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (document.documentElement.classList.contains("dark")) {
-      setTheme("dark");
+    setMounted(true);
+    
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    const root = document.documentElement;
+    
+    if (savedTheme) {
+      if (savedTheme === "dark") {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+      setTheme(savedTheme);
+    } else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (prefersDark) {
+        root.classList.add("dark");
+        setTheme("dark");
+      } else {
+        root.classList.remove("dark");
+        setTheme("light");
+      }
     }
   }, []);
 
   const toggleTheme = () => {
     const root = document.documentElement;
-    if (theme === "light") {
-      root.classList.add("dark");
-      setTheme("dark");
-    } else {
+    
+    if (theme === "dark") {
       root.classList.remove("dark");
       setTheme("light");
+      localStorage.setItem("theme", "light");
+    } else {
+      root.classList.add("dark");
+      setTheme("dark");
+      localStorage.setItem("theme", "dark");
     }
   };
+
+  if (!mounted) {
+    return (
+      <button
+        className="flex items-center justify-center rounded-lg p-2 text-neutral-600 transition-colors hover:bg-black/5 dark:text-neutral-300 dark:hover:bg-white/10"
+        aria-label="Toggle theme"
+      >
+        <div className="h-5 w-5" />
+      </button>
+    );
+  }
 
   return (
     <button
       onClick={toggleTheme}
       className="flex items-center justify-center rounded-lg p-2 text-neutral-600 transition-colors hover:bg-black/5 dark:text-neutral-300 dark:hover:bg-white/10"
-      aria-label="Toggle theme"
+      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
     >
       <div className="relative h-5 w-5">
         <motion.div
@@ -266,9 +303,11 @@ export const ThemeToggle = () => {
             scale: theme === "dark" ? 1 : 0,
           }}
           className="absolute inset-0"
+          transition={{ type: "spring", stiffness: 200, damping: 15 }}
         >
           <IconSun size={20} />
         </motion.div>
+        
         <motion.div
           initial={false}
           animate={{
@@ -277,6 +316,7 @@ export const ThemeToggle = () => {
             scale: theme === "dark" ? 0 : 1,
           }}
           className="absolute inset-0"
+          transition={{ type: "spring", stiffness: 200, damping: 15 }}
         >
           <IconMoon size={20} />
         </motion.div>
@@ -289,28 +329,85 @@ export const ThemeToggle = () => {
 
 type NavbarButtonVariant = "primary" | "secondary";
 
-interface NavbarButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+interface NavbarButtonProps {
   href?: string;
-  as?: React.ElementType;
   variant?: NavbarButtonVariant;
+  className?: string;
+  children: React.ReactNode;
+  onClick?: () => void;
 }
 
+// Main button component that can be either a Link or button
 export const NavbarButton = ({
   href,
-  as: Tag = "a",
   children,
   className,
   variant = "primary",
-  ...props
+  onClick,
 }: NavbarButtonProps) => {
   const variants: Record<NavbarButtonVariant, string> = {
-    primary: "bg-black text-white",
-    secondary: "bg-transparent",
+    primary: "bg-black text-white hover:bg-black/90",
+    secondary: "bg-transparent border border-black/20 hover:bg-black/5 dark:border-white/20 dark:hover:bg-white/10",
+  };
+
+  const baseClasses = cn(
+    "rounded-md px-4 py-2 text-sm font-semibold transition",
+    variants[variant],
+    className,
+  );
+
+  // If href is provided, use Link
+  if (href) {
+    return (
+      <Link
+        href={href}
+        onClick={onClick}
+        className={baseClasses}
+      >
+        {children}
+      </Link>
+    );
+  }
+
+  // If no href, use a regular button
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={baseClasses}
+    >
+      {children}
+    </button>
+  );
+};
+
+// Separated button component for regular buttons with more props
+export const NavbarRegularButton = ({
+  children,
+  className,
+  variant = "primary",
+  onClick,
+  type = "button",
+  disabled = false,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+  variant?: NavbarButtonVariant;
+  onClick?: () => void;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+  const variants: Record<NavbarButtonVariant, string> = {
+    primary: "bg-black text-white hover:bg-black/90 disabled:opacity-50 disabled:cursor-not-allowed",
+    secondary: "bg-transparent border border-black/20 hover:bg-black/5 dark:border-white/20 dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed",
   };
 
   return (
-    <Tag
-      href={href}
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
       className={cn(
         "rounded-md px-4 py-2 text-sm font-semibold transition",
         variants[variant],
@@ -319,6 +416,6 @@ export const NavbarButton = ({
       {...props}
     >
       {children}
-    </Tag>
+    </button>
   );
 };

@@ -145,7 +145,7 @@ export default function FAQPage() {
           <p className="text-sm text-muted-foreground">
             Still have questions?{" "}
             <Link
-              href="#contact"
+              href="/contact"
               className="font-bold text-primary underline-offset-4 hover:underline"
             >
               Contact our team
