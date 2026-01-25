@@ -115,13 +115,13 @@ const mapData = {
   ],
   leads: [
     {
-      lat: 30.6869,
-      lng: 76.6813,
+      lat: 30.7710,
+      lng: 76.5790,
       city: "Chandigarh",
       country: "India",
-      name: "Bhumika Varshney",
+      name: "Pawan",
       role: "Campus Lead",
-      org: "CGC University",
+      org: "Chandigarh University",
     },
     {
       lat: 30.7046,
@@ -133,13 +133,13 @@ const mapData = {
       org: "CGC Landran",
     },
     {
-      lat: 30.7710,
-      lng: 76.5790,
+      lat: 30.6869,
+      lng: 76.6813,
       city: "Chandigarh",
       country: "India",
-      name: "Pawan",
+      name: "Bhumika Varshney",
       role: "Campus Lead",
-      org: "Chandigarh University",
+      org: "CGC University",
     },
     {
       lat: 31.2550,
