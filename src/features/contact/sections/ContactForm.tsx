@@ -135,7 +135,7 @@ const Card = ({
   className?: string;
 }) => (
   <div
-    className={`rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900/50 to-gray-900/30 backdrop-blur-sm shadow-2xl shadow-black/20 ${className}`}
+    className={`p-6 rounded-2xl border dark:border-white/10 border-gray-200 dark:bg-white/5 bg-white/80 backdrop-blur-xl shadow-2xl shadow-black/10 ${className}`}
   >
     {children}
   </div>
@@ -148,7 +148,7 @@ const CardHeader = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <div className={`px-6 py-5 border-b border-gray-800 ${className}`}>
+  <div className={`px-6 py-5 border-b dark:border-white/10 border-gray-200 ${className}`}>
     {children}
   </div>
 );
@@ -160,7 +160,7 @@ const CardTitle = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <h3 className={`font-bold text-lg text-white ${className}`}>{children}</h3>
+  <h3 className={`font-bold text-lg dark:text-white text-gray-900 ${className}`}>{children}</h3>
 );
 
 const CardDescription = ({
@@ -169,7 +169,7 @@ const CardDescription = ({
 }: {
   children: React.ReactNode;
   className?: string;
-}) => <p className={`text-sm text-gray-400 ${className}`}>{children}</p>;
+}) => <p className={`text-sm dark:text-gray-300 text-gray-600 ${className}`}>{children}</p>;
 
 const CardContent = ({
   children,
@@ -186,7 +186,7 @@ const CardFooter = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <div className={`px-6 py-5 border-t border-gray-800 ${className}`}>
+  <div className={`px-6 py-5 border-t dark:border-white/10 border-gray-200 ${className}`}>
     {children}
   </div>
 );
@@ -199,14 +199,14 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ children, className = "", variant = "default", size = "default", ...props }, ref) => {
     const baseClasses =
-      "inline-flex items-center justify-center rounded-4xl font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:pointer-events-none";
+      "inline-flex items-center justify-center rounded-4xl font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 focus-visible:ring-offset-white disabled:opacity-50 disabled:pointer-events-none";
 
     const variants = {
       default:
-        "bg-gradient-to-r from-[#fd7d6e] to-[#ff9a8b] text-white hover:from-[#ff9a8b]-700 hover:to-[#fd7d6e]-700 hover:shadow-lg hover:shadow-blue-500/20",
+        "bg-gradient-to-r from-[#fd7d6e] to-[#ff9a8b] text-white hover:from-[#ff9a8b] hover:to-[#fd7d6e] hover:shadow-lg hover:shadow-blue-500/20",
       outline:
-        "border border-gray-700 bg-gray-800/50 text-gray-300 hover:bg-gray-800 hover:border-gray-600 hover:text-white",
-      ghost: "bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white",
+        "border dark:border-white/20 border-gray-300 dark:bg-white/5 bg-white/80 dark:text-gray-300 text-gray-700 hover:dark:bg-white/10 hover:bg-gray-100 hover:dark:border-white/30 hover:border-gray-400 hover:dark:text-white hover:text-gray-900",
+      ghost: "dark:bg-transparent bg-transparent dark:text-gray-300 text-gray-600 hover:dark:bg-white/5 hover:bg-gray-100 hover:dark:text-white hover:text-gray-900",
     };
 
     const sizes = {
@@ -236,7 +236,7 @@ const Input = React.forwardRef<
 >(({ className = "", ...props }, ref) => (
   <input
     ref={ref}
-    className={`flex h-11 w-full rounded-xl border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${className}`}
+    className={`flex h-11 w-full rounded-xl border dark:border-white/10 border-gray-300 dark:bg-white/5 bg-white/80 px-4 py-3 text-sm dark:text-white text-gray-900 dark:placeholder:text-gray-400 placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 backdrop-blur-sm ${className}`}
     {...props}
   />
 ));
@@ -248,7 +248,7 @@ const Textarea = React.forwardRef<
 >(({ className = "", ...props }, ref) => (
   <textarea
     ref={ref}
-    className={`flex min-h-[100px] w-full rounded-xl border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${className}`}
+    className={`flex min-h-[100px] w-full rounded-xl border dark:border-white/10 border-gray-300 dark:bg-white/5 bg-white/80 px-4 py-3 text-sm dark:text-white text-gray-900 dark:placeholder:text-gray-400 placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 backdrop-blur-sm ${className}`}
     {...props}
   />
 ));
@@ -265,7 +265,7 @@ const Label = ({
 }) => (
   <label
     htmlFor={htmlFor}
-    className={`text-sm font-medium leading-none text-gray-300 ${className}`}
+    className={`text-sm font-medium leading-none dark:text-gray-200 text-gray-700 ${className}`}
   >
     {children}
   </label>
@@ -278,7 +278,7 @@ const Checkbox = React.forwardRef<
   <input
     ref={ref}
     type="checkbox"
-    className={`h-4 w-4 rounded border-gray-700 bg-gray-800 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 ${className}`}
+    className={`h-4 w-4 rounded dark:border-white/20 border-gray-300 dark:bg-white/5 bg-white text-blue-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-offset-gray-900 focus:ring-offset-white ${className}`}
     {...props}
   />
 ));
@@ -292,7 +292,7 @@ const Select = React.forwardRef<
 >(({ children, className = "", ...props }, ref) => (
   <select
     ref={ref}
-    className={`flex h-11 w-full rounded-xl border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${className}`}
+    className={`flex h-11 w-full rounded-xl border dark:border-white/10 border-gray-300 dark:bg-white/5 bg-white/80 px-4 py-3 text-sm dark:text-white text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 backdrop-blur-sm ${className}`}
     {...props}
   >
     {children}
@@ -328,7 +328,7 @@ const FormLabel = ({
   children: React.ReactNode;
   htmlFor?: string;
 }) => (
-  <Label htmlFor={htmlFor} className="text-sm font-medium text-gray-300">
+  <Label htmlFor={htmlFor} className="text-sm font-medium dark:text-gray-200 text-gray-700">
     {children}
   </Label>
 );
@@ -338,7 +338,7 @@ const FormControl = ({ children }: { children: React.ReactNode }) => (
 );
 
 const FormMessage = ({ children }: { children?: React.ReactNode }) =>
-  children ? <p className="text-sm text-red-400">{children}</p> : null;
+  children ? <p className="text-sm text-red-500 dark:text-red-400">{children}</p> : null;
 
 // ===================== CONFECTTI & LOADER =====================
 function useConfetti() {
@@ -658,15 +658,15 @@ const ChatInterface = () => {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900/50 to-gray-900/30 backdrop-blur-sm p-5 shadow-2xl shadow-black/20">
+      <Card>
         <div className="flex items-center gap-3 mb-5">
           <div className="p-2.5 bg-gradient-to-r from-[#fd7d6e] to-[#ff9a8b] rounded-xl">
             <Bot className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="font-bold text-white">D4 Community Assistant</h3>
+            <h3 className="font-bold dark:text-white text-gray-900">D4 Community Assistant</h3>
             <div className="flex items-center gap-2">
-              <p className="text-sm text-gray-400">
+              <p className="text-sm dark:text-gray-300 text-gray-600">
                 {apiKeyAvailable
                   ? "🤖 AI-Powered • Online"
                   : "📱 Offline Mode • Basic Info"}
@@ -678,7 +678,7 @@ const ChatInterface = () => {
           </div>
         </div>
 
-        <div className="h-80 overflow-y-auto rounded-xl bg-gray-900/50 border border-gray-800 p-4 space-y-4">
+        <div className="h-80 overflow-y-auto rounded-xl dark:bg-white/5 bg-gray-50/80 border dark:border-white/10 border-gray-200 p-4 space-y-4">
           {messages.map((msg) => (
             <motion.div
               key={msg.id}
@@ -690,19 +690,19 @@ const ChatInterface = () => {
                 className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                   msg.sender === "user"
                     ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-br-none shadow-lg shadow-blue-900/20"
-                    : "bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-800 rounded-bl-none"
+                    : "dark:bg-gradient-to-r dark:from-white/5 dark:to-white/10 bg-gradient-to-r from-gray-50 to-white border dark:border-white/10 border-gray-200 rounded-bl-none"
                 }`}
               >
                 <div className="flex items-start gap-2.5">
                   {msg.sender === "bot" && (
                     <Bot className="h-4 w-4 mt-0.5 flex-shrink-0 text-blue-400" />
                   )}
-                  <div className="text-sm whitespace-pre-wrap leading-relaxed">
+                  <div className="text-sm whitespace-pre-wrap leading-relaxed dark:text-gray-100 text-gray-800">
                     {msg.content}
                   </div>
                 </div>
                 <div
-                  className={`text-xs mt-2 ${msg.sender === "user" ? "text-blue-200/70" : "text-gray-500"}`}
+                  className={`text-xs mt-2 ${msg.sender === "user" ? "text-blue-200/70" : "dark:text-gray-400 text-gray-500"}`}
                 >
                   {msg.timestamp.toLocaleTimeString([], {
                     hour: "2-digit",
@@ -715,7 +715,7 @@ const ChatInterface = () => {
 
           {isTyping && (
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-800 rounded-xl border border-gray-700">
+              <div className="p-2 dark:bg-white/5 bg-gray-50 rounded-xl border dark:border-white/10 border-gray-200">
                 <Bot className="h-4 w-4 text-blue-400" />
               </div>
               <div className="flex gap-1.5">
@@ -766,14 +766,14 @@ const ChatInterface = () => {
         </div>
 
         {!apiKeyAvailable && (
-          <div className="mt-3 p-3 rounded-xl bg-gray-800/30 border border-gray-800">
-            <p className="text-xs text-center text-gray-400">
+          <div className="mt-3 p-3 rounded-xl dark:bg-white/5 bg-gray-50/80 border dark:border-white/10 border-gray-200">
+            <p className="text-xs text-center dark:text-gray-300 text-gray-600">
               💡 <span className="text-blue-400">Tip:</span> Add Gemini API key
               for AI-powered responses
             </p>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 };
@@ -820,18 +820,18 @@ const SuccessModal = ({
         <motion.div
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
-          className="relative z-10 w-full max-w-2xl rounded-2xl bg-gradient-to-br from-gray-900/50 to-gray-900/30 backdrop-blur-sm p-6 shadow-2xl shadow-black/40 border border-gray-800"
+          className="relative z-10 w-full max-w-2xl rounded-2xl dark:bg-white/5 bg-white/90 backdrop-blur-xl p-6 shadow-2xl shadow-black/40 border dark:border-white/10 border-gray-200"
         >
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 p-2 hover:bg-gray-800 rounded-xl transition-colors"
+            className="absolute right-4 top-4 p-2 hover:dark:bg-white/10 hover:bg-gray-100 rounded-xl transition-colors"
           >
-            <X className="h-4 w-4 text-gray-400" />
+            <X className="h-4 w-4 dark:text-gray-300 text-gray-600" />
           </button>
 
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="w-full md:w-44 h-44 rounded-2xl bg-gradient-to-r from-[#fd7d6e] to-[#ff9a8b] flex items-center justify-center shadow-2xl shadow-blue-500/20">
-              <div className="w-28 h-28 rounded-xl bg-gray-900/80 flex items-center justify-center shadow-inner">
+              <div className="w-28 h-28 rounded-xl dark:bg-black/40 bg-white/20 flex items-center justify-center shadow-inner">
                 <svg viewBox="0 0 120 120" className="w-20 h-20">
                   <defs>
                     <linearGradient id="g2" x1="0" x2="1">
@@ -865,10 +865,10 @@ const SuccessModal = ({
             <div className="flex-1">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-2xl font-bold text-white">
+                  <h3 className="text-2xl font-bold dark:text-white text-gray-900">
                     Thanks — you're awesome!
                   </h3>
-                  <p className="mt-2 text-sm text-gray-300 max-w-md">
+                  <p className="mt-2 text-sm dark:text-gray-300 text-gray-600 max-w-md">
                     We received your application and will get back to you soon.
                     Meanwhile, join our community links below!
                   </p>
@@ -877,8 +877,8 @@ const SuccessModal = ({
 
               <div className="mt-4">
                 <div>
-                  <p className="font-medium text-white">D4 Community</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="font-medium dark:text-white text-gray-900">D4 Community</p>
+                  <p className="text-xs dark:text-gray-300 text-gray-600 mt-1">
                     Expect an email reply within 24 hours.
                   </p>
 
@@ -893,7 +893,7 @@ const SuccessModal = ({
                     </a>
                     <a
                       href="mailto:help.d4community@gmail.com"
-                      className="inline-flex items-center rounded-xl px-3.5 py-2 text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700 transition-colors"
+                      className="inline-flex items-center rounded-xl px-3.5 py-2 text-sm font-medium dark:bg-white/5 dark:text-gray-300 bg-gray-100 text-gray-700 hover:dark:bg-white/10 hover:bg-gray-200 border dark:border-white/10 border-gray-300 transition-colors"
                     >
                       Contact Us
                     </a>
@@ -904,7 +904,7 @@ const SuccessModal = ({
               <div className="mt-6 text-right">
                 <button
                   onClick={onClose}
-                  className="inline-flex items-center rounded-xl px-4 py-2 text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700 transition-colors"
+                  className="inline-flex items-center rounded-xl px-4 py-2 text-sm font-medium dark:bg-white/5 dark:text-gray-300 bg-gray-100 text-gray-700 hover:dark:bg-white/10 hover:bg-gray-200 border dark:border-white/10 border-gray-300 transition-colors"
                 >
                   Close
                 </button>
@@ -912,7 +912,7 @@ const SuccessModal = ({
             </div>
           </div>
 
-          <div className="mt-3 text-center text-xs text-gray-500">
+          <div className="mt-3 text-center text-xs dark:text-gray-400 text-gray-500">
             <span>D4 Community — thanks for connecting!</span>
           </div>
         </motion.div>
@@ -1016,7 +1016,7 @@ export function D4ContactForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-black py-8 px-4 mt-16">
+    <div className="min-h-screen py-8 px-4 mt-16">
       {/* Dots loader overlay */}
       <DotsLoader
         visible={showLoader}
@@ -1034,9 +1034,9 @@ export function D4ContactForm() {
         >
           {/* Banner Image Background */}
           <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-gray-900/30 z-10" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-white/10 z-10" />
             {/* You can replace this with an actual Image component if you have a banner */}
-            <div className="w-full h-full bg-gradient-to-r from-[#fd7d6e] to-[#ff9a8b] to-gray-900" />
+            <div className="w-full h-full bg-gradient-to-r from-[#fd7d6e] to-[#ff9a8b] to-white/10" />
             {/* D4 Community text overlay */}
             <div className="absolute inset-0 flex items-center justify-center z-20">
               <div className="text-center px-4">
@@ -1063,9 +1063,9 @@ export function D4ContactForm() {
         </motion.div>
 
         <div className="mx-auto max-w-6xl px-6 mb-16 text-center">
-          <h2 className="font-bold text-2xl md:text-4xl lg:text-5xl dark:text-white text-black tracking-tight">
+          <h2 className="font-bold text-2xl md:text-4xl lg:text-5xl dark:text-white text-gray-900 tracking-tight">
             Let's Build{" "}
-            <span className="text-neutral-400">
+            <span className="dark:text-gray-300 text-gray-700">
               {"Together".split("").map((word, idx) => (
                 <motion.span
                   key={idx}
@@ -1080,7 +1080,7 @@ export function D4ContactForm() {
               ))}
             </span>
           </h2>
-          <p className="text-muted-foreground mt-4 text-sm tracking-wide text-balance md:text-base text-center">
+          <p className="dark:text-gray-300 text-gray-600 mt-4 text-sm tracking-wide text-balance md:text-base text-center">
             Connect with our community of developers, designers, and tech
             enthusiasts. Whether you're looking to collaborate, learn, or
             grow, we're here for you
@@ -1090,7 +1090,7 @@ export function D4ContactForm() {
         <div className="max-w-7xl mx-auto">
           {/* Tabs */}
           <div className="flex justify-center mb-8">
-            <div className="inline-flex rounded-4xl bg-gray-900/50 backdrop-blur-sm p-1.5 border border-gray-800">
+            <div className="inline-flex rounded-4xl dark:bg-white/5 bg-white/80 backdrop-blur-sm p-1.5 border dark:border-white/10 border-gray-200">
               <Button
                 variant={activeTab === "form" ? "default" : "ghost"}
                 className={`rounded-4xl ${activeTab === "form" ? "shadow-lg shadow-blue-500/10" : ""}`}
@@ -1208,9 +1208,9 @@ export function D4ContactForm() {
 // ===================== COMPONENT SECTIONS =====================
 
 const CommunityLinksSection = () => (
-  <Card className="bg-gradient-to-br from-gray-900/50 to-gray-900/30 border-blue-900/20">
+  <Card>
     <CardHeader>
-      <CardTitle className="flex items-center gap-2 text-white">
+      <CardTitle className="flex items-center gap-2 dark:text-white text-gray-900">
         <Users className="h-5 w-5 text-blue-400" />
         Community Links
       </CardTitle>
@@ -1222,20 +1222,20 @@ const CommunityLinksSection = () => (
           href={item.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between p-3 rounded-xl bg-gray-800/30 hover:bg-gray-800/50 border border-gray-800 hover:border-gray-700 transition-all duration-300 group hover:scale-[1.02]"
+          className="flex items-center justify-between p-3 rounded-xl dark:bg-white/5 bg-gray-50/80 hover:dark:bg-white/10 hover:bg-gray-100 border dark:border-white/10 border-gray-200 hover:dark:border-white/20 hover:border-gray-300 transition-all duration-300 group hover:scale-[1.02]"
         >
           <div className="flex items-center gap-3">
             <div
-              className="p-2 rounded-lg bg-gray-800/50 group-hover:bg-gray-700/50 transition-colors"
+              className="p-2 rounded-lg dark:bg-white/5 bg-gray-100 group-hover:dark:bg-white/10 group-hover:bg-gray-200 transition-colors"
               style={{ color: item.brand }}
             >
               {item.icon}
             </div>
-            <span className="font-medium text-gray-300 group-hover:text-white transition-colors">
+            <span className="font-medium dark:text-gray-200 text-gray-700 group-hover:dark:text-white group-hover:text-gray-900 transition-colors">
               {item.label}
             </span>
           </div>
-          <ExternalLink className="h-4 w-4 text-gray-500 group-hover:text-gray-300 transition-colors" />
+          <ExternalLink className="h-4 w-4 dark:text-gray-400 text-gray-500 group-hover:dark:text-gray-300 group-hover:text-gray-700 transition-colors" />
         </a>
       ))}
     </CardContent>
@@ -1243,23 +1243,23 @@ const CommunityLinksSection = () => (
 );
 
 const ContactInfoSection = () => (
-  <Card className="border-purple-900/20">
+  <Card>
     <CardHeader>
-      <CardTitle className="flex items-center gap-2 text-white">
+      <CardTitle className="flex items-center gap-2 dark:text-white text-gray-900">
         <Calendar className="h-5 w-5 text-purple-400" />
         Quick Info
       </CardTitle>
     </CardHeader>
     <CardContent className="space-y-4">
-      <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-800/30 border border-gray-800">
+      <div className="flex items-center gap-3 p-3 rounded-xl dark:bg-white/5 bg-gray-50/80 border dark:border-white/10 border-gray-200">
         <div className="p-2 rounded-lg bg-blue-900/20">
           <Mail className="h-5 w-5 text-blue-400" />
         </div>
         <div>
-          <p className="text-sm text-gray-400">Email</p>
+          <p className="text-sm dark:text-gray-300 text-gray-600">Email</p>
           <a
             href="mailto:help.d4community@gmail.com"
-            className="font-medium text-gray-300 hover:text-blue-400 transition-colors"
+            className="font-medium dark:text-gray-200 text-gray-700 hover:text-blue-400 transition-colors"
           >
             help.d4community@gmail.com
           </a>
@@ -1278,9 +1278,9 @@ const ContactFormSection = ({
   roles,
   experienceLevels,
 }: any) => (
-  <Card className="border-blue-900/20 shadow-2xl shadow-black/20">
+  <Card className="shadow-2xl shadow-black/20">
     <CardHeader className="bg-gradient-to-r from-blue-900/10 to-purple-900/10">
-      <CardTitle className="text-white">Join D4 Community</CardTitle>
+      <CardTitle className="dark:text-white text-gray-900">Join D4 Community</CardTitle>
       <CardDescription>
         Tell us about yourself and how you'd like to be involved
       </CardDescription>
@@ -1330,11 +1330,11 @@ const ContactFormSection = ({
               value={form.watch("role")}
               onChange={(e) => form.setValue("role", e.target.value)}
             >
-              <option value="" className="bg-gray-900">
+              <option value="" className="dark:bg-gray-900 bg-white">
                 Select your role
               </option>
               {roles.map((role: string) => (
-                <option key={role} value={role} className="bg-gray-900">
+                <option key={role} value={role} className="dark:bg-gray-900 bg-white">
                   {role}
                 </option>
               ))}
@@ -1386,7 +1386,7 @@ const ContactFormSection = ({
                 />
                 <Label
                   htmlFor={item}
-                  className="text-sm text-gray-300 cursor-pointer hover:text-white transition-colors"
+                  className="text-sm dark:text-gray-200 text-gray-700 cursor-pointer hover:dark:text-white hover:text-gray-900 transition-colors"
                 >
                   {item}
                 </Label>
@@ -1404,11 +1404,11 @@ const ContactFormSection = ({
             value={form.watch("experience")}
             onChange={(e) => form.setValue("experience", e.target.value)}
           >
-            <option value="" className="bg-gray-900">
+            <option value="" className="dark:bg-gray-900 bg-white">
               Select experience level
             </option>
             {experienceLevels.map((level: string) => (
-              <option key={level} value={level} className="bg-gray-900">
+              <option key={level} value={level} className="dark:bg-gray-900 bg-white">
                 {level}
               </option>
             ))}
@@ -1430,17 +1430,17 @@ const ContactFormSection = ({
         </FormItem>
 
         {/* Terms */}
-        <div className="flex items-start space-x-3 space-y-0 rounded-xl border border-gray-800 p-4 bg-gray-900/30">
+        <div className="flex items-start space-x-3 space-y-0 rounded-xl border dark:border-white/10 border-gray-200 p-4 dark:bg-white/5 bg-gray-50/80">
           <Checkbox
             id="agreeToTerms"
             checked={form.watch("agreeToTerms")}
             onChange={(e) => form.setValue("agreeToTerms", e.target.checked)}
           />
           <div className="space-y-2 leading-none">
-            <Label htmlFor="agreeToTerms" className="text-gray-300">
+            <Label htmlFor="agreeToTerms" className="dark:text-gray-200 text-gray-700">
               I agree to the terms and conditions
             </Label>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm dark:text-gray-300 text-gray-600">
               By submitting this form, you agree to receive communications from
               D4 Community about events, opportunities, and community updates.
             </p>
@@ -1452,7 +1452,7 @@ const ContactFormSection = ({
 
         {/* Server Error */}
         {serverError && (
-          <div className="rounded-xl border border-red-900/30 bg-red-900/10 px-4 py-3 text-sm text-red-400">
+          <div className="rounded-xl border border-red-900/30 bg-red-900/10 px-4 py-3 text-sm text-red-500 dark:text-red-400">
             {serverError}
           </div>
         )}
@@ -1461,7 +1461,7 @@ const ContactFormSection = ({
       <CardFooter className="flex flex-col gap-4">
         <Button
           type="submit"
-          className="w-full bg-gradient-to-r from-[#fd7d6e] to-[#ff9a8b] hover:from-[#ff9a8b]-700 hover:to-[#fd7d6e]-700 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300"
+          className="w-full bg-gradient-to-r from-[#fd7d6e] to-[#ff9a8b] hover:from-[#ff9a8b] hover:to-[#fd7d6e] hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300"
           disabled={isLoading}
           size="lg"
         >
@@ -1478,7 +1478,7 @@ const ContactFormSection = ({
           )}
         </Button>
 
-        <div className="text-center text-sm text-gray-400">
+        <div className="text-center text-sm dark:text-gray-300 text-gray-600">
           <p>We typically respond within 24 hours</p>
         </div>
       </CardFooter>
