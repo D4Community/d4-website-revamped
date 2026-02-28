@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { InfiniteSlider } from "@/components/ui/infinite-slider";
 
 interface Partner {
   id: string;
@@ -13,64 +13,304 @@ interface Partner {
 
 const PARTNERS: Partner[] = [
   {
-    id: "partner-1",
-    name: "Microsoft",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg",
-    description: "Technology Partner",
+    id: "acm-cgcu",
+    name: "ACM CGCU",
+    logo: "/images/community-partner/acm_cgcu.png",
+    description: "Community Partner",
   },
   {
-    id: "partner-2",
-    name: "Google",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-    description: "Cloud & AI Partner",
+    id: "bud-to-build",
+    name: "Bud to Build",
+    logo: "/images/community-partner/budtobuild.png",
+    description: "Community Partner",
   },
   {
-    id: "partner-3",
-    name: "Amazon Web Services",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg",
-    description: "Cloud Infrastructure Partner",
+    id: "codezen",
+    name: "CodeZen",
+    logo: "/images/community-partner/codezen.png",
+    description: "Community Partner",
   },
   {
-    id: "partner-4",
-    name: "GitHub",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg",
-    description: "Development Platform Partner",
+    id: "coding-club-iit-jmu",
+    name: "Coding Club IIT Jammu",
+    logo: "/images/community-partner/codingclubiitjmu.jpeg",
+    description: "Community Partner",
   },
   {
-    id: "partner-5",
-    name: "Figma",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg",
-    description: "Design Tools Partner",
+    id: "csquare",
+    name: "C Square",
+    logo: "/images/community-partner/csquare.png",
+    description: "Community Partner",
   },
   {
-    id: "partner-6",
-    name: "Slack",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg",
-    description: "Communication Partner",
+    id: "cu-updates",
+    name: "CU Updates",
+    logo: "/images/community-partner/cu_updates.png",
+    description: "Community Partner",
   },
   {
-    id: "partner-7",
-    name: "Notion",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg",
-    description: "Productivity Partner",
+    id: "d4",
+    name: "D4",
+    logo: "/images/community-partner/D.png",
+    description: "Community Partner",
   },
   {
-    id: "partner-8",
-    name: "Vercel",
-    logo: "https://assets.vercel.com/image/upload/q_auto/front/favicon/vercel/180x180.png",
-    description: "Deployment Platform Partner",
+    id: "devhive",
+    name: "DevHive",
+    logo: "/images/community-partner/Devhive.png",
+    description: "Community Partner",
   },
   {
-    id: "partner-9",
-    name: "Tailwind CSS",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Tailwind_CSS_Logo.svg",
-    description: "Styling Framework Partner",
+    id: "dream-coders",
+    name: "Dream Coders",
+    logo: "/images/community-partner/dreamcoders.jpg",
+    description: "Community Partner",
   },
   {
-    id: "partner-10",
-    name: "OpenAI",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg",
-    description: "AI Research Partner",
+    id: "encrypt-edge",
+    name: "Encrypt Edge",
+    logo: "/images/community-partner/encrypt-edge.png",
+    description: "Community Partner",
+  },
+  {
+    id: "event-dev-x",
+    name: "Event Dev X",
+    logo: "/images/community-partner/event_dev_x.png",
+    description: "Community Partner",
+  },
+  {
+    id: "ffdg",
+    name: "FFDG",
+    logo: "/images/community-partner/FFDG.png",
+    description: "Community Partner",
+  },
+  {
+    id: "gdg-pec",
+    name: "GDG PEC",
+    logo: "/images/community-partner/gdg-pec.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "gdg",
+    name: "GDG",
+    logo: "/images/community-partner/gdg.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "gdgc-sviet",
+    name: "GDGoC SVIET",
+    logo: "/images/community-partner/gdgc_sviet.png",
+    description: "Community Partner",
+  },
+  {
+    id: "gdgoc-tae",
+    name: "GDGoC TAE",
+    logo: "/images/community-partner/GDGoC-TAE.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "gdgoc-dgil",
+    name: "GDGoC DGIL",
+    logo: "/images/community-partner/gdgocdgil.png",
+    description: "Community Partner",
+  },
+  {
+    id: "gdg-bbdniit-lucknow",
+    name: "GDG BBDNIIT Lucknow",
+    logo: "/images/community-partner/gdg_bbdniit_lucknow.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "gdg-cgc-coe",
+    name: "GDG CGC COE",
+    logo: "/images/community-partner/gdg_cgc_coe.png",
+    description: "Community Partner",
+  },
+  {
+    id: "gdg-iet-davv",
+    name: "GDG IET DAVV",
+    logo: "/images/community-partner/gdg_iet_davv.jpeg",
+    description: "Community Partner",
+  },
+  {
+    id: "gdg-iiit-kalyani",
+    name: "GDG IIIT Kalyani",
+    logo: "/images/community-partner/gdg_iiit_kalyani.png",
+    description: "Community Partner",
+  },
+  {
+    id: "gdg-indo-global",
+    name: "GDG Indo Global College",
+    logo: "/images/community-partner/gdg_indo_global_college.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "gdg-mmdu",
+    name: "GDG MMDU",
+    logo: "/images/community-partner/gdg_mmdu.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "gdg-techno-main",
+    name: "GDG Techno",
+    logo: "/images/community-partner/gdg_techno_main_salt_lake.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "gic",
+    name: "GIC",
+    logo: "/images/community-partner/GIC.png",
+    description: "Community Partner",
+  },
+  {
+    id: "godc",
+    name: "GODC",
+    logo: "/images/community-partner/godc.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "gsa-itmbu",
+    name: "GSA ITMBU",
+    logo: "/images/community-partner/GSA_itmbu.png",
+    description: "Community Partner",
+  },
+  {
+    id: "hackhalt",
+    name: "HackHalt",
+    logo: "/images/community-partner/hackhalt.jpeg",
+    description: "Community Partner",
+  },
+  {
+    id: "ica",
+    name: "ICA",
+    logo: "/images/community-partner/ica.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "ieee-cgcu",
+    name: "IEEE CGCU",
+    logo: "/images/community-partner/IEEE_CGCU.jpeg",
+    description: "Community Partner",
+  },
+  {
+    id: "innovatex",
+    name: "InnovateX",
+    logo: "/images/community-partner/innovatex.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "iste-cgcu",
+    name: "ISTE CGCU",
+    logo: "/images/community-partner/iste_cgcu.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "kailshians",
+    name: "Kailshians",
+    logo: "/images/community-partner/kailshians.png",
+    description: "Community Partner",
+  },
+  {
+    id: "mern-matrix",
+    name: "MERN Matrix",
+    logo: "/images/community-partner/mern_matrix.png",
+    description: "Community Partner",
+  },
+  {
+    id: "node-zero",
+    name: "Node Zero",
+    logo: "/images/community-partner/node_zero.png",
+    description: "Community Partner",
+  },
+  {
+    id: "nv",
+    name: "NV",
+    logo: "/images/community-partner/nv.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "off-sec-diary",
+    name: "Off Sec Diary",
+    logo: "/images/community-partner/off_sec_diary.png",
+    description: "Community Partner",
+  },
+  {
+    id: "open-source-chandigarh",
+    name: "Open Source Chandigarh",
+    logo: "/images/community-partner/open_source_chandigarh.png",
+    description: "Community Partner",
+  },
+  {
+    id: "papaya-coders",
+    name: "Papaya Coders",
+    logo: "/images/community-partner/papapya_coders.png",
+    description: "Community Partner",
+  },
+  {
+    id: "react-rajasthan",
+    name: "React Rajasthan",
+    logo: "/images/community-partner/react_rajasthan.png",
+    description: "Community Partner",
+  },
+  {
+    id: "react-kolkata",
+    name: "React Kolkata",
+    logo: "/images/community-partner/reac_kolkate.png",
+    description: "Community Partner",
+  },
+  {
+    id: "shadow-script",
+    name: "Shadow Script",
+    logo: "/images/community-partner/shadow_script.png",
+    description: "Community Partner",
+  },
+  {
+    id: "shebuilds",
+    name: "SheBuilds",
+    logo: "/images/community-partner/shebuilds.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "tensorik",
+    name: "Tensorik",
+    logo: "/images/community-partner/tensorik.png",
+    description: "Community Partner",
+  },
+  {
+    id: "the-dev-army",
+    name: "The Dev Army",
+    logo: "/images/community-partner/thedevarmy.png",
+    description: "Community Partner",
+  },
+  {
+    id: "the-uniques",
+    name: "The Uniques",
+    logo: "/images/community-partner/theuniques.png",
+    description: "Community Partner",
+  },
+  {
+    id: "the-seed-club",
+    name: "The Seed Club",
+    logo: "/images/community-partner/the_seed_club.jpg",
+    description: "Community Partner",
+  },
+  {
+    id: "wiztron",
+    name: "Wiztron",
+    logo: "/images/community-partner/wiztron.png",
+    description: "Community Partner",
+  },
+  {
+    id: "yatu",
+    name: "YATU",
+    logo: "/images/community-partner/YATU.png",
+    description: "Community Partner",
+  },
+  {
+    id: "zenyukti",
+    name: "Zenyukti",
+    logo: "/images/community-partner/zenyukti.png",
+    description: "Community Partner",
   },
 ];
 
@@ -78,188 +318,34 @@ interface CommunityPartnersProps {
   className?: string;
 }
 
-export function CommunityPartners({ 
-  className 
-}: CommunityPartnersProps) {
-  const [topLineHovered, setTopLineHovered] = useState(false);
-  const [bottomLineHovered, setBottomLineHovered] = useState(false);
-  const topLineRef = useRef<HTMLDivElement>(null);
-  const bottomLineRef = useRef<HTMLDivElement>(null);
-  const topAnimationRef = useRef<number>(0);
-  const bottomAnimationRef = useRef<number>(0);
-  const topPositionRef = useRef<number>(0);
-  const bottomPositionRef = useRef<number>(0);
-  const topVelocityRef = useRef<number>(-0.5);
-  const bottomVelocityRef = useRef<number>(0.5);
-  const lastTimeRef = useRef<number>(0);
-  const [dimensions, setDimensions] = useState({
-    cardWidth: 160,
-    cardHeight: 110,
-    logoSize: 56,
-    gap: 32,
-    visibleCount: 4,
-  });
+// Split into two rows
+const ROW_1 = PARTNERS.slice(0, Math.ceil(PARTNERS.length / 2));
+const ROW_2 = PARTNERS.slice(Math.ceil(PARTNERS.length / 2));
 
-  // Smooth easing function
-  const easeOutExpo = (t: number): number => {
-    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-  };
+function PartnerCard({ partner }: { partner: Partner }) {
+  return (
+    <div className="relative overflow-hidden flex flex-col items-center justify-center w-30 sm:w-35 md:w-40  p-4 rounded-2xl backdrop-blur-2xl bg-linear-to-br from-white/10 via-white/5 to-white/0 dark:from-black/10 dark:via-black/5 dark:to-black/0 border border-white/30 dark:border-gray-800/50 transition-all duration-500 ease-out">
+      <div className="flex flex-col items-center"
+      >
+        <div className="relative w-12 h-12 sm:w-14 sm:h-14">
+          <Image
+            src={partner.logo}
+            alt={`${partner.name} logo`}
+            fill
+            className="object-contain"
+            sizes="56px"
+            unoptimized
+          />
+        </div>
+      <span className="mt-2 text-xs md:text-sm font-medium text-center text-gray-900 dark:text-white truncate w-full">
+        {partner.name}
+      </span>
+      </div>
+    </div>
+  );
+}
 
-  // Calculate dimensions based on screen size
-  const calculateDimensions = () => {
-    if (typeof window === 'undefined') return;
-    
-    const width = window.innerWidth;
-    let cardWidth, cardHeight, logoSize, gap, visibleCount;
-    
-    if (width < 640) {
-      // Mobile
-      cardWidth = 120;
-      cardHeight = 90;
-      logoSize = 40;
-      gap = 16;
-      visibleCount = 3;
-    } else if (width < 1024) {
-      // Tablet
-      cardWidth = 140;
-      cardHeight = 100;
-      logoSize = 48;
-      gap = 24;
-      visibleCount = 4;
-    } else {
-      // Desktop
-      cardWidth = 160;
-      cardHeight = 110;
-      logoSize = 56;
-      gap = 32;
-      visibleCount = 5;
-    }
-    
-    setDimensions({ cardWidth, cardHeight, logoSize, gap, visibleCount });
-  };
-
-  useEffect(() => {
-    calculateDimensions();
-    const handleResize = () => calculateDimensions();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Main animation loop
-  useEffect(() => {
-    let isAnimating = true;
-    
-    const animate = (currentTime: number) => {
-      if (!isAnimating) return;
-      
-      if (!lastTimeRef.current) lastTimeRef.current = currentTime;
-      const deltaTime = currentTime - lastTimeRef.current;
-      lastTimeRef.current = currentTime;
-      
-      const topLine = topLineRef.current;
-      const bottomLine = bottomLineRef.current;
-      
-      if (topLine) {
-        // Calculate total width for seamless loop
-        const totalPartnersWidth = (dimensions.cardWidth + dimensions.gap) * PARTNERS.length;
-        
-        if (topLineHovered) {
-          // Smooth deceleration when hovering
-          topVelocityRef.current *= 0.95;
-          if (Math.abs(topVelocityRef.current) < 0.01) {
-            topVelocityRef.current = 0;
-          }
-        } else {
-          // Smooth acceleration when not hovering
-          const targetVelocity = -0.5;
-          const acceleration = 0.002;
-          
-          if (topVelocityRef.current > targetVelocity) {
-            topVelocityRef.current = Math.max(targetVelocity, topVelocityRef.current - acceleration * deltaTime);
-          } else if (topVelocityRef.current < targetVelocity) {
-            topVelocityRef.current = Math.min(targetVelocity, topVelocityRef.current + acceleration * deltaTime);
-          }
-        }
-        
-        // Update position
-        topPositionRef.current += topVelocityRef.current * (deltaTime / 16);
-        
-        // Handle seamless loop
-        if (topPositionRef.current <= -totalPartnersWidth) {
-          topPositionRef.current += totalPartnersWidth;
-        }
-        if (topPositionRef.current > 0) {
-          topPositionRef.current -= totalPartnersWidth;
-        }
-        
-        topLine.style.transform = `translateX(${topPositionRef.current}px)`;
-        topLine.style.transition = 'transform 0.1s linear';
-      }
-      
-      if (bottomLine) {
-        // Calculate total width for seamless loop
-        const totalPartnersWidth = (dimensions.cardWidth + dimensions.gap) * PARTNERS.length;
-        
-        if (bottomLineHovered) {
-          // Smooth deceleration when hovering
-          bottomVelocityRef.current *= 0.95;
-          if (Math.abs(bottomVelocityRef.current) < 0.01) {
-            bottomVelocityRef.current = 0;
-          }
-        } else {
-          // Smooth acceleration when not hovering
-          const targetVelocity = 0.5;
-          const acceleration = 0.002;
-          
-          if (bottomVelocityRef.current > targetVelocity) {
-            bottomVelocityRef.current = Math.max(targetVelocity, bottomVelocityRef.current - acceleration * deltaTime);
-          } else if (bottomVelocityRef.current < targetVelocity) {
-            bottomVelocityRef.current = Math.min(targetVelocity, bottomVelocityRef.current + acceleration * deltaTime);
-          }
-        }
-        
-        // Update position
-        bottomPositionRef.current += bottomVelocityRef.current * (deltaTime / 16);
-        
-        // Handle seamless loop (reverse direction)
-        if (bottomPositionRef.current >= 0) {
-          bottomPositionRef.current -= totalPartnersWidth;
-        }
-        if (bottomPositionRef.current < -totalPartnersWidth) {
-          bottomPositionRef.current += totalPartnersWidth;
-        }
-        
-        bottomLine.style.transform = `translateX(${bottomPositionRef.current}px)`;
-        bottomLine.style.transition = 'transform 0.1s linear';
-      }
-      
-      topAnimationRef.current = requestAnimationFrame(animate);
-      bottomAnimationRef.current = topAnimationRef.current;
-    };
-    
-    topAnimationRef.current = requestAnimationFrame(animate);
-    
-    return () => {
-      isAnimating = false;
-      cancelAnimationFrame(topAnimationRef.current);
-      cancelAnimationFrame(bottomAnimationRef.current);
-    };
-  }, [topLineHovered, bottomLineHovered, dimensions]);
-
-  // Duplicate partners for seamless loop
-  const getDuplicatedPartners = () => {
-    const neededDuplicates = Math.ceil((window.innerWidth * 3) / (dimensions.cardWidth + dimensions.gap));
-    const duplicated = [];
-    
-    for (let i = 0; i < neededDuplicates; i++) {
-      duplicated.push(...PARTNERS);
-    }
-    
-    return duplicated;
-  };
-
-  const duplicatedPartners = getDuplicatedPartners();
-
+export function CommunityPartners({ className }: CommunityPartnersProps) {
   return (
     <div className={cn("w-full py-12 md:py-16", className)}>
       <div className="max-w-7xl mx-auto px-4">
@@ -273,141 +359,33 @@ export function CommunityPartners({
           </p>
         </div>
 
-        {/* Carousel Container */}
-        <div className="relative overflow-hidden">
-          {/* First Line - Right to Left */}
-          <div 
-            className="mb-6 md:mb-8 overflow-hidden"
-            onMouseEnter={() => setTopLineHovered(true)}
-            onMouseLeave={() => setTopLineHovered(false)}
+        {/* Two‑row slider */}
+        <div className="flex flex-col gap-6 md:gap-8">
+          <InfiniteSlider
+            direction="left"
+            speed={40}
+            showFade
+            gap={24}
+            autoMeasure
+            className="py-2"
           >
-            <div 
-              ref={topLineRef}
-              className="flex will-change-transform"
-              style={{
-                gap: `${dimensions.gap}px`,
-                width: 'max-content',
-              }}
-            >
-              {duplicatedPartners.map((partner, index) => (
-                <div
-                  key={`top-${partner.id}-${index}`}
-                  className="flex-shrink-0"
-                  style={{
-                    width: `${dimensions.cardWidth}px`,
-                    height: `${dimensions.cardHeight}px`,
-                  }}
-                >
-                  <div className={cn(
-                    "w-full h-full rounded-xl",
-                    "bg-white/10 dark:bg-black/10",
-                    "backdrop-blur-md",
-                    "border border-white/20 dark:border-gray-800/30",
-                    "flex flex-col items-center justify-center p-3 md:p-4",
-                    "transition-all duration-300",
-                    topLineHovered && "bg-white/20 dark:bg-black/20"
-                  )}>
-                    {/* Logo */}
-                    <div 
-                      className="relative mb-2"
-                      style={{
-                        width: `${dimensions.logoSize}px`,
-                        height: `${dimensions.logoSize}px`,
-                      }}
-                    >
-                      <Image
-                        src={partner.logo}
-                        alt={`${partner.name} logo`}
-                        fill
-                        className="object-contain"
-                        sizes={`${dimensions.logoSize}px`}
-                        unoptimized
-                      />
-                    </div>
-                    
-                    {/* Name */}
-                    <h3 className="text-xs md:text-sm font-medium text-center text-gray-900 dark:text-white truncate w-full">
-                      {partner.name}
-                    </h3>
-                    
-                    {/* Description */}
-                    <p className="text-[10px] md:text-xs text-center text-gray-600 dark:text-gray-400 truncate w-full">
-                      {partner.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+            {ROW_1.map((p) => (
+              <PartnerCard key={p.id} partner={p} />
+            ))}
+          </InfiniteSlider>
 
-          {/* Second Line - Left to Right */}
-          <div 
-            className="overflow-hidden"
-            onMouseEnter={() => setBottomLineHovered(true)}
-            onMouseLeave={() => setBottomLineHovered(false)}
+          <InfiniteSlider
+            direction="right"
+            speed={40}
+            showFade
+            gap={24}
+            autoMeasure
+            className="py-2"
           >
-            <div 
-              ref={bottomLineRef}
-              className="flex will-change-transform"
-              style={{
-                gap: `${dimensions.gap}px`,
-                width: 'max-content',
-              }}
-            >
-              {duplicatedPartners.map((partner, index) => (
-                <div
-                  key={`bottom-${partner.id}-${index}`}
-                  className="flex-shrink-0"
-                  style={{
-                    width: `${dimensions.cardWidth}px`,
-                    height: `${dimensions.cardHeight}px`,
-                  }}
-                >
-                  <div className={cn(
-                    "w-full h-full rounded-xl",
-                    "bg-white/10 dark:bg-black/10",
-                    "backdrop-blur-md",
-                    "border border-white/20 dark:border-gray-800/30",
-                    "flex flex-col items-center justify-center p-3 md:p-4",
-                    "transition-all duration-300",
-                    bottomLineHovered && "bg-white/20 dark:bg-black/20"
-                  )}>
-                    {/* Logo */}
-                    <div 
-                      className="relative mb-2"
-                      style={{
-                        width: `${dimensions.logoSize}px`,
-                        height: `${dimensions.logoSize}px`,
-                      }}
-                    >
-                      <Image
-                        src={partner.logo}
-                        alt={`${partner.name} logo`}
-                        fill
-                        className="object-contain"
-                        sizes={`${dimensions.logoSize}px`}
-                        unoptimized
-                      />
-                    </div>
-                    
-                    {/* Name */}
-                    <h3 className="text-xs md:text-sm font-medium text-center text-gray-900 dark:text-white truncate w-full">
-                      {partner.name}
-                    </h3>
-                    
-                    {/* Description */}
-                    <p className="text-[10px] md:text-xs text-center text-gray-600 dark:text-gray-400 truncate w-full">
-                      {partner.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Gradient Overlays */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 md:w-32 bg-gradient-to-r from-background via-background/90 to-transparent z-10" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 md:w-32 bg-gradient-to-l from-background via-background/90 to-transparent z-10" />
+            {ROW_2.map((p) => (
+              <PartnerCard key={p.id} partner={p} />
+            ))}
+          </InfiniteSlider>
         </div>
       </div>
     </div>
