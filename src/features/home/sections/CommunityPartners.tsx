@@ -324,7 +324,7 @@ const ROW_2 = PARTNERS.slice(Math.ceil(PARTNERS.length / 2));
 
 function PartnerCard({ partner }: { partner: Partner }) {
   return (
-    <div className="relative overflow-hidden flex flex-col items-center justify-center w-30 sm:w-35 md:w-40  p-4 rounded-2xl backdrop-blur-2xl bg-linear-to-br from-white/10 via-white/5 to-white/0 dark:from-black/10 dark:via-black/5 dark:to-black/0 border border-white/30 dark:border-gray-800/50 transition-all duration-500 ease-out">
+    <div className="relative overflow-hidden flex flex-col items-center justify-center w-30 sm:w-35 md:w-40 p-4 rounded-2xl bg-white/5 dark:bg-black/5 border border-white/30 dark:border-gray-800/50">
       <div className="flex flex-col items-center"
       >
         <div className="relative w-12 h-12 sm:w-14 sm:h-14">
@@ -364,9 +364,9 @@ export function CommunityPartners({ className }: CommunityPartnersProps) {
           <InfiniteSlider
             direction="left"
             speed={40}
+            pauseOnHover={false}
             showFade
             gap={24}
-            autoMeasure
             className="py-2"
           >
             {ROW_1.map((p) => (
@@ -377,9 +377,9 @@ export function CommunityPartners({ className }: CommunityPartnersProps) {
           <InfiniteSlider
             direction="right"
             speed={40}
+            pauseOnHover={false}
             showFade
             gap={24}
-            autoMeasure
             className="py-2"
           >
             {ROW_2.map((p) => (

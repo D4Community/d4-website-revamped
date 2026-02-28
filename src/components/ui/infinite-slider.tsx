@@ -8,7 +8,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { motion, useAnimationControls } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -28,16 +27,6 @@ export interface InfiniteSliderProps {
   fadeWidth?: string;
   /** Gap between items in px */
   gap?: number;
-  /** Assumed width of each item in px – used to calculate the total
-   *  track length for a seamless loop. If your items have varying widths
-   *  you can pass the average or set `autoMeasure` to true. */
-  itemWidth?: number;
-  /** When true the component measures the first set of children with a
-   *  ResizeObserver instead of relying on `itemWidth`. Slightly more
-   *  expensive but accurate for heterogeneous sizes. */
-  autoMeasure?: boolean;
-  /** How many times the children list is duplicated (min 2) */
-  duplicates?: number;
   /** Extra class names for the outer container */
   className?: string;
   /** Extra class names applied to the sliding track `<div>` */
@@ -54,47 +43,30 @@ export function InfiniteSlider({
   showFade = true,
   fadeWidth = "w-20 md:w-32",
   gap = 48,
-  itemWidth,
-  autoMeasure = false,
-  duplicates = 4,
   className,
   trackClassName,
 }: InfiniteSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [singleSetWidth, setSingleSetWidth] = useState(0);
-  const controls = useAnimationControls();
-  const [hovered, setHovered] = useState(false);
-  const pausedXRef = useRef<number | null>(null);
+  const [duration, setDuration] = useState(0);
 
   const items = Children.toArray(children);
   const count = items.length;
 
-  // Duplicate children for seamless loop
-  const safeCount = Math.max(duplicates, 2);
-  const allItems = Array.from({ length: safeCount }, () => items).flat();
+  // Only need 2 copies for a seamless CSS loop
+  const allItems = [...items, ...items];
 
-  // ── Measure a single set width ──────────────────────────────────────────
+  // ── Measure a single set width & compute duration ───────────────────────
 
   const measure = useCallback(() => {
-    if (count === 0) return;
-
-    if (!autoMeasure && itemWidth) {
-      // Fast path – calculated from props
-      setSingleSetWidth(count * (itemWidth + gap));
-      return;
-    }
-
-    // Measure from the DOM
-    if (!trackRef.current) return;
+    if (count === 0 || !trackRef.current) return;
     const trackChildren = Array.from(trackRef.current.children);
-    // Measure only the first `count` children (one set)
     let width = 0;
     for (let i = 0; i < Math.min(count, trackChildren.length); i++) {
       const el = trackChildren[i] as HTMLElement;
       width += el.offsetWidth + gap;
     }
-    setSingleSetWidth(width);
-  }, [count, itemWidth, gap, autoMeasure]);
+    setDuration(width / speed);
+  }, [count, gap, speed]);
 
   useEffect(() => {
     measure();
@@ -102,82 +74,26 @@ export function InfiniteSlider({
     return () => window.removeEventListener("resize", measure);
   }, [measure]);
 
-  // Optional ResizeObserver for auto-measurement
-  useEffect(() => {
-    if (!autoMeasure || !trackRef.current) return;
-
-    const ro = new ResizeObserver(() => measure());
-    ro.observe(trackRef.current);
-    return () => ro.disconnect();
-  }, [autoMeasure, measure]);
-
-  // ── Animation ───────────────────────────────────────────────────────────
-
-  useEffect(() => {
-    if (singleSetWidth === 0) return;
-
-    const shouldPause = pauseOnHover && hovered;
-
-    if (shouldPause) {
-      // Capture current x position from the DOM before stopping
-      if (trackRef.current) {
-        const computedStyle = window.getComputedStyle(trackRef.current);
-        const matrix = new DOMMatrix(computedStyle.transform);
-        pausedXRef.current = matrix.m41;
-      }
-      controls.stop();
-      return;
-    }
-
-    const to = direction === "left" ? -singleSetWidth : 0;
-
-    // Resume from paused position or start fresh
-    const from =
-      pausedXRef.current !== null
-        ? pausedXRef.current
-        : direction === "left"
-          ? 0
-          : -singleSetWidth;
-
-    // Calculate remaining distance to compute proportional duration
-    const totalDistance = singleSetWidth;
-    const remaining = Math.abs(to - from);
-    const duration = (remaining / totalDistance) * (singleSetWidth / speed);
-
-    pausedXRef.current = null;
-
-    controls.set({ x: from });
-    controls.start({
-      x: to,
-      transition: {
-        x: {
-          duration,
-          ease: "linear",
-          repeat: Infinity,
-          repeatType: "loop",
-        },
-      },
-    });
-
-    return () => {
-      controls.stop();
-    };
-  }, [singleSetWidth, speed, direction, hovered, pauseOnHover, controls]);
-
   // ── Render ──────────────────────────────────────────────────────────────
+
+  const isReady = duration > 0;
+  const trackClass =
+    direction === "left" ? "slider-track-left" : "slider-track-right";
 
   return (
     <div
-      className={cn("relative w-full overflow-hidden", className)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className={cn(
+        "relative w-full overflow-hidden",
+        pauseOnHover && "slider-wrapper",
+        className,
+      )}
     >
       {/* Left fade */}
       {showFade && (
         <div
           className={cn(
             "pointer-events-none absolute inset-y-0 left-0 z-10 bg-linear-to-r from-background to-transparent",
-            fadeWidth
+            fadeWidth,
           )}
         />
       )}
@@ -187,24 +103,30 @@ export function InfiniteSlider({
         <div
           className={cn(
             "pointer-events-none absolute inset-y-0 right-0 z-10 bg-linear-to-l from-background to-transparent",
-            fadeWidth
+            fadeWidth,
           )}
         />
       )}
 
-      {/* Sliding track */}
-      <motion.div
+      {/* Sliding track — pure CSS animation on the GPU */}
+      <div
         ref={trackRef}
-        className={cn("flex w-max items-center", trackClassName)}
-        style={{ gap }}
-        animate={controls}
+        className={cn(
+          "flex w-max items-center",
+          isReady && trackClass,
+          trackClassName,
+        )}
+        style={{
+          gap,
+          "--slider-duration": `${duration}s`,
+        } as React.CSSProperties}
       >
         {allItems.map((item, i) => (
           <div key={i} className="shrink-0">
             {item}
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }

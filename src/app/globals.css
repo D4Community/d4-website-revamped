@@ -147,3 +147,23 @@
   padding: 15px;
   border-radius: 1.75rem;
 }
+
+/* ─── Infinite slider (pure CSS, GPU-composited) ─────────────── */
+@keyframes slider-scroll-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes slider-scroll-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+.slider-track-left {
+  animation: slider-scroll-left var(--slider-duration) linear infinite;
+}
+.slider-track-right {
+  animation: slider-scroll-right var(--slider-duration) linear infinite;
+}
+.slider-wrapper:hover .slider-track-left,
+.slider-wrapper:hover .slider-track-right {
+  animation-play-state: paused;
+}
