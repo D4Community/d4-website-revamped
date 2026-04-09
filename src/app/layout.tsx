@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "The official website for the D4 Community.",
   // Verification property added here
   verification: {
-    google: "Wu3T8_LbSp9nhwyj_x2DH1UuUtfYBjYld-zudlNfv_8",
+    google: "Wu3T8_LbSp7nhwyj_x2DH2UuUteYBjTld-zudlNfv_8",
   },
 };
 
