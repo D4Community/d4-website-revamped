@@ -913,7 +913,7 @@ const SuccessModal = ({
           </div>
 
           <div className="mt-3 text-center text-xs dark:text-gray-400 text-gray-500">
-            <span>D4 Community — thanks for connecting!</span>
+            <span>D4 Community - thanks for connecting!</span>
           </div>
         </motion.div>
       </motion.div>

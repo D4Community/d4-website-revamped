@@ -1,17 +1,23 @@
 "use client";
+
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import { Button } from "@/components/ui/button";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import { MoveRight, Users, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const HeroSection = () => {
+  const router = useRouter();
+
   return (
     <div className="relative overflow-hidden w-full -mt-18 pt-12">
       <BackgroundRippleEffect />
+
       <div className="container mx-auto relative">
         <div className="flex gap-8 py-36 lg:py-40 items-center justify-center flex-col">
+          
           <div className="relative z-10">
             <Button variant="secondary" size="sm" className="gap-4">
               <Sparkles className="w-4 h-4 text-primary" />
@@ -19,6 +25,7 @@ const HeroSection = () => {
               <MoveRight className="w-4 h-4" />
             </Button>
           </div>
+
           <div className="flex gap-4 flex-col">
             <motion.div className="relative z-10 mx-4 my-4 flex flex-col items-center justify-center gap-4 text-center sm:mx-0 sm:mb-0 sm:flex-row">
               <LayoutTextFlip
@@ -34,10 +41,17 @@ const HeroSection = () => {
               input from the wider community.
             </p>
           </div>
+
           <div className="relative z-10 flex flex-row gap-3">
-            <Button size="lg" className="gap-4" variant="outline">
+            <Button
+              size="lg"
+              className="gap-4"
+              variant="outline"
+              onClick={() => router.push("/join")}
+            >
               Join Community <Users className="w-4 h-4" />
             </Button>
+
             <Button asChild size="lg" className="gap-4">
               <Link
                 href="https://connect.d4community.com"
@@ -48,6 +62,7 @@ const HeroSection = () => {
               </Link>
             </Button>
           </div>
+
         </div>
       </div>
     </div>

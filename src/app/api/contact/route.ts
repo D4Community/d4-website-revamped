@@ -112,7 +112,7 @@ export async function POST(req: Request) {
 
 function generateEmailTemplate(data: any) {
   // LinkedIn banner URL
-  const bannerImageUrl = "https://media.licdn.com/dms/image/v2/D4D3DAQEWfoiP69F5Mw/image-scale_191_1128/image-scale_191_1128/0/1736758649950/d4community_cover?e=1769936400&v=beta&t=O3EtggKJeZcnnVsVVDLIoe3lxAhr9GDnkbINB88fQM4";
+  const bannerImageUrl = "https://media.licdn.com/dms/image/v2/D4D3DAQEWfoiP69F5Mw/image-scale_127_750/image-scale_127_750/0/1736758649945/d4community_cover?e=1776754800&v=beta&t=TbHqGo9Zq20bim-OlAts9-rYH2zzCjUvnvXyykphAyo";
   
   // Helper function to escape HTML and preserve line breaks
   const formatMessage = (text: string) => {

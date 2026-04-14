@@ -37,7 +37,10 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  // For Next.js 16 with Turbopack, use serverExternalPackages
+  serverExternalPackages: ['pdfkit'],
+  // Turbopack configuration (empty object to silence the warning)
+  turbopack: {},
 };
 
 export default nextConfig;
-

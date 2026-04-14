@@ -1097,11 +1097,21 @@ export const siteConfig = {
       title: "Company",
       links: [
         { id: 1, title: "About", url: "/about" },
-        { id: 2, title: "Contact", url: "/contact" },
         { id: 3, title: "Team", url: "/team" },
         { id: 4, title: "Events", url: "/events" },
+        { id: 8, title: "Join", url: "/join" },
+        { id: 2, title: "Contact", url: "/contact" },
       ],
     },
+    {
+      title: "Resources",
+      links: [
+        { id: 5, title: "Code Of Conduct", url: "/code-of-conduct" },
+        { id: 6, title: "Privacy Policy", url: "/privacy-policy" },
+        { id: 7, title: "Terms of Use", url: "/terms" },
+      ],
+
+    }
     // {
     //   title: "Products",
     //   links: [
@@ -1130,7 +1140,7 @@ export const Footer = () => {
 
   return (
     <footer id="footer" className="lg:sticky bottom-0 w-full pb-0 bg-background pt-28 md:pt-4">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between p-4">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between p-4">
         <div className="flex flex-col items-start justify-start gap-y-5 max-w-xs mx-0">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
@@ -1139,21 +1149,22 @@ export const Footer = () => {
             {siteConfig.hero.description}
           </p>
         </div>
-        <div className="pt-5 md:w-1/2">
-          <div className="flex flex-col items-start justify-start md:flex-row md:items-center md:justify-end gap-y-5 lg:pl-10">
+        
+        <div className="pt-5 md:pt-0">
+          <div className="flex flex-col md:flex-row gap-x-12 gap-y-6">
             {siteConfig.footerLinks.map((column, columnIndex) => (
-              <ul key={columnIndex} className="flex flex-col gap-y-2">
+              <ul key={columnIndex} className="flex flex-col gap-y-2 min-w-[120px]">
                 <li className="mb-2 text-sm font-semibold text-primary">
                   {column.title}
                 </li>
                 {column.links.map((link) => (
                   <li
                     key={link.id}
-                    className="group inline-flex cursor-pointer items-center justify-start gap-1 text-[15px]/snug text-muted-foreground"
+                    className="group inline-flex cursor-pointer items-center justify-start gap-1 text-[15px]/snug text-muted-foreground hover:text-primary transition-colors"
                   >
                     <Link href={link.url}>{link.title}</Link>
                     <div className="flex size-4 items-center justify-center border border-border rounded translate-x-0 transform opacity-0 transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:opacity-100">
-                      <ChevronRightIcon className="h-4 w-4 " />
+                      <ChevronRightIcon className="h-4 w-4" />
                     </div>
                   </li>
                 ))}
@@ -1162,7 +1173,8 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="w-full h-48 md:h-64 relative mt-8 md:mt-24 z-0 ">
+      
+      <div className="w-full h-48 md:h-64 relative mt-8 md:mt-24 z-0">
         <div className="absolute inset-0 bg-gradient-to-t from-transparent to-background z-10 from-40%" />
         <div className="absolute inset-0">
           <FlickeringGrid
