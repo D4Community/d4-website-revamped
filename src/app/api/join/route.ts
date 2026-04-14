@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     await transporter.sendMail({
       from: `"D4 Community" <${process.env.GMAIL_USER}>`,
       to: email,
-      subject: `🎊 Welcome to D4 Community, ${name}!`,
+      subject: `Welcome to D4 Community, ${name}!`,
       html: generateWelcomeEmail(name),
     });
     console.log("✅ Welcome email sent");
@@ -96,7 +96,7 @@ export async function POST(req: Request) {
         await transporter.sendMail({
           from: `"D4 Community" <${process.env.GMAIL_USER}>`,
           to: email,
-          subject: `📜 Your D4 Community Membership Certificate, ${name}!`,
+          subject: `Your D4 Community Membership Certificate, ${name}!`,
           html: generateCertificateEmail(name, memberId),
           attachments: [
             {
@@ -119,7 +119,7 @@ export async function POST(req: Request) {
         await transporter.sendMail({
           from: `"D4 Community" <${process.env.GMAIL_USER}>`,
           to: email,
-          subject: `📜 Your D4 Community Membership Certificate, ${name}!`,
+          subject: `Your D4 Community Membership Certificate, ${name}!`,
           html: generateCertificateEmail(name, memberId),
         });
         console.log("✅ Certificate email sent (HTML certificate - PDF generation failed)");

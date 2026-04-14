@@ -97,15 +97,15 @@ export const generateWelcomeEmail = (name: string) => `
         <p class="message">Thank you for joining D4 Community! We're excited to have you as part of our community of developers, designers, and tech enthusiasts.</p>
         
         <div class="links">
-          <div class="link-item">💬 <a href="https://chat.whatsapp.com/Khwy3LEyjdX4Kx8VJ1MXmW">Join WhatsApp Group</a></div>
-          <div class="link-item">📢 <a href="https://whatsapp.com/channel/0029Va8QbTU8V0trPdleNl2I">WhatsApp Channel</a></div>
-          <div class="link-item">💼 <a href="https://www.linkedin.com/company/d4community">LinkedIn</a></div>
-          <div class="link-item">🐙 <a href="https://github.com/D4Community">GitHub</a></div>
-          <div class="link-item">🎮 <a href="https://discord.com/invite/RPpYB8JpUQ">Discord</a></div>
+          <div class="link-item"> <a href="https://chat.whatsapp.com/Khwy3LEyjdX4Kx8VJ1MXmW">Join WhatsApp Group</a></div>
+          <div class="link-item"> <a href="https://whatsapp.com/channel/0029Va8QbTU8V0trPdleNl2I">WhatsApp Channel</a></div>
+          <div class="link-item"> <a href="https://www.linkedin.com/company/d4community">LinkedIn</a></div>
+          <div class="link-item"> <a href="https://github.com/D4Community">GitHub</a></div>
+          <div class="link-item"> <a href="https://discord.com/invite/RPpYB8JpUQ">Discord</a></div>
         </div>
         
         <div class="cert-note">
-          <p><strong>📜 Membership Certificate</strong><br>Your official membership certificate will arrive in a separate email within a minute.</p>
+          <p><strong> Membership Certificate</strong><br>Your official membership certificate will arrive in a separate email within a minute.</p>
         </div>
         
         <p class="message" style="margin-bottom: 0;">
