@@ -6,23 +6,23 @@ import { Cpu, Users, GraduationCap, Building } from "lucide-react";
 
 const features = [
   {
-    title: "20+",
+    title: "5000+",
     icon: Users,
     description: "Members",
   },
   {
-    title: "04+",
+    title: "50+",
     icon: Cpu,
     description: "Tech Partners",
   },
 
   {
-    title: "100+",
+    title: "7000+",
     icon: GraduationCap,
     description: "Student Members",
   },
   {
-    title: "15+",
+    title: "100+",
     icon: Building,
     description: "Community Partners",
   },
