@@ -26,7 +26,7 @@ const FAQItem = ({
         onClick={onClick}
         className="flex w-full items-center justify-between py-6 text-left transition-all hover:opacity-70"
       >
-        <span className="text-lg font-medium tracking-tight text-foreground sm:text-xl">
+        <span className="text-sm font-medium tracking-tight text-foreground sm:text-md md:text-lg">
           {question}
         </span>
         <motion.div
@@ -47,7 +47,7 @@ const FAQItem = ({
             transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
             className="overflow-hidden"
           >
-            <div className="pb-6 text-base leading-relaxed text-muted-foreground sm:text-lg whitespace-pre-line">
+            <div className="pb-6 text-sm leading-relaxed text-muted-foreground sm:text-md whitespace-pre-line">
               {answer}
             </div>
           </motion.div>
