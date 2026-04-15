@@ -5,28 +5,26 @@ import { motion } from "framer-motion";
 
 const TermsOfUse = () => {
   return (
-    <div className="min-h-screen bg-[#080a08] text-white/80 py-20 px-6 font-sans">
+    <div className="min-h-screen bg-white dark:bg-[#080a08] text-gray-800 dark:text-white/80 py-20 px-6 font-sans transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
         
-        {/* Header Section */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-16 border-b border-white/10 pb-10 text-center"
+          className="mb-16 border-b border-gray-200 dark:border-white/10 pb-10 text-center"
         >
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter">
+          <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-4 tracking-tighter">
             Terms of <span style={{ color: "#f6b26b" }}>Use</span>
           </h1>
-          <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-[#6d9eeb]/60">
+          <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-[#4a86e8] dark:text-[#6d9eeb]/60">
             Effective Date: April 14, 2026
           </p>
         </motion.div>
 
-        {/* Content Section */}
         <div className="space-y-12 text-base md:text-lg leading-relaxed">
           
           <section>
-            <h2 className="text-xl font-bold text-white mb-4 uppercase tracking-widest border-l-2 border-[#5ccb5f] pl-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-widest border-l-4 border-[#38a13b] dark:border-[#5ccb5f] pl-4">
               1. About D4 Community
             </h2>
             <p>
@@ -34,14 +32,14 @@ const TermsOfUse = () => {
             </p>
           </section>
 
-          <section className="bg-white/[0.03] p-6 rounded-2xl border border-white/[0.06]">
-            <h2 className="text-xl font-bold text-white mb-4">
+          <section className="bg-gray-50 dark:bg-white/[0.03] p-6 rounded-2xl border border-gray-200 dark:border-white/[0.06]">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
               2. Important: Monetary Support & Scams
             </h2>
             <p className="mb-4">
               Please read this carefully to stay safe:
             </p>
-            <ul className="list-disc pl-5 space-y-3 text-[#5ccb5f]/90">
+            <ul className="list-disc pl-5 space-y-3 text-[#38a13b] dark:text-[#5ccb5f]/90 font-medium">
               <li><strong>No Direct Money:</strong> D4 Community never asks for direct money, donations, or "membership fees" from individuals.</li>
               <li><strong>Sponsorships:</strong> We only accept formal sponsorships from companies for our events. In return, we provide value like branding, recruitment access, or workshops.</li>
               <li><strong>Official Emails:</strong> Only consider communications sent from our official domain <strong>@d4community.com</strong>. If you get an email from a personal Gmail or other address claiming to be D4, please ignore it.</li>
@@ -49,7 +47,7 @@ const TermsOfUse = () => {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-4 uppercase tracking-widest border-l-2 border-[#5ccb5f] pl-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-widest border-l-4 border-[#38a13b] dark:border-[#5ccb5f] pl-4">
               3. Misuse of D4 Name
             </h2>
             <p>
@@ -58,7 +56,7 @@ const TermsOfUse = () => {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-4 uppercase tracking-widest border-l-2 border-[#5ccb5f] pl-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-widest border-l-4 border-[#38a13b] dark:border-[#5ccb5f] pl-4">
               4. User Obligations
             </h2>
             <p>
@@ -71,11 +69,11 @@ const TermsOfUse = () => {
             </ul>
           </section>
 
-          <section className="pt-10 border-t border-white/10 text-center">
-            <p className="text-sm text-white/40">
+          <footer className="pt-10 border-t border-gray-200 dark:border-white/10 text-center">
+            <p className="text-sm text-gray-500 dark:text-white/40">
               Still have doubts? Reach out to the core team via our official Discord or Mail.
             </p>
-          </section>
+          </footer>
         </div>
       </div>
     </div>
