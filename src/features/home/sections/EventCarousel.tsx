@@ -282,7 +282,7 @@ export function EventCarousel({ className }: { className?: string }) {
       </div>
 
       {/* Pagination & Arrows Footer */}
-      <div className="mt-16 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-900 pt-8 px-6">
+      <div className="mt-6 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-900 pt-6 px-6">
         {/* Left Side: Pagination Dots */}
         <div className="flex items-center gap-4">
           <div className="flex gap-2">
