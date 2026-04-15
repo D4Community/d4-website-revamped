@@ -6,6 +6,17 @@ import { Linkedin, Twitter, Github, Users } from "lucide-react";
 
 const organizers = [
   {
+    name: "Ayush Kumar Tiwari",
+    title: "Organizer",
+    bio: "Ayush is a Software Engineer with 3+ years of experience building user-focused web applications using React.js, Next.js, TypeScript, and Angular, with experience across B2B platforms and cross-platform mobile apps.",
+    image: "/images/team/ayush-tiwari.png",
+    socials: {
+      linkedin: "https://www.linkedin.com/in/itsayu/",
+      twitter: "https://twitter.com/its_AKT_/",
+      github: "https://github.com/itsayu/",
+    },
+  },
+  {
     name: "Sagar Malhotra",
     title: "Organizer",
     bio: "Sagar Malhotra is a friendly neighborhood Android Engineer passionate about helping developers grow. He supports the community through mentoring peers, teaching, writing blogs, and creating educational content.",
@@ -14,17 +25,6 @@ const organizers = [
       linkedin: "https://www.linkedin.com/in/sagar0-0malhotra/",
       twitter: "#",
       github: "https://github.com/Sagar0-0",
-    },
-  },
-  {
-    name: "Ayush Tiwari",
-    title: "Organizer",
-    bio: "Ayush is a Software Engineer with 2.5+ years of experience building user-focused web applications using React.js, Next.js, TypeScript, and Angular, with experience across B2B platforms and cross-platform mobile apps.",
-    image: "/images/team/ayush-tiwari.png",
-    socials: {
-      linkedin: "https://www.linkedin.com/in/itsayu/",
-      twitter: "https://twitter.com/its_AKT_/",
-      github: "https://github.com/itsayu/",
     },
   },
   {

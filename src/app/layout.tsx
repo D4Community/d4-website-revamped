@@ -79,9 +79,13 @@ const jsonLd = {
         "Web Development",
         "Student Developer Communities",
         "Tech Events India",
+        "Developer Networking",
+        "Tech Education",
+        "Developer Growth",
+        "Ayush Kumar Tiwari",
       ],
       keywords:
-        "best developer community India, largest developer community India, biggest developer community India, best hackathon India, Hack-N-Win, D4 Community",
+        "best developer community India, largest developer community India, biggest developer community India, best hackathon India, Hack-N-Win, D4 Community, biggest hackathon North India, second largest hackathon India, in-person hackathon India, student developer community India, biggest developer community Punjab, best developer community Chandigarh, best developer community Ludhiana, best developer community NCR, best developer community, largest developer community Punjab, largest developer community Chandigarh, largest developer community Ludhiana, largest developer community NCR, Ayush Kumar Tiwari, Ayush Tiwari, D4 Community founder, D4 Community organizer",
     },
     {
       "@type": "Event",
