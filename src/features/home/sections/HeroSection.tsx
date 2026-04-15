@@ -12,7 +12,7 @@ const HeroSection = () => {
   const router = useRouter();
 
   return (
-    <div className="relative overflow-hidden w-full -mt-18 pt-12">
+    <div className="relative overflow-hidden w-full -mt-18 pt-12 px-6">
       <BackgroundRippleEffect />
 
       <div className="container mx-auto relative">

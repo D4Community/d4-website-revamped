@@ -52,7 +52,7 @@ export function Partners({ className }: PartnersProps) {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   return (
-    <div className={cn("w-full py-16 md:py-24", className)}>
+    <div className={cn("w-full py-16 md:py-20", className)}>
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12 md:mb-16">

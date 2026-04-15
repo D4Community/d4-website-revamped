@@ -17,8 +17,46 @@ import {
   Coffee,
   Quote,
   MessageSquare,
-  Rocket
+  Rocket,
+  Plus,
+  Minus
 } from "lucide-react";
+import { FAQSchema, faqRegistry } from "@/schema";
+
+const FAQ_DATA = [
+  { 
+    q: "Who can join D4?", 
+    a: "Anyone from students to experienced professionals who is passionate about learning, building, and sharing knowledge can join D4." 
+  },
+  { 
+    q: "Is there a membership fee?", 
+    a: "No, joining the D4 community is completely free. We always aim to keep our events, sessions, and activities accessible for all participants." 
+  },
+  { 
+    q: "What happens after I apply?", 
+    a: "Once you apply, you'll receive a digital membership certificate along with an invite to our private communication channels." 
+  },
+  { 
+    q: "What kind of events does D4 organize?", 
+    a: "D4 organizes hackathons, workshops, networking sessions, tech talks, community meetups, and skill-building events for members." 
+  },
+  { 
+    q: "Do I need prior experience to join?", 
+    a: "No prior experience is required. Beginners, learners, and experienced professionals are all welcome in the community." 
+  },
+  { 
+    q: "Can I volunteer or contribute to D4?", 
+    a: "Yes, members can contribute by volunteering in events, mentoring others, sharing knowledge, and helping grow the community." 
+  },
+  { 
+    q: "How will I stay updated about upcoming events?", 
+    a: "All updates regarding events, sessions, and community activities are shared through our private communication channels and official platforms." 
+  },
+  { 
+    q: "Is D4 only for tech members?", 
+    a: "No, D4 welcomes people from all backgrounds who are interested in innovation, collaboration, learning, and personal growth." 
+  }
+];
 
 export default function JoinCommunityPage() {
   const router = useRouter();
@@ -26,6 +64,7 @@ export default function JoinCommunityPage() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   
   const [formData, setFormData] = useState({
     email: "", name: "", role: "", experience: "", interest: [] as string[], whyJoin: ""
@@ -112,7 +151,6 @@ export default function JoinCommunityPage() {
             Check your inbox for your <strong>Member Certificate</strong>. 
             Welcome to D4.
           </p>
-          {/* <p className="text-[10px] text-muted-foreground/50 uppercase tracking-widest">Refreshing in 5 seconds...</p> */}
         </motion.div>
       </div>
     );
@@ -120,6 +158,7 @@ export default function JoinCommunityPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-[#fd7d6e]/30 pt-20 pb-20 px-6 transition-colors duration-300">
+      {FAQSchema && <FAQSchema page="join" />}
       
       {/* --- GLOBAL LOADER OVERLAY --- */}
       <AnimatePresence>
@@ -183,7 +222,11 @@ export default function JoinCommunityPage() {
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                     />
                     <button 
-                      onClick={() => validateStep1() && setStep(2)}
+                      onClick={() => {
+                        if (validateStep1()) {
+                          setStep(2);
+                        }
+                      }}
                       className="absolute right-2 top-2 bottom-2 bg-[#fd7d6e] text-white px-4 rounded-xl hover:opacity-90 transition-all group/btn"
                     >
                       <ArrowRight size={18} className="transition-transform duration-300 -rotate-45 group-hover/btn:rotate-0" />
@@ -286,7 +329,7 @@ export default function JoinCommunityPage() {
         {/* --- DYNAMIC FEATURE CARDS --- */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 auto-rows-fr mb-32">
           <motion.div whileHover={{ y: -5 }} className="md:col-span-7 p-8 rounded-[2.5rem] bg-card border border-border">
-            <Rocket className="text-[#fd7d6e] mb-6" size={28} />
+            <Code className="text-[#fd7d6e] mb-6" size={28} />
             <h4 className="text-xl font-bold mb-3">Project Showcase</h4>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Give your side projects, hobby code, and serious ventures a place to breathe. Invite collaborators and inspire other builders within the ecosystem.
@@ -345,6 +388,34 @@ export default function JoinCommunityPage() {
           <Quote className="absolute -bottom-36 -right-4 w-40 h-40 text-white/10 rotate-12" />
         </div>
 
+        {/* --- FAQ SECTION --- */}
+        <div className="max-w-2xl mx-auto mb-32">
+          <h3 className="text-2xl font-bold mb-8 text-center">Frequently Asked</h3>
+          <div className="space-y-4">
+            {FAQ_DATA.map((faq, i) => (
+              <div key={i} className="border border-border rounded-2xl overflow-hidden">
+                <button 
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between p-5 text-left bg-card hover:bg-secondary/20 transition-colors"
+                >
+                  <span className="text-sm font-medium">{faq.q}</span>
+                  {openFaq === i ? <Minus size={16} /> : <Plus size={16} />}
+                </button>
+                <AnimatePresence>
+                  {openFaq === i && (
+                    <motion.div 
+                      initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }}
+                      className="overflow-hidden bg-card/50"
+                    >
+                      <p className="p-5 text-sm text-muted-foreground border-t border-border">{faq.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* --- FOOTER --- */}
         <footer className="pt-12 border-t border-border/50 text-center">
           <div className="flex items-center justify-center gap-8 mb-8 grayscale opacity-40">
@@ -355,7 +426,7 @@ export default function JoinCommunityPage() {
           <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground font-medium">
             Discite • Develop • Debug • Deploy
           </p>
-          <p className="mt-4 text-[9px] text-muted-foreground/40">© 2026 D4 Community. All rights reserved.</p>
+          {/* <p className="mt-4 text-[9px] text-muted-foreground/40">© 2026 D4 Community. All rights reserved.</p> */}
         </footer>
       </div>
     </div>

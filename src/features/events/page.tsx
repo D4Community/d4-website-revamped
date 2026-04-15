@@ -1,3 +1,4 @@
+import { EventsHero } from "./EventsHero"
 import { UpcomingEvents } from "../home/sections/UpcomingEvents"
 import { EventCarousel } from "../home/sections/EventCarousel"
 
@@ -5,7 +6,10 @@ import { EventCarousel } from "../home/sections/EventCarousel"
 const EventsPage = () => {
   return (
     <>
-    <UpcomingEvents />
+    <EventsHero />
+    <div id="UpcomingEvents">
+      <UpcomingEvents />
+    </div>
     <EventCarousel />
     </>
 

@@ -11,7 +11,7 @@ export const HomePage = () => {
   return (
     <main className="flex flex-col min-h-screen">
       <HeroSection />
-      <div className="py-12">
+      <div>
         <EventCarousel />
       </div>
       <Partners />

@@ -54,6 +54,49 @@ export const faqRegistry = {
   about: [
     // Add about-page-specific FAQs here
   ],
+
+  join: [
+    {
+      question: "Who can join the D4 Community?",
+      answer:
+        "Anyone passionate about learning, building, collaboration, and growth can join D4. Students, beginners, professionals, founders, and creators are all welcome.",
+    },
+    {
+      question: "Is joining D4 free?",
+      answer:
+        "Yes. Joining the D4 Community is completely free, and we always aim to keep our events and opportunities accessible for everyone.",
+    },
+    {
+      question: "What happens after I join?",
+      answer:
+        "After joining, you'll receive updates about community activities, upcoming events, collaboration opportunities, and ways to get involved in D4 initiatives.",
+    },
+    {
+      question: "Do I need coding experience to join?",
+      answer:
+        "No prior coding experience is required. Whether you're just starting or already experienced, D4 is built for learners and builders at every stage.",
+    },
+    {
+      question: "Can non-tech members join D4?",
+      answer:
+        "Absolutely. Designers, marketers, writers, organizers, founders, and anyone interested in innovation and collaboration can be part of the community.",
+    },
+    {
+      question: "Can I volunteer after joining?",
+      answer:
+        "Yes. Members can volunteer in events, help organize activities, mentor others, contribute ideas, and support community growth.",
+    },
+    {
+      question: "How will I know about upcoming events?",
+      answer:
+        "We share all updates about events, meetups, hackathons, and opportunities through our official communication channels.",
+    },
+    {
+      question: "Can I leave the community anytime?",
+      answer:
+        "Yes. Participation in D4 is always voluntary, and you are free to step back or rejoin community activities anytime.",
+    },
+  ],
 } as const;
 
 export type FAQPageType = keyof typeof faqRegistry;

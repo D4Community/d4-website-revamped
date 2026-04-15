@@ -15,7 +15,7 @@ export const HomePage = () => {
       <FeatureSection />
       <CommunityPartners />
       <Partners />
-      <div className="py-12">
+      <div>
         <UpcomingEvents />
       </div>
       <div className="py-12">
