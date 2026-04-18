@@ -20,7 +20,7 @@ const ALL_PARTNERS = [
   { id: "niwi", name: "NIWIAI", logo: "/images/partners/niwi.png" },
   { id: "AppWrk", name: "AppWrk IT Solutions", logo: "/images/partners/appwrk.png" },
   { id: "osen", name: "OSEN", logo: "/images/partners/osen.png" },
-  { id: "VentureNest", name: "Venture Nest", logo: "/images/partners/VentureNest.png", darkLogo: "/images/partners/VentureNestW.png" },
+  { id: "VentureNest", name: "Venture Nest", logo: "/images/partners/VentureNestW.png", darkLogo: "/images/partners/VentureNest.png" },
   { id: "slay", name: "Slay", logo: "/images/partners/Slay.png" },
 ];
 
