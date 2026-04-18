@@ -30,11 +30,13 @@ interface EventItem {
 /* ===================== CONFIG ===================== */
 
 const AUTO_SCROLL_DELAY = 6000;
+const MOBILE_CLOSE_DELAY = 3000; // Time in ms the details stay visible on mobile
 const COMMUDLE_API_URL = "/api/commudle-events";
 const DEVFOLIO_API_URL = "/api/devfolio-hackathons";
 
 export function EventCarousel({ className }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [items, setItems] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [cardWidth, setCardWidth] = useState(0);
@@ -42,6 +44,8 @@ export function EventCarousel({ className }: { className?: string }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [animate, setAnimate] = useState(true);
+  
+  const [activeCardId, setActiveCardId] = useState<string | number | null>(null);
 
   /* ===================== DATA FETCHING ===================== */
   useEffect(() => {
@@ -138,12 +142,38 @@ export function EventCarousel({ className }: { className?: string }) {
   const handleNext = useCallback(() => {
     setAnimate(true);
     setIndex((prev) => prev + 1);
+    clearActiveCard();
   }, []);
 
   const handlePrev = useCallback(() => {
     setAnimate(true);
     setIndex((prev) => prev - 1);
+    clearActiveCard();
   }, []);
+
+  const clearActiveCard = () => {
+    setActiveCardId(null);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  };
+
+  const handleCardClick = (id: string | number) => {
+    // If clicking same card, toggle it off
+    if (activeCardId === id) {
+      clearActiveCard();
+      return;
+    }
+
+    // Set new active card
+    setActiveCardId(id);
+
+    // Clear any existing timer
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    // Set new timer to close after 3 seconds
+    timeoutRef.current = setTimeout(() => {
+      setActiveCardId(null);
+    }, MOBILE_CLOSE_DELAY);
+  };
 
   useEffect(() => {
     if (index >= total + visibleCards) {
@@ -174,27 +204,23 @@ export function EventCarousel({ className }: { className?: string }) {
 
   return (
     <div className={cn("max-w-7xl mx-auto pt-4 sm:pt-12 md:pt-20 pb-12", className)}>
-      {/* Centered Heading */}
-      {/* <header className="mb-12 flex flex-col items-center text-center space-y-4">
-        <h2 className="font-bold text-3xl md:text-5xl md:text-6xl font-black tracking-tighter dark:text-white text-zinc-950">
-          Past <span className="text-zinc-400 dark:text-zinc-400">Events.</span>
-        </h2>
-      </header> */}
       <div className="mb-10 md:mb-12 text-center gap-3">
         <div>
           <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight text-center">
-            Past {" "}
+            Past{" "}
             <span className="text-gray-400 dark:text-white/30">Events.</span>
           </h2>
         </div>
       </div>
 
-      {/* Carousel Container */}
       <div
         ref={containerRef}
         className="overflow-hidden relative"
         onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
+        onMouseLeave={() => {
+            setPaused(false);
+            // Don't clear immediately on mouse leave to allow click logic to persist
+        }}
       >
         <motion.div
           className="flex"
@@ -205,93 +231,93 @@ export function EventCarousel({ className }: { className?: string }) {
               : { duration: 0 }
           }
         >
-          {slides.map((item, i) => (
-            <div
-              key={`${item.id}-${i}`}
-              style={{ width: cardWidth }}
-              className="px-4 shrink-0"
-            >
-              <motion.div className="group relative bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-[2rem] overflow-hidden flex flex-col h-[500px] transition-all duration-500 hover:border-[#fd7d6e]/30">
-                {/* Visual Section */}
-                <div className="relative aspect-[4/3] bg-zinc-50 dark:bg-zinc-900/50 p-4">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.title}
-                    fill
-                    className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
+          {slides.map((item, i) => {
+            const uniqueId = `${item.id}-${i}`;
+            return (
+              <div
+                key={uniqueId}
+                style={{ width: cardWidth }}
+                className="px-4 shrink-0"
+                onClick={() => handleCardClick(uniqueId)}
+              >
+                <motion.div className="group relative bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-[2rem] overflow-hidden flex flex-col h-[500px] transition-all duration-500 hover:border-[#fd7d6e]/30">
+                  <div className="relative aspect-[4/3] bg-zinc-50 dark:bg-zinc-900/50 p-4">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.title}
+                      fill
+                      className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
 
-                  <div className="absolute top-5 left-5 flex flex-col gap-2">
-                    <span
+                    <div className="absolute top-5 left-5 flex flex-col gap-2">
+                      <span
+                        className={cn(
+                          "text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-md border flex items-center gap-1.5 w-fit",
+                          item.mode === "Virtual"
+                            ? "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                            : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+                        )}
+                      >
+                        {item.mode === "Virtual" ? (
+                          <Monitor className="w-3 h-3" />
+                        ) : (
+                          <UsersIcon className="w-3 h-3" />
+                        )}
+                        {item.mode}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-8 flex-grow flex flex-col relative overflow-hidden">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                        <Calendar className="w-3.5 h-3.5 text-[#fd7d6e]" />
+                        {item.date}
+                      </div>
+                    </div>
+
+                    <h3 className="text-xl font-black tracking-tight mb-3 dark:text-white text-zinc-900 group-hover:text-[#fd7d6e] transition-colors leading-tight uppercase">
+                      {item.title}
+                    </h3>
+
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed font-medium">
+                      {item.description}
+                    </p>
+
+                    <div className="mt-auto flex items-center gap-2 text-zinc-400">
+                      <MapPin className="w-3.5 h-3.5 shrink-0 text-[#fd7d6e]" />
+                      <span className="text-[10px] font-bold uppercase tracking-wide truncate">
+                        {item.location}
+                      </span>
+                    </div>
+
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open("https://www.commudle.com/communities/d4-community/events", "_blank");
+                      }}
                       className={cn(
-                        "text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-md border flex items-center gap-1.5 w-fit",
-                        item.mode === "Virtual"
-                          ? "bg-blue-500/10 text-blue-500 border-blue-500/20"
-                          : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+                          "absolute inset-x-0 bottom-0 p-8 bg-white dark:bg-zinc-950 transition-transform duration-300 ease-out border-t border-zinc-100 dark:border-zinc-900 flex items-center justify-between cursor-pointer",
+                          activeCardId === uniqueId ? "translate-y-0" : "translate-y-full group-hover:translate-y-0"
                       )}
                     >
-                      {item.mode === "Virtual" ? (
-                        <Monitor className="w-3 h-3" />
-                      ) : (
-                        <UsersIcon className="w-3 h-3" />
-                      )}
-                      {item.mode}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Content Section */}
-                <div className="p-8 flex-grow flex flex-col relative overflow-hidden">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                      <Calendar className="w-3.5 h-3.5 text-[#fd7d6e]" />
-                      {item.date}
+                      <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#fd7d6e]">
+                        View Details
+                      </span>
+                      <div className="w-10 h-10 rounded-full bg-[#fd7d6e] flex items-center justify-center shadow-lg shadow-[#fd7d6e]/20">
+                        <ArrowUpRight className="w-5 h-5 text-white" />
+                      </div>
                     </div>
                   </div>
-
-                  <h3 className="text-xl font-black tracking-tight mb-3 dark:text-white text-zinc-900 group-hover:text-[#fd7d6e] transition-colors leading-tight uppercase">
-                    {item.title}
-                  </h3>
-
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed font-medium">
-                    {item.description}
-                  </p>
-
-                  <div className="mt-auto flex items-center gap-2 text-zinc-400">
-                    <MapPin className="w-3.5 h-3.5 shrink-0 text-[#fd7d6e]" />
-                    <span className="text-[10px] font-bold uppercase tracking-wide truncate">
-                      {item.location}
-                    </span>
-                  </div>
-
-                  {/* Hidden Hover Button */}
-                  <div
-                    onClick={() =>
-                      window.open(
-                        "https://www.commudle.com/communities/d4-community/events",
-                        "_blank",
-                      )
-                    }
-                    className="absolute inset-x-0 bottom-0 p-8 bg-white dark:bg-zinc-950 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out border-t border-zinc-100 dark:border-zinc-900 flex items-center justify-between cursor-pointer"
-                  >
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#fd7d6e]">
-                      View Details
-                    </span>
-                    <div className="w-10 h-10 rounded-full bg-[#fd7d6e] flex items-center justify-center shadow-lg shadow-[#fd7d6e]/20">
-                      <ArrowUpRight className="w-5 h-5 text-white" />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          ))}
+                </motion.div>
+              </div>
+            );
+          })}
         </motion.div>
       </div>
 
-      {/* Pagination & Arrows Footer */}
       <div className="mt-6 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-900 pt-6 px-6">
-        {/* Left Side: Pagination Dots */}
         <div className="flex items-center gap-4">
           <div className="flex gap-2">
             {items.map((_, i) => (
@@ -312,7 +338,6 @@ export function EventCarousel({ className }: { className?: string }) {
           </div>
         </div>
 
-        {/* Right Side: Navigation Arrows */}
         <div className="flex gap-3">
           <button
             onClick={handlePrev}

@@ -181,14 +181,13 @@ export default function AboutSection() {
   const clearHide = () => {
     if (hideTimerRef.current) { clearTimeout(hideTimerRef.current); hideTimerRef.current = null; }
   };
+  
   const scheduleHide = (ms = 250) => {
-    hideTimerRef.current = setTimeout(() => setPopup(null), ms);
+    if (typeof window !== "undefined" && window.innerWidth >= 768) {
+      hideTimerRef.current = setTimeout(() => setPopup(null), ms);
+    }
   };
 
-  /**
-   * Get anchor coords from the actual SVG <g> element the user hovered —
-   * this is always pixel-perfect regardless of zoom/pan/projection.
-   */
   const anchorFromSVGEvent = useCallback(
     (e: React.MouseEvent<SVGGElement>): AnchorPos | null => {
       if (!mapContainerRef.current) return null;
@@ -202,8 +201,9 @@ export default function AboutSection() {
     [],
   );
 
-  const handleMarkerEnter = useCallback(
+  const handleMarkerInteraction = useCallback(
     (group: CityGroup, e: React.MouseEvent<SVGGElement>) => {
+      e.stopPropagation();
       clearHide();
       const anchor = anchorFromSVGEvent(e);
       if (!anchor) return;
@@ -247,13 +247,13 @@ export default function AboutSection() {
   const handleZoomIn = () => { if (position.zoom < 8) setPosition((p) => ({ ...p, zoom: p.zoom * 1.5 })); };
   const handleZoomOut = () => { if (position.zoom > 1) setPosition((p) => ({ ...p, zoom: Math.max(1, p.zoom / 1.5) })); };
 
-  // Close popup on pan/zoom (anchor would be stale)
   const handleMoveEnd = ({ coordinates, zoom }: { coordinates: [number, number]; zoom: number }) => {
     setPosition({ coordinates, zoom });
-    setPopup(null);
+    if (typeof window !== "undefined" && window.innerWidth >= 768) {
+      setPopup(null);
+    }
   };
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (mapContainerRef.current && !mapContainerRef.current.contains(e.target as Node)) {
@@ -265,8 +265,6 @@ export default function AboutSection() {
   }, []);
 
   useEffect(() => () => { if (hideTimerRef.current) clearTimeout(hideTimerRef.current); }, []);
-
-  // ─── Style helpers ───────────────────────────────────────────────────────────
 
   const getTypeColor = (type: string) =>
     type === "speaker" ? "#3b82f6" : type === "lead" ? "#10b981" : "#f59e0b";
@@ -289,8 +287,6 @@ export default function AboutSection() {
     if (type === "lead") return { card: "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800", accent: "text-green-600 dark:text-green-400" };
     return { card: "bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800", accent: "text-amber-600 dark:text-amber-400" };
   };
-
-  // ─── Render ───────────────────────────────────────────────────────────────────
 
   return (
     <section className="w-full px-4 py-12 sm:py-16 md:py-20 overflow-hidden bg-white dark:bg-neutral-950">
@@ -371,20 +367,11 @@ export default function AboutSection() {
         {/* Map */}
         <div className="w-full">
           <div className="bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-lg border border-neutral-200 dark:border-neutral-800 p-1">
-            {/*
-              Key layout trick:
-              - The outer wrapper is `relative overflow-visible` so the popup
-                (position:absolute inside it) can visually escape the rounded
-                clip that would cut it off at the container edge.
-              - An inner absolute div clips ONLY the map SVG via overflow-hidden.
-              - The popup lives outside that inner div, inside the outer wrapper.
-            */}
             <div
               className="relative w-full h-[350px] sm:h-[600px] rounded-xl"
               style={{ overflow: "visible" }}
               ref={mapContainerRef}
             >
-              {/* Map clip layer — clips only the SVG, not the popup */}
               <div className="absolute inset-0 rounded-xl overflow-hidden">
                 <ComposableMap
                   projection="geoEqualEarth"
@@ -430,7 +417,8 @@ export default function AboutSection() {
                       return (
                         <Marker key={group.id} coordinates={[group.lng, group.lat]}>
                           <g
-                            onMouseEnter={(e) => handleMarkerEnter(group, e)}
+                            onMouseEnter={(e) => handleMarkerInteraction(group, e)}
+                            onClick={(e) => handleMarkerInteraction(group, e)}
                             onMouseLeave={handleMarkerLeave}
                             style={{ cursor: "pointer" }}
                           >
@@ -474,16 +462,6 @@ export default function AboutSection() {
                   className="w-10 h-10 rounded-lg bg-white dark:bg-neutral-800 shadow-lg border border-neutral-300 dark:border-neutral-700 flex items-center justify-center text-lg font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors disabled:opacity-40">−</button>
               </div>
 
-              {/* Nav hint */}
-              <div className="absolute top-4 left-4 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg px-4 py-2 border border-neutral-300 dark:border-neutral-700 z-10">
-                <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">Map Navigation</div>
-                <div className="text-xs text-neutral-600 dark:text-neutral-400 space-y-0.5">
-                  <div>• Drag to pan</div>
-                  <div>• Scroll to zoom</div>
-                  <div>• Hover pin → details</div>
-                </div>
-              </div>
-
               {/* Legend */}
               <div className="absolute bottom-4 left-4 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg px-4 py-2 border border-neutral-300 dark:border-neutral-700 z-10 space-y-1">
                 {[["bg-blue-500", "Speakers"], ["bg-green-500", "Leads"], ["bg-amber-500", "Events"]].map(([cls, label]) => (
@@ -492,212 +470,211 @@ export default function AboutSection() {
                     <span className="text-xs text-neutral-700 dark:text-neutral-300">{label}</span>
                   </div>
                 ))}
-                <div className="flex items-center gap-2 pt-1 border-t border-neutral-200 dark:border-neutral-700">
-                  <div className="w-3 h-3 rounded-full bg-indigo-500 flex items-center justify-center">
-                    <span style={{ fontSize: "5px", color: "#fff", fontWeight: 800 }}>N</span>
-                  </div>
-                  <span className="text-xs text-neutral-700 dark:text-neutral-300">City cluster</span>
-                </div>
               </div>
 
-              {/* ──────────────────────────────────────────────────────────────
-                  POPUP MODAL
-                  Positioned using the real bounding rect of the hovered SVG
-                  marker element — always pixel-perfect at the actual pin.
-              ────────────────────────────────────────────────────────────── */}
               <AnimatePresence>
-                {popup && (() => {
-                  const cW = mapContainerRef.current?.offsetWidth ?? 800;
-                  const cH = mapContainerRef.current?.offsetHeight ?? 500;
+  {popup && (() => {
+    const cW = mapContainerRef.current?.offsetWidth ?? 800;
+    const isMobileView = cW < 768;
+    const hasMany = popup.group.items.length > 1;
 
-                  // Responsive width
-                  const isMob = cW < 500;
-                  const pW = isMob ? Math.min(cW - 16, 290) : 360;
+    const activeItem = popup.group.items[popup.activeIdx];
+    const badge = typeBadge(activeItem.type);
+    const accent = typeAccent(activeItem.type);
 
-                  const hasMany = popup.group.items.length > 1;
-                  // Estimated popup height for above/below decision
-                  const pHEst = hasMany ? 300 : 240;
+    // Desktop Positioning Logic
+    const pW = 360;
+    const pHEst = hasMany ? 300 : 240;
+    const { left, top, above, arrowLeft } = calcPopupPos(
+      popup.anchor.x,
+      popup.anchor.y,
+      cW,
+      mapContainerRef.current?.offsetHeight ?? 600,
+      pW,
+      pHEst,
+    );
 
-                  const { left, top, above, arrowLeft } = calcPopupPos(
-                    popup.anchor.x,
-                    popup.anchor.y,
-                    cW,
-                    cH,
-                    pW,
-                    pHEst,
-                  );
+    // Shared Detail Content Component to ensure no data is missing
+    const DetailContent = ({ isMobile = false }) => (
+      <motion.div
+        key={popup.activeIdx}
+        initial={{ opacity: 0, x: 10 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -10 }}
+        transition={{ duration: 0.15 }}
+        className={isMobile ? "p-6 space-y-5" : "p-4 space-y-3"}
+      >
+        <div>
+          <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase inline-block mb-1.5 ${badge.bg} ${badge.text}`}>
+            {badge.label}
+          </span>
+          <h4 className={`${isMobile ? "text-xl" : "text-[14px]"} font-bold text-neutral-900 dark:text-white leading-tight`}>
+            {activeItem.name}
+          </h4>
+          {activeItem.role && (
+            <p className={`${isMobile ? "text-sm" : "text-[11px]"} text-neutral-500 dark:text-neutral-400 mt-1`}>
+              {activeItem.role}
+            </p>
+          )}
+        </div>
 
-                  const activeItem = popup.group.items[popup.activeIdx];
-                  const badge = typeBadge(activeItem.type);
-                  const accent = typeAccent(activeItem.type);
+        {activeItem.topic && (
+          <div className={`rounded-xl ${isMobile ? "p-4" : "p-3"} border ${accent.card}`}>
+            <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1 tracking-wider">Topic</p>
+            <p className={`${isMobile ? "text-sm" : "text-[11px]"} text-neutral-800 dark:text-neutral-200 leading-relaxed italic`}>
+              "{activeItem.topic}"
+            </p>
+          </div>
+        )}
 
-                  return (
-                    <motion.div
-                      key={`popup-${popup.group.id}`}
-                      initial={{ opacity: 0, scale: 0.91, y: above ? 8 : -8 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.91, y: above ? 8 : -8 }}
-                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                      onMouseEnter={handlePopupEnter}
-                      onMouseLeave={handlePopupLeave}
-                      style={{
-                        position: "absolute",
-                        left,
-                        top,
-                        width: pW,
-                        zIndex: 60,
-                        pointerEvents: "auto",
-                      }}
-                    >
-                      {/* ── Arrow tail pointing at the marker ── */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          left: arrowLeft - 8,
-                          ...(above
-                            ? { bottom: -7, borderTopColor: "transparent", borderLeftColor: "transparent" }
-                            : { top: -7, borderBottomColor: "transparent", borderRightColor: "transparent" }),
-                          width: 14,
-                          height: 14,
-                          background: "white",
-                          transform: "rotate(45deg)",
-                          border: "1px solid #e5e7eb",
-                          zIndex: -1,
-                        }}
-                        className="dark:!bg-neutral-900 dark:!border-neutral-700"
-                      />
+        {activeItem.org && (
+          <div className={`rounded-xl ${isMobile ? "p-4" : "p-3"} border ${accent.card}`}>
+            <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1 tracking-wider">Organization</p>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
+              <span className={`${isMobile ? "text-sm" : "text-[12px]"} font-bold text-neutral-900 dark:text-neutral-100`}>
+                {activeItem.org}
+              </span>
+            </div>
+          </div>
+        )}
 
-                      {/* ── Card ── */}
-                      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.16)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-neutral-200 dark:border-neutral-800 overflow-hidden">
+        {activeItem.type === "event" && (
+          <div className="grid grid-cols-2 gap-2">
+            <div className={`rounded-xl ${isMobile ? "p-3" : "p-2.5"} border ${accent.card}`}>
+              <p className="text-[9px] text-neutral-400 font-bold uppercase mb-0.5 tracking-wider">Date</p>
+              <p className={`${isMobile ? "text-sm" : "text-[11px]"} font-bold ${accent.accent}`}>{activeItem.date}</p>
+            </div>
+            <div className={`rounded-xl ${isMobile ? "p-3" : "p-2.5"} border ${accent.card}`}>
+              <p className="text-[9px] text-neutral-400 font-bold uppercase mb-0.5 tracking-wider">Reach</p>
+              <p className={`${isMobile ? "text-sm" : "text-[11px]"} font-bold ${accent.accent}`}>{activeItem.attendees}</p>
+            </div>
+          </div>
+        )}
 
-                        {/* Header */}
-                        <div className="bg-neutral-100/80 dark:bg-neutral-800/80 backdrop-blur-md px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between gap-2">
-                          <div className="min-w-0">
-                            <h3 className="text-[12px] font-black text-neutral-800 dark:text-white uppercase tracking-tight truncate">
-                              {popup.group.city}
-                              <span className="text-neutral-400 dark:text-neutral-500 font-normal normal-case">, {popup.group.country}</span>
-                            </h3>
-                            <p className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
-                              {popup.group.items.length} {popup.group.items.length === 1 ? "entry" : "entries"}
-                              {hasMany && " · hover list to switch"}
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => setPopup(null)}
-                            className="w-6 h-6 flex-shrink-0 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors text-sm leading-none"
-                          >×</button>
-                        </div>
+        <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
+          <span className="text-[9px] text-neutral-400">{activeItem.city}, {activeItem.country}</span>
+          <span className="text-[9px] text-neutral-400 font-mono">
+            {activeItem.lat.toFixed(2)}°, {activeItem.lng.toFixed(2)}°
+          </span>
+        </div>
+      </motion.div>
+    );
 
-                        {/* Body */}
-                        <div className="flex" style={{ maxHeight: isMob ? 200 : 260 }}>
+    return (
+      <>
+        {/* MOBILE VIEW: Full-screen optimized modal */}
+        {isMobileView && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[999] flex items-center justify-center p-4"
+            onClick={() => setPopup(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="w-full max-w-[500px] bg-white dark:bg-neutral-900 rounded-[2rem] shadow-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Mobile Header */}
+              <div className="px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-800/50">
+                <div className="min-w-0">
+                  <h3 className="text-xs font-black text-neutral-800 dark:text-white uppercase tracking-widest">
+                    {popup.group.city} <span className="text-neutral-400 font-normal">, {popup.group.country}</span>
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setPopup(null)}
+                  className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-neutral-600 dark:text-white active:scale-90 transition-transform"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
 
-                          {/* Sidebar — multi-item cities only */}
-                          {hasMany && (
-                            <div
-                              className="flex-shrink-0 bg-neutral-50 dark:bg-neutral-950/60 border-r border-neutral-100 dark:border-neutral-800 overflow-y-auto custom-scrollbar"
-                              style={{ width: isMob ? 88 : 108 }}
-                            >
-                              {popup.group.items.map((item, idx) => (
-                                <button
-                                  key={item.id}
-                                  onMouseEnter={() => setPopup((p) => p ? { ...p, activeIdx: idx } : null)}
-                                  onClick={() => setPopup((p) => p ? { ...p, activeIdx: idx } : null)}
-                                  className={`w-full text-left px-2.5 py-2.5 border-b border-neutral-100 dark:border-neutral-800 transition-all ${
-                                    popup.activeIdx === idx
-                                      ? "bg-white dark:bg-neutral-800 border-r-2 border-r-blue-500"
-                                      : "opacity-55 hover:opacity-100 hover:bg-white/50 dark:hover:bg-neutral-800/40"
-                                  }`}
-                                >
-                                  <span className={`block truncate text-[10px] font-bold leading-tight ${
-                                    popup.activeIdx === idx ? "text-blue-600 dark:text-blue-400" : "text-neutral-500 dark:text-neutral-400"
-                                  }`}>
-                                    {item.name}
-                                  </span>
-                                  <span className="block truncate text-[9px] mt-0.5 text-neutral-400 font-normal leading-tight">
-                                    {item.type === "speaker" ? item.role : item.type === "lead" ? item.org : item.date}
-                                  </span>
-                                </button>
-                              ))}
-                            </div>
-                          )}
+              <div className="flex flex-col h-full max-h-[75vh]">
+                {hasMany && (
+                  <div className="flex overflow-x-auto border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/30 dark:bg-neutral-950/20 custom-scrollbar">
+                    {popup.group.items.map((item, idx) => (
+                      <button
+                        key={item.id}
+                        onClick={() => setPopup((p) => p ? { ...p, activeIdx: idx } : null)}
+                        className={`flex-shrink-0 px-5 py-4 text-[11px] font-bold transition-all border-b-2 ${
+                          popup.activeIdx === idx ? "text-blue-600 border-blue-500 bg-white dark:bg-neutral-800" : "text-neutral-400 border-transparent"
+                        }`}
+                      >
+                        {item.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="overflow-y-auto custom-scrollbar">
+                  <DetailContent isMobile={true} />
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
 
-                          {/* Detail pane */}
-                          <div className="flex-1 overflow-y-auto custom-scrollbar min-w-0">
-                            <AnimatePresence mode="wait">
-                              <motion.div
-                                key={popup.activeIdx}
-                                initial={{ opacity: 0, x: 8 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -8 }}
-                                transition={{ duration: 0.12 }}
-                                className="p-4 space-y-3"
-                              >
-                                {/* Badge + name + role */}
-                                <div>
-                                  <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase inline-block mb-1.5 ${badge.bg} ${badge.text}`}>
-                                    {badge.label}
-                                  </span>
-                                  <h4 className="text-[13px] font-bold text-neutral-900 dark:text-white leading-snug">
-                                    {activeItem.name}
-                                  </h4>
-                                  {activeItem.role && (
-                                    <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5 leading-tight">
-                                      {activeItem.role}
-                                    </p>
-                                  )}
-                                </div>
-
-                                {/* Speaker topic */}
-                                {activeItem.type === "speaker" && activeItem.topic && (
-                                  <div className={`rounded-xl p-3 border ${accent.card}`}>
-                                    <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1 tracking-wider">Topic</p>
-                                    <p className="text-[11px] text-neutral-800 dark:text-neutral-200 leading-relaxed italic">
-                                      "{activeItem.topic}"
-                                    </p>
-                                  </div>
-                                )}
-
-                                {/* Lead org */}
-                                {activeItem.type === "lead" && activeItem.org && (
-                                  <div className={`rounded-xl p-3 border ${accent.card}`}>
-                                    <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1 tracking-wider">Organization</p>
-                                    <div className="flex items-center gap-1.5">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
-                                      <span className="text-[12px] font-bold text-neutral-900 dark:text-neutral-100">{activeItem.org}</span>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Event stats */}
-                                {activeItem.type === "event" && (
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <div className={`rounded-xl p-2.5 border ${accent.card}`}>
-                                      <p className="text-[9px] text-neutral-400 font-bold uppercase mb-0.5 tracking-wider">Date</p>
-                                      <p className={`text-[11px] font-bold ${accent.accent}`}>{activeItem.date}</p>
-                                    </div>
-                                    <div className={`rounded-xl p-2.5 border ${accent.card}`}>
-                                      <p className="text-[9px] text-neutral-400 font-bold uppercase mb-0.5 tracking-wider">Reach</p>
-                                      <p className={`text-[11px] font-bold ${accent.accent}`}>{activeItem.attendees}</p>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Coords footer */}
-                                <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
-                                  <span className="text-[9px] text-neutral-400">{activeItem.city}, {activeItem.country}</span>
-                                  <span className="text-[9px] text-neutral-400 font-mono">
-                                    {activeItem.lat.toFixed(2)}°, {activeItem.lng.toFixed(2)}°
-                                  </span>
-                                </div>
-                              </motion.div>
-                            </AnimatePresence>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })()}
-              </AnimatePresence>
+        {/* DESKTOP VIEW: Pin-anchored Tooltip (UI untouched) */}
+        {!isMobileView && (
+          <motion.div
+            key={`popup-${popup.group.id}`}
+            initial={{ opacity: 0, scale: 0.91, y: above ? 8 : -8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.91, y: above ? 8 : -8 }}
+            transition={{ type: "spring", stiffness: 380, damping: 32 }}
+            onMouseEnter={handlePopupEnter}
+            onMouseLeave={handlePopupLeave}
+            style={{ position: "absolute", left, top, width: pW, zIndex: 60, pointerEvents: "auto" }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                left: arrowLeft - 8,
+                ...(above ? { bottom: -7 } : { top: -7 }),
+                width: 14, height: 14, background: "inherit", transform: "rotate(45deg)",
+                border: "1px solid #e5e7eb", zIndex: -1
+              }}
+              className="bg-white dark:bg-neutral-900 dark:border-neutral-700"
+            />
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
+              <div className="bg-neutral-100/80 dark:bg-neutral-800/80 px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
+                <h3 className="text-[12px] font-black text-neutral-800 dark:text-white uppercase truncate">
+                  {popup.group.city}, {popup.group.country}
+                </h3>
+                <button onClick={() => setPopup(null)} className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-neutral-300 dark:hover:bg-neutral-700">×</button>
+              </div>
+              <div className="flex" style={{ maxHeight: 260 }}>
+                {hasMany && (
+                  <div className="w-[108px] flex-shrink-0 bg-neutral-50 dark:bg-neutral-950/60 border-r dark:border-neutral-800 overflow-y-auto custom-scrollbar">
+                    {popup.group.items.map((item, idx) => (
+                      <button
+                        key={item.id}
+                        onMouseEnter={() => setPopup((p) => p ? { ...p, activeIdx: idx } : null)}
+                        className={`w-full text-left px-2.5 py-3 border-b dark:border-neutral-800 transition-all ${popup.activeIdx === idx ? "bg-white dark:bg-neutral-800 border-r-2 border-r-blue-500" : "opacity-55"}`}
+                      >
+                        <span className={`block truncate text-[10px] font-bold ${popup.activeIdx === idx ? "text-blue-600" : ""}`}>{item.name}</span>
+                        <span className="block truncate text-[8px] text-neutral-400">{item.type === "speaker" ? item.role : item.date}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                  <DetailContent isMobile={false} />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </>
+    );
+  })()}
+</AnimatePresence>
             </div>
           </div>
         </div>
@@ -720,7 +697,7 @@ export default function AboutSection() {
       </div>
 
       <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 3px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
