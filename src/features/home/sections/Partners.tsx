@@ -17,9 +17,10 @@ const ALL_PARTNERS = [
   { id: "commudle", name: "commudle", logo: "/images/partners/commudle.png" },
   { id: "xyz", name: "XYZ", logo: "/images/partners/xyz.png" },
   { id: "techRbm", name: "TechRBM", logo: "/images/partners/TechRBM.png" },
+  { id: "niwi", name: "NIWIAI", logo: "/images/partners/niwi.png" },
   { id: "AppWrk", name: "AppWrk IT Solutions", logo: "/images/partners/appwrk.png" },
   { id: "osen", name: "OSEN", logo: "/images/partners/osen.png" },
-  { id: "VentureNest", name: "Venture Nest", logo: "/images/partners/VentureNest.png" },
+  { id: "VentureNest", name: "Venture Nest", logo: "/images/partners/VentureNest.png", darkLogo: "/images/partners/VentureNestW.png" },
   { id: "slay", name: "Slay", logo: "/images/partners/Slay.png" },
 ];
 
@@ -56,7 +57,7 @@ export function Partners({ className }: { className?: string }) {
     <div className={cn("w-full py-16 md:py-20  overflow-hidden", className)}>
       <div className="max-w-7xl mx-auto px-4">
         
-        <div className="text-center mb-12">
+        {/* <div className="text-center mb-12">
           <h2 className="font-bold text-2xl md:text-4xl lg:text-5xl dark:text-white text-black tracking-tight">
             Our{" "}
             <span className="text-neutral-400">
@@ -74,7 +75,19 @@ export function Partners({ className }: { className?: string }) {
               ))}
             </span>
           </h2>
+        </div> */}
+
+        <div className="mb-10 md:mb-12 text-center gap-3">
+        <div>
+          <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight text-center">
+            Our {" "}
+            <span className="text-gray-400 dark:text-white/30">Partners.</span>
+          </h2>
+          <p className="text-base md:text-lg text-neutral-500 max-w-5xl mx-auto py-2 md:py-4 leading-relaxed">
+            Trusted partners supporting our community journey
+          </p>
         </div>
+      </div>
 
         {/* --- DESKTOP & TABLET VIEW --- */}
         <div className="hidden md:flex relative justify-center items-center w-full min-h-[180px]">

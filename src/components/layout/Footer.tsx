@@ -1112,6 +1112,18 @@ export const siteConfig = {
         { id: 7, title: "Terms of Use", url: "/terms" },
       ],
 
+    },
+    {
+      title: "Connect",
+      links: [
+        { id: 10, title: "LinkedIn", url: "https://linkedin.com/company/d4community" },
+        { id: 11, title: "X", url: "https://x.com/d4community" },
+        { id: 12, title: "Instagram", url: "https://instagram.com/d4community" },
+        { id: 13, title: "GitHub", url: "https://github.com/d4community" },
+        { id: 14, title: "YouTube", url: "https://youtube.com/d4_community" },
+        { id: 15, title: "Facebook", url: "https://facebook.com/d4community" },
+      ],
+
     }
     // {
     //   title: "Products",

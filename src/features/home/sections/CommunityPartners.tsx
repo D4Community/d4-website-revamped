@@ -358,7 +358,7 @@ export function CommunityPartners({ className }: CommunityPartnersProps) {
           </p>
         </div> */}
 
-        <div className="text-center mb-4 md:mb-6">
+        {/* <div className="text-center mb-4 md:mb-6">
           <h2 className="font-bold text-2xl md:text-4xl lg:text-5xl dark:text-white text-black tracking-tight">
             Community{" "}
             <span className="text-neutral-400">
@@ -379,7 +379,19 @@ export function CommunityPartners({ className }: CommunityPartnersProps) {
           <p className="text-base md:text-lg text-neutral-500 max-w-5xl mx-auto py-4 md:py-6 leading-relaxed">
             Trusted by industry leaders and innovators
           </p>
+        </div> */}
+
+        <div className="mb-10 md:mb-12 text-center gap-3">
+        <div>
+          <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight text-center">
+            Community {" "}
+            <span className="text-gray-400 dark:text-white/30">Partners.</span>
+          </h2>
+        <p className="text-base md:text-lg text-neutral-500 max-w-5xl mx-auto py-2 md:py-4 leading-relaxed">
+            Trusted by industry leaders and innovators
+          </p>
         </div>
+      </div>
 
         {/* Two‑row slider */}
         <div className="flex flex-col gap-6 md:gap-8">
