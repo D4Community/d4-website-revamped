@@ -175,11 +175,19 @@ export function EventCarousel({ className }: { className?: string }) {
   return (
     <div className={cn("max-w-7xl mx-auto pt-4 sm:pt-12 md:pt-20 pb-12", className)}>
       {/* Centered Heading */}
-      <header className="mb-12 flex flex-col items-center text-center space-y-4">
+      {/* <header className="mb-12 flex flex-col items-center text-center space-y-4">
         <h2 className="font-bold text-3xl md:text-5xl md:text-6xl font-black tracking-tighter dark:text-white text-zinc-950">
           Past <span className="text-zinc-400 dark:text-zinc-400">Events.</span>
         </h2>
-      </header>
+      </header> */}
+      <div className="mb-10 md:mb-12 text-center gap-3">
+        <div>
+          <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight text-center">
+            Past {" "}
+            <span className="text-gray-400 dark:text-white/30">Events.</span>
+          </h2>
+        </div>
+      </div>
 
       {/* Carousel Container */}
       <div

@@ -394,7 +394,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
         <div>
           <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight text-center">
             Upcoming {" "}
-            <span className="text-gray-400 dark:text-white/30">Events</span>
+            <span className="text-gray-400 dark:text-white/30">Events.</span>
           </h2>
         </div>
         {/* {!loading && events.length > 0 && (

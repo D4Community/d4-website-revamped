@@ -1,146 +1,160 @@
 "use client";
 
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-interface Partner {
-  id: string;
-  name: string;
-  logo: string;
-  description: string;
-}
-
-const PARTNERS: Partner[] = [
-  {
-    id: "ml-chandigarh",
-    name: "ML Chandigarh",
-    logo: "/images/partners/ML Chandigarh.png",
-    description: "Partner",
-  },
-  {
-    id: "osen",
-    name: "OSEN",
-    logo: "/images/partners/osen.png",
-    description: "Partner",
-  },
-  {
-    id: "requestly",
-    name: "Requestly",
-    logo: "/images/partners/requestly.png",
-    description: "Partner",
-  },
-  {
-    id: "bharatxr",
-    name: "BharatXR",
-    logo: "/images/partners/bharatxr.png",
-    description: "Partner",
-  },
-  {
-    id: "slay",
-    name: "Slay",
-    logo: "/images/partners/Slay.png",
-    description: "Partner",
-  },
+const ALL_PARTNERS = [
+  { id: "v0", name: "v0", logo: "/images/partners/v0w.png", darkLogo: "/images/partners/v0.png" },
+  { id: "n8n", name: "n8n", logo: "/images/partners/n8nw.png", darkLogo: "/images/partners/n8n.png" },
+  { id: "appwrite", name: "Appwrite", logo: "/images/partners/appwrite.png" },
+  { id: "GoogleForDevelopers", name: "Google for Developers", logo: "/images/partners/GoogleForDevelopers.png" },
+  { id: "github", name: "GitHub", logo: "/images/partners/githubW.png", darkLogo: "/images/partners/github.png"  },
+  { id: "mastra", name: "Mastra", logo: "/images/partners/Mastra.svg", darkLogo: "/images/partners/MastraW.svg"  },
+  { id: "requestly", name: "Requestly", logo: "/images/partners/requestly.png" },
+  { id: "devfolio", name: "Devfolio", logo: "/images/partners/devfolio.png" },
+  { id: "commudle", name: "commudle", logo: "/images/partners/commudle.png" },
+  { id: "xyz", name: "XYZ", logo: "/images/partners/xyz.png" },
+  { id: "techRbm", name: "TechRBM", logo: "/images/partners/TechRBM.png" },
+  { id: "AppWrk", name: "AppWrk IT Solutions", logo: "/images/partners/appwrk.png" },
+  { id: "osen", name: "OSEN", logo: "/images/partners/osen.png" },
+  { id: "VentureNest", name: "Venture Nest", logo: "/images/partners/VentureNest.png" },
+  { id: "slay", name: "Slay", logo: "/images/partners/Slay.png" },
 ];
 
-interface PartnersProps {
-  className?: string;
-}
+export function Partners({ className }: { className?: string }) {
+  const [index, setIndex] = useState(0);
+  const [itemsToShow, setItemsToShow] = useState(5);
 
-export function Partners({ className }: PartnersProps) {
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width >= 992) setItemsToShow(5);
+      else if (width >= 768) setItemsToShow(4);
+      else setItemsToShow(ALL_PARTNERS.length);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % Math.ceil(ALL_PARTNERS.length / itemsToShow));
+    }, 5000); 
+    return () => clearInterval(timer);
+  }, [itemsToShow]);
+
+  const currentPartners = ALL_PARTNERS.slice(
+    index * itemsToShow,
+    (index + 1) * itemsToShow
+  );
 
   return (
-    <div className={cn("w-full py-16 md:py-20", className)}>
+    <div className={cn("w-full py-16 md:py-20  overflow-hidden", className)}>
       <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-            Partners
+        
+        <div className="text-center mb-12">
+          <h2 className="font-bold text-2xl md:text-4xl lg:text-5xl dark:text-white text-black tracking-tight">
+            Our{" "}
+            <span className="text-neutral-400">
+              {"Partners.".split("").map((char, idx) => (
+                <motion.span
+                  key={idx}
+                  className="inline-block"
+                  initial={{ x: -10, opacity: 0 }}
+                  whileInView={{ x: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: idx * 0.02 }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </span>
           </h2>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-            Trusted by industry leaders and innovators
-          </p>
         </div>
 
-        {/* First Row - Partners 1-5 */}
-        <div className="mb-8 md:mb-12">
-          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 lg:gap-8">
-            {PARTNERS.map((partner) => (
-              <div
-                key={partner.id}
-                className="shrink-0"
-                onMouseEnter={() => setHoveredCard(partner.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div
-                  className={cn(
-                    "w-36 md:w-44 lg:w-52 xl:w-56",
-                    "rounded-2xl",
-                    "backdrop-blur-xl",
-                    "bg-gradient-to-br",
-                    "from-white/10 via-white/5 to-white/0",
-                    "dark:from-black/10 dark:via-black/5 dark:to-black/0",
-                    "border",
-                    "border-white/30 dark:border-gray-800/50",
-                    "flex flex-col items-center justify-center p-4 md:p-5 lg:p-6",
-                    "transition-all duration-500 ease-out",
-                    "relative",
-                    "overflow-hidden",
-                    "group",
-                    hoveredCard === partner.id
-                      ? "scale-105 bg-white/20 dark:bg-black/20 shadow-lg"
-                      : "scale-100",
-                  )}
+        {/* --- DESKTOP & TABLET VIEW --- */}
+        <div className="hidden md:flex relative justify-center items-center w-full min-h-[180px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${index}-${itemsToShow}`}
+              className="flex justify-center items-center gap-10 lg:gap-16 w-full"
+            >
+              {currentPartners.map((partner, i) => (
+                <motion.div
+                  key={partner.id}
+                  initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -15, filter: "blur(8px)" }}
+                  transition={{
+                    duration: 0.3, // Faster transition
+                    delay: i * 0.05, // Faster stagger
+                    ease: "easeOut"
+                  }}
                 >
-                  {/* Glass effect overlay */}
-                  <div className="absolute inset-0 bg-linear-to-br from-white/5 to-transparent dark:from-black/5" />
+                  <PartnerLogo partner={partner} />
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
-                  {/* Logo Container */}
-                  <div className="relative w-14 h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 mb-2 z-10">
-                    <Image
-                      src={partner.logo}
-                      alt={`${partner.name} logo`}
-                      fill
-                      className="object-contain transition-all duration-500"
-                      sizes="(max-width: 768px) 56px, 64px"
-                    />
-                  </div>
-
-                  {/* Partner Name */}
-                  <h3
-                    className={cn(
-                      "text-sm md:text-base font-medium text-center",
-                      "text-gray-900 dark:text-white",
-                      "truncate w-full z-10",
-                      "transition-all duration-500",
-                      hoveredCard === partner.id &&
-                        "text-gray-800 dark:text-gray-100",
-                    )}
-                  >
-                    {partner.name}
-                  </h3>
-
-                  {/* Description */}
-                  <p
-                    className={cn(
-                      "text-xs md:text-sm text-center",
-                      "text-gray-600 dark:text-gray-400",
-                      "truncate w-full z-10",
-                      "transition-all duration-500",
-                      hoveredCard === partner.id &&
-                        "text-gray-700 dark:text-gray-300",
-                    )}
-                  >
-                    {partner.description}
-                  </p>
+        {/* --- MOBILE VIEW (Marquee) --- */}
+        <div className="md:hidden flex w-full">
+           <div className="relative flex overflow-x-hidden group">
+            <div className="animate-marquee flex items-center whitespace-nowrap py-4">
+              {ALL_PARTNERS.concat(ALL_PARTNERS).map((partner, idx) => (
+                <div key={`${partner.id}-${idx}`} className="mx-8">
+                  <PartnerLogo partner={partner} />
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
+
       </div>
+
+      <style jsx global>{`
+        @keyframes marquee {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          animation: marquee 20s linear infinite; // Slightly faster marquee (20s)
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function PartnerLogo({ partner }: { partner: typeof ALL_PARTNERS[0] }) {
+  return (
+    <div className="flex flex-col items-center justify-center group w-28 md:w-32 lg:w-40 flex-shrink-0">
+      <div className="relative w-14 h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mb-3">
+        <Image
+          src={partner.logo}
+          alt={partner.name}
+          fill
+          className={cn(
+            "object-contain grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105",
+            partner.darkLogo && "dark:hidden"
+          )}
+        />
+        {partner.darkLogo && (
+          <Image
+            src={partner.darkLogo}
+            alt={partner.name}
+            fill
+            className="hidden dark:block object-contain grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
+          />
+        )}
+      </div>
+      <h3 className="text-[10px] md:text-xs font-semibold text-neutral-500 dark:text-neutral-400 truncate w-full text-center">
+        {partner.name}
+      </h3>
     </div>
   );
 }

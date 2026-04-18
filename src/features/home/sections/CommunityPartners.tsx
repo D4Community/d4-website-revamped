@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 
 interface Partner {
@@ -348,11 +349,34 @@ export function CommunityPartners({ className }: CommunityPartnersProps) {
     <div className={cn("w-full py-12 md:py-16", className)}>
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-8 md:mb-12">
+        {/* <div className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">
             Community Partners
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base">
+            Trusted by industry leaders and innovators
+          </p>
+        </div> */}
+
+        <div className="text-center mb-4 md:mb-6">
+          <h2 className="font-bold text-2xl md:text-4xl lg:text-5xl dark:text-white text-black tracking-tight">
+            Community{" "}
+            <span className="text-neutral-400">
+              {"Partners.".split("").map((word, idx) => (
+                <motion.span
+                  key={idx}
+                  className="inline-block"
+                  initial={{ x: -10, opacity: 0 }}
+                  whileInView={{ x: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.04 }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </span>
+          </h2>
+          <p className="text-base md:text-lg text-neutral-500 max-w-5xl mx-auto py-4 md:py-6 leading-relaxed">
             Trusted by industry leaders and innovators
           </p>
         </div>

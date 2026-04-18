@@ -1,21 +1,109 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { HeartHandshake } from "lucide-react";
-import { InfiniteSlider } from "@/components/ui/infinite-slider";
+import Image from "next/image";
 import { volunteersData } from "../data/volunteers";
 
+/* ===================== MARQUEE ROW COMPONENT ===================== */
+
+const MarqueeRow = ({ 
+  items, 
+  direction = "left", 
+  speed = 50 
+}: { 
+  items: typeof volunteersData, 
+  direction?: "left" | "right", 
+  speed?: number 
+}) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const requestRef = useRef<number | null>(null);
+  const positionRef = useRef(0);
+  const isHovered = useRef(false);
+
+  // Triple the items to ensure seamless looping without gaps
+  const tripledItems = [...items, ...items, ...items];
+
+  const animate = () => {
+    if (!scrollRef.current || isHovered.current) return;
+
+    const container = scrollRef.current;
+    const maxScroll = container.scrollWidth / 3;
+    
+    // speed is pixels per second, roughly
+    const step = speed / 15; 
+
+    if (direction === "left") {
+      positionRef.current -= step;
+      if (Math.abs(positionRef.current) >= maxScroll) positionRef.current = 0;
+    } else {
+      positionRef.current += step;
+      if (positionRef.current >= 0) positionRef.current = -maxScroll;
+    }
+
+    container.style.transform = `translateX(${positionRef.current}px)`;
+    requestRef.current = requestAnimationFrame(animate);
+  };
+
+  useEffect(() => {
+    // Initial position for right-moving row to avoid starting at 0
+    if (direction === "right" && scrollRef.current) {
+        positionRef.current = -(scrollRef.current.scrollWidth / 3);
+    }
+    
+    requestRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, []);
+
+  return (
+    <div 
+      className="overflow-hidden w-full py-4 select-none"
+      onMouseEnter={() => { isHovered.current = true; }}
+      onMouseLeave={() => { isHovered.current = false; animate(); }}
+    >
+      <div 
+        ref={scrollRef} 
+        className="flex gap-8 w-max will-change-transform"
+      >
+        {tripledItems.map((member, index) => (
+          <div key={`${member.name}-${index}`} className="flex flex-col items-center gap-3 w-32">
+            <div className="relative w-20 h-20 rounded-full bg-secondary overflow-hidden shadow-sm shadow-black/20">
+              <Image 
+                src={`https://api.dicebear.com/7.x/identicon/svg?seed=${member.name}${direction === 'right' ? 'alt' : ''}`} 
+                alt={member.name} 
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+            <p className="text-sm font-semibold text-muted-foreground text-center whitespace-nowrap overflow-hidden text-ellipsis w-full">
+              {member.name}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ===================== MAIN COMPONENT ===================== */
+
 export const Volunteers = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
   const half = Math.ceil(volunteersData.length / 2);
   const row1 = volunteersData.slice(0, half);
   const row2 = volunteersData.slice(half);
 
   return (
-    <section className="relative w-full py-24 overflow-hidden border-t border-border/50 bg-secondary/5" ref={ref}>
+    <section 
+      className="relative w-full py-24 overflow-hidden border-t border-border/50 bg-secondary/5" 
+      ref={containerRef}
+    >
       <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10 mb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -34,36 +122,13 @@ export const Volunteers = () => {
         </motion.div>
       </div>
 
-      <div className="w-full">
-        <InfiniteSlider gap={32} speed={50} showFade={true} fadeWidth="w-32 md:w-64">
-          {row1.map((member, index) => (
-            <div key={member.name + index} className="flex flex-col items-center gap-3 p-4 group transition-all duration-300 w-32">
-              <div className="w-20 h-20 rounded-full bg-secondary overflow-hidden shadow-sm shadow-black/20 group-hover:shadow-md transition-all group-hover:-translate-y-1">
-                <img 
-                  src={`https://api.dicebear.com/7.x/identicon/svg?seed=${member.name}`} 
-                  alt={member.name} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <p className="text-sm font-semibold text-muted-foreground group-hover:text-primary transition-colors text-center whitespace-nowrap overflow-hidden text-ellipsis w-full" title={member.name}>{member.name}</p>
-            </div>
-          ))}
-        </InfiniteSlider>
-
-        <InfiniteSlider gap={32} speed={40} direction="right" showFade={true} fadeWidth="w-32 md:w-64" className="mt-4">
-          {row2.map((member, index) => (
-            <div key={member.name + index + "rev"} className="flex flex-col items-center gap-3 p-4 group transition-all duration-300 w-32">
-              <div className="w-20 h-20 rounded-full bg-secondary/80 overflow-hidden shadow-sm shadow-black/20 group-hover:shadow-md transition-all group-hover:-translate-y-1 border border-transparent group-hover:border-[#5ccb5f]/50">
-                <img 
-                  src={`https://api.dicebear.com/7.x/identicon/svg?seed=${member.name}alt`} 
-                  alt={member.name} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <p className="text-sm font-semibold text-muted-foreground group-hover:text-[#5ccb5f] transition-colors text-center whitespace-nowrap overflow-hidden text-ellipsis w-full" title={member.name}>{member.name}</p>
-            </div>
-          ))}
-        </InfiniteSlider>
+      <div className="relative w-full">
+        {/* Top Fade Gradient */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-32 md:w-64 bg-gradient-to-r from-background to-transparent z-20" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-32 md:w-64 bg-gradient-to-l from-background to-transparent z-20" />
+        
+        <MarqueeRow items={row1} direction="left" speed={60} />
+        <MarqueeRow items={row2} direction="right" speed={50} />
       </div>
     </section>
   );
