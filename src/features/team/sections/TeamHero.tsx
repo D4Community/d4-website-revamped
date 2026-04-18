@@ -131,7 +131,7 @@ const CountPill = ({
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-    className="flex flex-col items-center gap-0.5 px-6 py-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm"
+    className="flex flex-col items-center gap-0.5 px-6 py-3 rounded-2xl border border-black/[0.06] dark:border-white/[0.06] bg-black/[0.03] dark:bg-white/[0.03] backdrop-blur-sm"
   >
     <span
       className="text-2xl font-black tracking-tight"
@@ -139,7 +139,7 @@ const CountPill = ({
     >
       {value}
     </span>
-    <span className="text-[10px] uppercase tracking-[0.18em] text-white/35 font-medium">
+    <span className="text-[10px] uppercase tracking-[0.18em] text-black/40 dark:text-white/35 font-medium">
       {label}
     </span>
   </motion.div>
@@ -166,7 +166,7 @@ export const TeamHero = () => {
 
   return (
     <section
-      className="relative w-full min-h-[90vh] flex flex-col items-center justify-center overflow-hidden bg-[#080a08] px-6"
+      className="relative w-full min-h-[90vh] flex flex-col items-center justify-center overflow-hidden bg-white dark:bg-[#080a08] px-6 transition-colors duration-500"
       onMouseMove={handleMouseMove}
     >
       {/* Dot field */}
@@ -214,7 +214,7 @@ export const TeamHero = () => {
         </motion.div>
 
         {/* Main headline — word-by-word stagger */}
-        <h1 className="font-black tracking-[-0.03em] leading-[1] mb-6 text-white">
+        <h1 className="font-black tracking-[-0.03em] leading-[1] mb-6 text-black dark:text-white">
           <div className="overflow-hidden mb-2">
             <motion.span
               className="block text-4xl sm:text-4xl md:text-5xl lg:text-[6rem]"
@@ -255,11 +255,10 @@ export const TeamHero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-xl text-base md:text-lg leading-relaxed mb-12"
-          style={{ color: "rgba(255,255,255,0.42)" }}
+          className="max-w-xl text-base md:text-lg leading-relaxed mb-12 text-black/60 dark:text-white/40"
         >
           A collective of developers, designers, and visionaries building
-          relentlessly at the <span className="text-primary">edge </span> of what&apos;s possible.
+          relentlessly at the <span className="text-black dark:text-white font-semibold">edge { }</span> of what&apos;s possible.
         </motion.p>
 
         {/* Stats row */}
