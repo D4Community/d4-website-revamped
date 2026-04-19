@@ -27,6 +27,7 @@ function useMarqueeHover(direction: "up" | "down", duration = 60) {
   const isHovered = useRef(false);
 
   const animate = () => {
+    // Disable animation on small mobile screens to prevent layout issues
     if (typeof window !== "undefined" && window.innerWidth <= 576) {
       if (colRef.current) colRef.current.style.transform = "none";
       return;
@@ -114,13 +115,18 @@ function MarqueeColumn({ direction, duration, className = "", isMobile = false }
 export default function ReviewsPage() {
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
-  if (!mounted) return null;
+  useEffect(() => {
+    setMounted(true);
+    // FIX: Force scroll to top on redirect/mount
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, []);
 
   return (
     <main className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
-      {/* SECTION WRAPPER: pt-32 ensures space for navbar, pb-24 for footer room */}
-      <section className="relative w-full pt-20 md:pt-32 pb-24 px-4">
+      {/* FIX: Added opacity-0 until mounted to prevent "flashing" or 
+         scrolling to the bottom of a zero-height container.
+      */}
+      <section className={`relative w-full pt-24 md:pt-32 pb-24 px-4 transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
         
         {/* HEADER AREA */}
         <div className="max-w-7xl mx-auto mb-16 md:mb-24 text-center space-y-6">
@@ -140,7 +146,7 @@ export default function ReviewsPage() {
           </p>
         </div>
 
-        {/* MARQUEE CONTAINER: mt-12 added for breathing room below the header */}
+        {/* MARQUEE CONTAINER */}
         <div className="relative mt-12 h-auto min-[576px]:h-[900px] max-w-7xl mx-auto overflow-visible min-[576px]:overflow-hidden">
           <div className="flex flex-col min-[576px]:flex-row gap-4 h-full">
             

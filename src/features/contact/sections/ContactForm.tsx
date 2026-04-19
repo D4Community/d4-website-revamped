@@ -145,7 +145,7 @@ const Card = ({
   className?: string;
 }) => (
   <div
-    className={`p-6 rounded-2xl border dark:border-white/10 border-gray-200 dark:bg-white/5 bg-white/80 backdrop-blur-xl shadow-2xl shadow-black/10 ${className}`}
+    className={`p-4 rounded-2xl border dark:border-white/10 border-gray-200 dark:bg-white/5 bg-white/80 backdrop-blur-xl shadow-2xl shadow-black/10 ${className}`}
   >
     {children}
   </div>
@@ -197,7 +197,7 @@ const CardContent = ({
 }: {
   children: React.ReactNode;
   className?: string;
-}) => <div className={`p-6 ${className}`}>{children}</div>;
+}) => <div className={`pt-4 ${className}`}>{children}</div>;
 
 const CardFooter = ({
   children,
@@ -1297,7 +1297,7 @@ const ContactInfoSection = () => (
       </span>
     </div>
     <CardContent className="space-y-4">
-      <div className="flex items-center gap-3 p-3 rounded-xl dark:bg-white/5 bg-gray-50/80 border dark:border-white/10 border-gray-200">
+      <div className="flex items-center gap-3 p-2 rounded-xl dark:bg-white/5 bg-gray-50/80 border dark:border-white/10 border-gray-200">
         <div className="p-2 rounded-lg bg-blue-900/20">
           <Mail className="h-5 w-5 text-blue-400" />
         </div>
@@ -1305,7 +1305,7 @@ const ContactInfoSection = () => (
           <p className="text-sm dark:text-gray-300 text-gray-600">Email</p>
           <a
             href="mailto:help.d4community@gmail.com"
-            className="font-medium dark:text-gray-200 text-gray-700 hover:text-blue-400 transition-colors"
+            className="font-small dark:text-gray-200 text-gray-700 hover:text-blue-400 transition-colors"
           >
             help.d4community@gmail.com
           </a>

@@ -1194,7 +1194,7 @@ export const Footer = () => {
             </div>
  
             {/* Description */}
-            <h2 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-[#1a1a1a] dark:text-white max-w-[100vw] lg:max-w-lg">
+            <h2 className="mt-6 mb-2 sm:mt-2 text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-[#1a1a1a] dark:text-white max-w-[100vw] lg:max-w-lg">
               {siteConfig.hero.description}
             </h2>
  
