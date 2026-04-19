@@ -463,7 +463,7 @@ export default function AboutSection() {
               </div>
 
               <div className="absolute top-4 left-4 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg px-4 py-2 border border-neutral-300 dark:border-neutral-700 z-10">
-                <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">
+                <div className="text-xs md:text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">
                   Map Navigation
                 </div>
 

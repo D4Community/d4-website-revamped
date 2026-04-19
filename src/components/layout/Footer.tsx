@@ -4,9 +4,23 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { ClassValue, clsx } from "clsx";
 import * as Color from "color-bits";
 import Link from "next/link";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { twMerge } from "tailwind-merge";
 import Logo from "../ui/logo";
+import {
+  Github,
+  Linkedin,
+  Youtube,
+  Facebook,
+  Instagram,
+  Twitter,
+} from "lucide-react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -1063,44 +1077,30 @@ export const BLUR_FADE_DELAY = 0.15;
 
 export const siteConfig = {
   hero: {
-    badgeIcon: (
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="dark:fill-white fill-[#364153]"
-      >
-        <path d="M7.62758 1.09876C7.74088 1.03404 7.8691 1 7.99958 1C8.13006 1 8.25828 1.03404 8.37158 1.09876L13.6216 4.09876C13.7363 4.16438 13.8316 4.25915 13.8979 4.37347C13.9642 4.48779 13.9992 4.6176 13.9992 4.74976C13.9992 4.88191 13.9642 5.01172 13.8979 5.12604C13.8316 5.24036 13.7363 5.33513 13.6216 5.40076L8.37158 8.40076C8.25828 8.46548 8.13006 8.49952 7.99958 8.49952C7.8691 8.49952 7.74088 8.46548 7.62758 8.40076L2.37758 5.40076C2.26287 5.33513 2.16753 5.24036 2.10123 5.12604C2.03492 5.01172 2 4.88191 2 4.74976C2 4.6176 2.03492 4.48779 2.10123 4.37347C2.16753 4.25915 2.26287 4.16438 2.37758 4.09876L7.62758 1.09876Z" />
-        <path d="M2.56958 7.23928L2.37758 7.34928C2.26287 7.41491 2.16753 7.50968 2.10123 7.624C2.03492 7.73831 2 7.86813 2 8.00028C2 8.13244 2.03492 8.26225 2.10123 8.37657C2.16753 8.49089 2.26287 8.58566 2.37758 8.65128L7.62758 11.6513C7.74088 11.716 7.8691 11.75 7.99958 11.75C8.13006 11.75 8.25828 11.716 8.37158 11.6513L13.6216 8.65128C13.7365 8.58573 13.8321 8.49093 13.8986 8.3765C13.965 8.26208 14 8.13211 14 7.99978C14 7.86745 13.965 7.73748 13.8986 7.62306C13.8321 7.50864 13.7365 7.41384 13.6216 7.34828L13.4296 7.23828L9.11558 9.70328C8.77568 9.89744 8.39102 9.99956 7.99958 9.99956C7.60814 9.99956 7.22347 9.89744 6.88358 9.70328L2.56958 7.23928Z" />
-        <path d="M2.37845 10.5993L2.57045 10.4893L6.88445 12.9533C7.22435 13.1474 7.60901 13.2496 8.00045 13.2496C8.39189 13.2496 8.77656 13.1474 9.11645 12.9533L13.4305 10.4883L13.6225 10.5983C13.7374 10.6638 13.833 10.7586 13.8994 10.8731C13.9659 10.9875 14.0009 11.1175 14.0009 11.2498C14.0009 11.3821 13.9659 11.5121 13.8994 11.6265C13.833 11.7409 13.7374 11.8357 13.6225 11.9013L8.37245 14.9013C8.25915 14.966 8.13093 15 8.00045 15C7.86997 15 7.74175 14.966 7.62845 14.9013L2.37845 11.9013C2.2635 11.8357 2.16795 11.7409 2.10148 11.6265C2.03501 11.5121 2 11.3821 2 11.2498C2 11.1175 2.03501 10.9875 2.10148 10.8731C2.16795 10.7586 2.2635 10.6638 2.37845 10.5983V10.5993Z" />
-      </svg>
+    description: (
+      <>
+        Building the <span className="text-[#7c9ff2]">future</span> of
+        open-source, <span className="text-[#f2b97c]">together.</span>
+      </>
     ),
-    badge: "Introducing custom automations",
-    title: "Meet your AI Agent Streamline your workflow",
-    description:
-      "D4 Community is an inclusive, open-source initiative driven by passionate individuals from diverse backgrounds",
-    cta: {
-      primary: {
-        text: "Try for Free",
-        href: "#",
-      },
-      secondary: {
-        text: "Log in",
-        href: "#",
-      },
-    },
   },
+  socials: [
+    { name: "LinkedIn",  href: "https://linkedin.com/company/d4community", icon: Linkedin  },
+    { name: "X",         href: "https://x.com/d4community",                icon: Twitter   },
+    { name: "Instagram", href: "https://instagram.com/d4community",         icon: Instagram },
+    { name: "GitHub",    href: "https://github.com/d4community",            icon: Github    },
+    { name: "YouTube",   href: "https://youtube.com/d4_community",          icon: Youtube   },
+    { name: "Facebook",  href: "https://facebook.com/d4community",          icon: Facebook  },
+  ],
   footerLinks: [
     {
       title: "Company",
       links: [
-        { id: 1, title: "About", url: "/about" },
-        { id: 3, title: "Team", url: "/team" },
-        { id: 4, title: "Events", url: "/events" },
+        { id: 1, title: "About",   url: "/about"   },
+        { id: 3, title: "Team",    url: "/team"    },
+        { id: 4, title: "Events",  url: "/events"  },
         { id: 9, title: "Gallery", url: "/gallery" },
-        { id: 8, title: "Join", url: "/join" },
+        { id: 8, title: "Join",    url: "/join"    },
         { id: 2, title: "Contact", url: "/contact" },
       ],
     },
@@ -1108,77 +1108,128 @@ export const siteConfig = {
       title: "Resources",
       links: [
         { id: 5, title: "Code Of Conduct", url: "/code-of-conduct" },
-        { id: 6, title: "Privacy Policy", url: "/privacy-policy" },
-        { id: 7, title: "Terms of Use", url: "/terms" },
+        { id: 6, title: "Privacy Policy",  url: "/privacy-policy"  },
+        { id: 7, title: "Terms of Use",    url: "/terms"           },
       ],
-
     },
-    {
-      title: "Connect",
-      links: [
-        { id: 10, title: "LinkedIn", url: "https://linkedin.com/company/d4community" },
-        { id: 11, title: "X", url: "https://x.com/d4community" },
-        { id: 12, title: "Instagram", url: "https://instagram.com/d4community" },
-        { id: 13, title: "GitHub", url: "https://github.com/d4community" },
-        { id: 14, title: "YouTube", url: "https://youtube.com/d4_community" },
-        { id: 15, title: "Facebook", url: "https://facebook.com/d4community" },
-      ],
-
-    }
-    // {
-    //   title: "Products",
-    //   links: [
-    //     { id: 5, title: "Company", url: "#" },
-    //     { id: 6, title: "Product", url: "#" },
-    //     { id: 7, title: "Press", url: "#" },
-    //     { id: 8, title: "More", url: "#" },
-    //   ],
-    // },
-    // {
-    //   title: "Resources",
-    //   links: [
-    //     { id: 9, title: "Press", url: "#" },
-    //     { id: 10, title: "Careers", url: "#" },
-    //     { id: 11, title: "Newsletters", url: "#" },
-    //     { id: 12, title: "More", url: "#" },
-    //   ],
-    // },
   ],
 };
-
+ 
 export type SiteConfig = typeof siteConfig;
-
+ 
+/* ─── footer ─────────────────────────────────────────────── */
 export const Footer = () => {
-  const tablet = useMediaQuery("(max-width: 1024px)");
-
+  const [isTablet, setIsTablet] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+ 
+  useEffect(() => {
+    const tabletMq = window.matchMedia("(max-width: 1024px)");
+    const mobileMq = window.matchMedia("(max-width: 576px)");
+ 
+    setIsTablet(tabletMq.matches);
+    setIsMobile(mobileMq.matches);
+ 
+    const onTablet = (e: MediaQueryListEvent) => setIsTablet(e.matches);
+    const onMobile = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+ 
+    tabletMq.addEventListener("change", onTablet);
+    mobileMq.addEventListener("change", onMobile);
+    return () => {
+      tabletMq.removeEventListener("change", onTablet);
+      mobileMq.removeEventListener("change", onMobile);
+    };
+  }, []);
+ 
   return (
-    <footer id="footer" className="lg:sticky bottom-0 w-full pb-0 bg-background pt-28 md:pt-4">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between p-4">
-        <div className="flex flex-col items-start justify-start gap-y-5 max-w-xs mx-0">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo />
-          </Link>
-          <p className="tracking-tight text-muted-foreground font-medium">
-            {siteConfig.hero.description}
-          </p>
-        </div>
-        
-        <div className="pt-5 md:pt-0">
-          <div className="flex flex-col md:flex-row gap-x-12 gap-y-6">
+    <footer
+      id="footer"
+      className={[
+        "w-full bg-background pb-0",
+        "pt-16 sm:pt-20 md:pt-24",
+        // sticky reveal only on lg+; on ≤576px footer is fully static & visible
+        "md:sticky bottom-0",
+      ].join(" ")}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 md:gap-12">
+ 
+          {/* ── Brand column ── */}
+          <div className="lg:col-span-7 flex flex-col items-start gap-y-6">
+ 
+            {/* Logo + mobile tagline */}
+            <div className="flex flex-col items-start gap-y-1">
+              <Link href="/" className="flex items-center gap-2">
+                <Logo />
+              </Link>
+              {/* Tagline: only on mobile, below logo, above nav links */}
+              {/* <p className="text-sm text-muted-foreground md:hidden">
+                India's open-source community for passionate developers.
+              </p> */}
+              <p className="text-sm text-muted-foreground md:hidden">
+                D4 Community is an inclusive, open-source initiative driven by passionate individuals from diverse backgrounds
+              </p>
+            </div>
+ 
+            {/* Divider — mobile only */}
+            <div className="w-full h-[1px] bg-border md:hidden" />
+ 
+            {/* Nav links — mobile only (right after logo) */}
+            <div className="w-full flex flex-row flex-wrap gap-x-10 gap-y-8 md:hidden">
+              {siteConfig.footerLinks.map((column, columnIndex) => (
+                <ul key={columnIndex} className="flex flex-col gap-y-3 min-w-[120px]">
+                  <li className="mb-1 text-xs font-bold uppercase tracking-wider text-primary/80">
+                    {column.title}
+                  </li>
+                  {column.links.map((link) => (
+                    <li
+                      key={link.id}
+                      className="group flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors font-medium"
+                    >
+                      <Link href={link.url}>{link.title}</Link>
+                      <ChevronRightIcon className="h-3 w-3 shrink-0 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
+                    </li>
+                  ))}
+                </ul>
+              ))}
+            </div>
+ 
+            {/* Description */}
+            <h2 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-[#1a1a1a] dark:text-white max-w-[100vw] lg:max-w-lg">
+              {siteConfig.hero.description}
+            </h2>
+ 
+            {/* Socials */}
+            <div className="flex flex-wrap items-center gap-5">
+              {siteConfig.socials.map((social) => (
+                <Link
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <social.icon size={20} />
+                  <span className="sr-only">{social.name}</span>
+                </Link>
+              ))}
+            </div>
+            <div className="w-full h-[1px] bg-border md:hidden" />
+          </div>
+ 
+          {/* ── Nav links — md+ right column ── */}
+          <div className="lg:col-span-5 hidden md:flex flex-row flex-wrap gap-x-10 gap-y-8 md:justify-end">
             {siteConfig.footerLinks.map((column, columnIndex) => (
-              <ul key={columnIndex} className="flex flex-col gap-y-2 min-w-[120px]">
-                <li className="mb-2 text-sm font-semibold text-primary">
+              <ul key={columnIndex} className="flex flex-col gap-y-3 min-w-[120px]">
+                <li className="mb-1 text-xs font-bold uppercase tracking-wider text-primary/80">
                   {column.title}
                 </li>
                 {column.links.map((link) => (
                   <li
                     key={link.id}
-                    className="group inline-flex cursor-pointer items-center justify-start gap-1 text-[15px]/snug text-muted-foreground hover:text-primary transition-colors"
+                    className="group flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors font-medium"
                   >
                     <Link href={link.url}>{link.title}</Link>
-                    <div className="flex size-4 items-center justify-center border border-border rounded translate-x-0 transform opacity-0 transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:opacity-100">
-                      <ChevronRightIcon className="h-4 w-4" />
-                    </div>
+                    <ChevronRightIcon className="h-3 w-3 shrink-0 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
                   </li>
                 ))}
               </ul>
@@ -1186,18 +1237,40 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-      
-      <div className="w-full h-48 md:h-64 relative mt-8 md:mt-24 z-0">
+ 
+      {/* ── Flickering grid banner ──
+          On ≤576px: hidden entirely — no reveal effect, no clipping, footer is fully visible.
+          On sm+: shown with normal gradient fade.
+      */}
+      {/* <div className="hidden sm:block w-full h-36 sm:h-40 md:h-48 lg:h-52 relative mt-8 sm:mt-12 md:mt-16 z-0">
         <div className="absolute inset-0 bg-gradient-to-t from-transparent to-background z-10 from-40%" />
         <div className="absolute inset-0">
           <FlickeringGrid
-            text={tablet ? "D4" : "Discite Develop Debug Deploy"}
-            fontSize={tablet ? 70 : 90}
+            text={isTablet ? "D4" : "Discite Develop Debug Deploy"}
+            fontSize={isTablet ? 60 : 90}
             className="h-full w-full"
             squareSize={2}
-            gridGap={tablet ? 2 : 3}
+            gridGap={isTablet ? 2 : 3}
             color="#6B7280"
-            maxOpacity={0.3}
+            maxOpacity={0.2}
+            flickerChance={0.1}
+          />
+        </div>
+      </div> */}
+      <div className="sm:hidden h-8" />
+
+      {/* ── Flickering grid banner ── */}
+      <div className="w-full h-44 md:h-60 lg:h-64 relative mt-8 md:mt-18 lg:mt-20 xl:mt-24 z-0">
+        <div className="absolute inset-0 bg-gradient-to-t from-transparent to-background z-10 from-40%" />
+        <div className="absolute inset-0">
+          <FlickeringGrid
+            text={isTablet ? "D4" : "Discite Develop Debug Deploy"}
+            fontSize={isTablet ? 60 : 90}
+            className="h-full w-full"
+            squareSize={2}
+            gridGap={isTablet ? 2 : 3}
+            color="#6B7280"
+            maxOpacity={0.2}
             flickerChance={0.1}
           />
         </div>

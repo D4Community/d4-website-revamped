@@ -129,7 +129,7 @@ export default function XReviews() {
 
   return (
     <main className="min-h-screen flex items-center justify-center">
-      <section className="relative w-full max-w-7xl h-[90vh] flex flex-col overflow-hidden">
+      <section className="relative w-full max-w-7xl h-[89vh] flex flex-col overflow-hidden p-4 md:p-6">
         {/* Header */}
         <div className="mb-10 md:mb-12 text-center gap-3">
           <div>
@@ -182,7 +182,7 @@ export default function XReviews() {
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 w-max">
             <button
               onClick={() => router.push("/twitter-reviews")}
-              className="whitespace-nowrap px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-white font-bold text-sm md:text-base tracking-widest uppercase transition-transform shadow-2xl"
+              className="whitespace-nowrap px-6 sm:px-8 py-4 sm:py-4 rounded-full text-white font-bold text-sm md:text-base tracking-widest uppercase transition-transform shadow-2xl"
               style={{
                 background: "linear-gradient(to right, #fd7d6e, #ff9a8b)",
               }}

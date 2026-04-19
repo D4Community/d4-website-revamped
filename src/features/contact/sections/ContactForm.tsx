@@ -39,63 +39,73 @@ import Image from "next/image";
 const COMMUNITY_LINKS = [
   {
     label: "WhatsApp Group",
-    icon: <MessageCircle size={20} />,
+    icon: <MessageCircle size={14} />,
     link: "https://chat.whatsapp.com/Khwy3LEyjdX4Kx8VJ1MXmW",
-    brand: "#25D366",
+    bg: "bg-green-50 dark:bg-green-950/30",
+    color: "text-green-600 dark:text-green-400",
   },
   {
     label: "WhatsApp Channel",
-    icon: <SendHorizonal size={20} />,
+    icon: <SendHorizonal size={14} />,
     link: "https://whatsapp.com/channel/0029Va8QbTU8V0trPdleNl2I",
-    brand: "#4ADE80",
+    bg: "bg-emerald-50 dark:bg-emerald-950/30",
+    color: "text-emerald-600 dark:text-emerald-400",
   },
   {
     label: "LinkedIn",
-    icon: <Linkedin size={20} />,
+    icon: <Linkedin size={14} />,
     link: "https://www.linkedin.com/company/d4community",
-    brand: "#0077B5",
+    bg: "bg-blue-50 dark:bg-blue-950/30",
+    color: "text-blue-600 dark:text-blue-400",
   },
   {
-    label: "Github",
-    icon: <Github size={20} />,
+    label: "GitHub",
+    icon: <Github size={14} />,
     link: "https://github.com/D4Community",
-    brand: "#FFF",
+    bg: "bg-gray-100 dark:bg-gray-800/50",
+    color: "text-gray-700 dark:text-gray-300",
   },
   {
     label: "Twitter / X",
-    icon: <Twitter size={20} />,
+    icon: <Twitter size={14} />,
     link: "https://twitter.com/D4community",
-    brand: "#1DA1F2",
+    bg: "bg-sky-50 dark:bg-sky-950/30",
+    color: "text-sky-600 dark:text-sky-400",
   },
   {
     label: "Instagram",
-    icon: <Instagram size={20} />,
+    icon: <Instagram size={14} />,
     link: "https://www.instagram.com/d4community",
-    brand: "#E4405F",
+    bg: "bg-pink-50 dark:bg-pink-950/30",
+    color: "text-pink-600 dark:text-pink-400",
   },
   {
     label: "YouTube",
-    icon: <Youtube size={20} />,
+    icon: <Youtube size={14} />,
     link: "https://www.youtube.com/@d4-community",
-    brand: "#FF0000",
+    bg: "bg-red-50 dark:bg-red-950/30",
+    color: "text-red-600 dark:text-red-400",
   },
   {
     label: "Commudle",
-    icon: <Globe size={20} />,
+    icon: <Globe size={14} />,
     link: "https://www.commudle.com/communities/d4-community",
-    brand: "#F97316",
+    bg: "bg-orange-50 dark:bg-orange-950/30",
+    color: "text-orange-600 dark:text-orange-400",
   },
   {
     label: "Discord Server",
-    icon: <Users size={20} />,
+    icon: <Users size={14} />,
     link: "https://discord.com/invite/RPpYB8JpUQ",
-    brand: "#5865F2",
+    bg: "bg-indigo-50 dark:bg-indigo-950/30",
+    color: "text-indigo-600 dark:text-indigo-400",
   },
   {
-    label: "Apply to be a Volunteer",
-    icon: <UserPlus size={20} />,
+    label: "Become a Volunteer",
+    icon: <UserPlus size={14} />,
     link: "https://forms.gle/CY8eDostKx2t8Wx49",
-    brand: "#ec5745",
+    bg: "bg-rose-50 dark:bg-rose-950/30",
+    color: "text-rose-600 dark:text-rose-400",
   },
 ];
 
@@ -148,7 +158,9 @@ const CardHeader = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <div className={`px-6 py-5 border-b dark:border-white/10 border-gray-200 ${className}`}>
+  <div
+    className={`px-6 py-5 border-b dark:border-white/10 border-gray-200 ${className}`}
+  >
     {children}
   </div>
 );
@@ -160,7 +172,11 @@ const CardTitle = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <h3 className={`font-bold text-lg dark:text-white text-gray-900 ${className}`}>{children}</h3>
+  <h3
+    className={`font-bold text-lg dark:text-white text-gray-900 ${className}`}
+  >
+    {children}
+  </h3>
 );
 
 const CardDescription = ({
@@ -169,7 +185,11 @@ const CardDescription = ({
 }: {
   children: React.ReactNode;
   className?: string;
-}) => <p className={`text-sm dark:text-gray-300 text-gray-600 ${className}`}>{children}</p>;
+}) => (
+  <p className={`text-sm dark:text-gray-300 text-gray-600 ${className}`}>
+    {children}
+  </p>
+);
 
 const CardContent = ({
   children,
@@ -186,7 +206,9 @@ const CardFooter = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <div className={`px-6 py-5 border-t dark:border-white/10 border-gray-200 ${className}`}>
+  <div
+    className={`px-6 py-5 border-t dark:border-white/10 border-gray-200 ${className}`}
+  >
     {children}
   </div>
 );
@@ -197,7 +219,16 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ children, className = "", variant = "default", size = "default", ...props }, ref) => {
+  (
+    {
+      children,
+      className = "",
+      variant = "default",
+      size = "default",
+      ...props
+    },
+    ref,
+  ) => {
     const baseClasses =
       "inline-flex items-center justify-center rounded-4xl font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 focus-visible:ring-offset-white disabled:opacity-50 disabled:pointer-events-none";
 
@@ -206,7 +237,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         "bg-gradient-to-r from-[#fd7d6e] to-[#ff9a8b] text-white hover:from-[#ff9a8b] hover:to-[#fd7d6e] hover:shadow-lg hover:shadow-blue-500/20",
       outline:
         "border dark:border-white/20 border-gray-300 dark:bg-white/5 bg-white/80 dark:text-gray-300 text-gray-700 hover:dark:bg-white/10 hover:bg-gray-100 hover:dark:border-white/30 hover:border-gray-400 hover:dark:text-white hover:text-gray-900",
-      ghost: "dark:bg-transparent bg-transparent dark:text-gray-300 text-gray-600 hover:dark:bg-white/5 hover:bg-gray-100 hover:dark:text-white hover:text-gray-900",
+      ghost:
+        "dark:bg-transparent bg-transparent dark:text-gray-300 text-gray-600 hover:dark:bg-white/5 hover:bg-gray-100 hover:dark:text-white hover:text-gray-900",
     };
 
     const sizes = {
@@ -218,15 +250,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const combinedClassName = `${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`;
 
     return (
-      <button
-        ref={ref}
-        className={combinedClassName}
-        {...props}
-      >
+      <button ref={ref} className={combinedClassName} {...props}>
         {children}
       </button>
     );
-  }
+  },
 );
 Button.displayName = "Button";
 
@@ -319,7 +347,7 @@ const FormItem = ({
 }: {
   children: React.ReactNode;
   className?: string;
-}) => <div className={`space-y-3 ${className}`}>{children}</div>;
+}) => <div className={`flex flex-col gap-1.5 ${className}`}>{children}</div>;
 
 const FormLabel = ({
   children,
@@ -328,9 +356,12 @@ const FormLabel = ({
   children: React.ReactNode;
   htmlFor?: string;
 }) => (
-  <Label htmlFor={htmlFor} className="text-sm font-medium dark:text-gray-200 text-gray-700">
+  <label
+    htmlFor={htmlFor}
+    className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+  >
     {children}
-  </Label>
+  </label>
 );
 
 const FormControl = ({ children }: { children: React.ReactNode }) => (
@@ -338,7 +369,9 @@ const FormControl = ({ children }: { children: React.ReactNode }) => (
 );
 
 const FormMessage = ({ children }: { children?: React.ReactNode }) =>
-  children ? <p className="text-sm text-red-500 dark:text-red-400">{children}</p> : null;
+  children ? (
+    <p className="text-sm text-red-500 dark:text-red-400">{children}</p>
+  ) : null;
 
 // ===================== CONFECTTI & LOADER =====================
 function useConfetti() {
@@ -469,6 +502,15 @@ function DotsLoader({
     </div>
   );
 }
+
+const SectionSep = ({ label }: { label: string }) => (
+  <div className="flex items-center gap-3 my-5">
+    <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 whitespace-nowrap">
+      {label}
+    </span>
+    <div className="flex-1 h-px bg-gray-100 dark:bg-white/8" />
+  </div>
+);
 
 // ===================== INTERACTIVE CHAT INTERFACE =====================
 interface ChatMessage {
@@ -664,7 +706,9 @@ const ChatInterface = () => {
             <Bot className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="font-bold dark:text-white text-gray-900">D4 Community Assistant</h3>
+            <h3 className="font-bold dark:text-white text-gray-900">
+              D4 Community Assistant
+            </h3>
             <div className="flex items-center gap-2">
               <p className="text-sm dark:text-gray-300 text-gray-600">
                 {apiKeyAvailable
@@ -877,7 +921,9 @@ const SuccessModal = ({
 
               <div className="mt-4">
                 <div>
-                  <p className="font-medium dark:text-white text-gray-900">D4 Community</p>
+                  <p className="font-medium dark:text-white text-gray-900">
+                    D4 Community
+                  </p>
                   <p className="text-xs dark:text-gray-300 text-gray-600 mt-1">
                     Expect an email reply within 24 hours.
                   </p>
@@ -1082,8 +1128,8 @@ export function D4ContactForm() {
           </h2>
           <p className="dark:text-gray-300 text-gray-600 mt-4 text-sm tracking-wide text-balance md:text-base text-center">
             Connect with our community of developers, designers, and tech
-            enthusiasts. Whether you're looking to collaborate, learn, or
-            grow, we're here for you
+            enthusiasts. Whether you're looking to collaborate, learn, or grow,
+            we're here for you
           </p>
         </div>
 
@@ -1209,47 +1255,47 @@ export function D4ContactForm() {
 
 const CommunityLinksSection = () => (
   <Card>
-    <CardHeader>
-      <CardTitle className="flex items-center gap-2 dark:text-white text-gray-900">
-        <Users className="h-5 w-5 text-blue-400" />
-        Community Links
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-3">
+    <div className="px-5 py-4 border-b border-gray-100 dark:border-white/10 flex items-center gap-2.5">
+      <div className="w-7 h-7 rounded-lg bg-[#fd7d6e]/10 flex items-center justify-center">
+        <Users className="w-3.5 h-3.5 text-[#d85a30]" />
+      </div>
+      <span>Community links</span>
+    </div>
+
+    <div className="p-3 flex flex-col gap-0.5">
       {COMMUNITY_LINKS.map((item) => (
         <a
           key={item.label}
           href={item.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between p-3 rounded-xl dark:bg-white/5 bg-gray-50/80 hover:dark:bg-white/10 hover:bg-gray-100 border dark:border-white/10 border-gray-200 hover:dark:border-white/20 hover:border-gray-300 transition-all duration-300 group hover:scale-[1.02]"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 border border-transparent hover:border-gray-100 dark:hover:border-white/10 transition-all duration-200 group"
         >
-          <div className="flex items-center gap-3">
-            <div
-              className="p-2 rounded-lg dark:bg-white/5 bg-gray-100 group-hover:dark:bg-white/10 group-hover:bg-gray-200 transition-colors"
-              style={{ color: item.brand }}
-            >
-              {item.icon}
-            </div>
-            <span className="font-medium dark:text-gray-200 text-gray-700 group-hover:dark:text-white group-hover:text-gray-900 transition-colors">
-              {item.label}
-            </span>
+          <div
+            className={`w-7 h-7 rounded-lg ${item.bg} ${item.color} flex items-center justify-center flex-shrink-0`}
+          >
+            {item.icon}
           </div>
-          <ExternalLink className="h-4 w-4 dark:text-gray-400 text-gray-500 group-hover:dark:text-gray-300 group-hover:text-gray-700 transition-colors" />
+          <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors flex-1 font-medium">
+            {item.label}
+          </span>
+          <ExternalLink className="w-3 h-3 text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-400 transition-colors" />
         </a>
       ))}
-    </CardContent>
+    </div>
   </Card>
 );
 
 const ContactInfoSection = () => (
   <Card>
-    <CardHeader>
-      <CardTitle className="flex items-center gap-2 dark:text-white text-gray-900">
-        <Calendar className="h-5 w-5 text-purple-400" />
-        Quick Info
-      </CardTitle>
-    </CardHeader>
+    <div className="px-5 py-4 border-b border-gray-100 dark:border-white/10 flex items-center gap-2.5">
+      <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center">
+        <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+      </div>
+      <span className="text-sm font-semibold text-gray-900 dark:text-white">
+        Quick info
+      </span>
+    </div>
     <CardContent className="space-y-4">
       <div className="flex items-center gap-3 p-3 rounded-xl dark:bg-white/5 bg-gray-50/80 border dark:border-white/10 border-gray-200">
         <div className="p-2 rounded-lg bg-blue-900/20">
@@ -1280,7 +1326,9 @@ const ContactFormSection = ({
 }: any) => (
   <Card className="shadow-2xl shadow-black/20">
     <CardHeader className="bg-gradient-to-r from-blue-900/10 to-purple-900/10">
-      <CardTitle className="dark:text-white text-gray-900">Join D4 Community</CardTitle>
+      <CardTitle className="dark:text-white text-gray-900">
+        Join D4 Community
+      </CardTitle>
       <CardDescription>
         Tell us about yourself and how you'd like to be involved
       </CardDescription>
@@ -1289,6 +1337,8 @@ const ContactFormSection = ({
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <CardContent className="space-y-6 pt-6">
         {/* Personal Info */}
+        <SectionSep label="Personal info" />
+
         <div className="grid md:grid-cols-2 gap-5">
           <FormItem>
             <FormLabel htmlFor="name">Full Name *</FormLabel>
@@ -1334,7 +1384,11 @@ const ContactFormSection = ({
                 Select your role
               </option>
               {roles.map((role: string) => (
-                <option key={role} value={role} className="dark:bg-gray-900 bg-white">
+                <option
+                  key={role}
+                  value={role}
+                  className="dark:bg-gray-900 bg-white"
+                >
                   {role}
                 </option>
               ))}
@@ -1367,21 +1421,30 @@ const ContactFormSection = ({
         </div>
 
         {/* Interests */}
+        <SectionSep label="Areas of interest *" />
         <FormItem>
-          <FormLabel>Areas of Interest *</FormLabel>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {interests.map((item: string) => (
               <div key={item} className="flex items-center space-x-2">
                 <Checkbox
                   id={item}
                   checked={form.watch("interest")?.includes(item)}
-                  onChange={(e) => {
-                    const updatedValue = e.target.checked
-                      ? [...(form.watch("interest") || []), item]
-                      : form
-                          .watch("interest")
-                          ?.filter((value: string) => value !== item);
-                    form.setValue("interest", updatedValue || []);
+                  // onChange={(e) => {
+                  //   const updatedValue = e.target.checked
+                  //     ? [...(form.watch("interest") || []), item]
+                  //     : form
+                  //         .watch("interest")
+                  //         ?.filter((value: string) => value !== item);
+                  //   form.setValue("interest", updatedValue || []);
+                  // }}
+                  onChange={(checked) => {
+                    const current = form.watch("interest") ?? [];
+                    form.setValue(
+                      "interest",
+                      checked
+                        ? [...current, item]
+                        : current.filter((v: string) => v !== item),
+                    );
                   }}
                 />
                 <Label
@@ -1408,7 +1471,11 @@ const ContactFormSection = ({
               Select experience level
             </option>
             {experienceLevels.map((level: string) => (
-              <option key={level} value={level} className="dark:bg-gray-900 bg-white">
+              <option
+                key={level}
+                value={level}
+                className="dark:bg-gray-900 bg-white"
+              >
                 {level}
               </option>
             ))}
@@ -1417,8 +1484,8 @@ const ContactFormSection = ({
         </FormItem>
 
         {/* Message */}
+        <SectionSep label="Your message" />
         <FormItem>
-          <FormLabel htmlFor="message">Your Message *</FormLabel>
           <Textarea
             id="message"
             placeholder="Tell us why you want to join D4 Community, what projects you're working on, or any questions you have..."
@@ -1437,7 +1504,10 @@ const ContactFormSection = ({
             onChange={(e) => form.setValue("agreeToTerms", e.target.checked)}
           />
           <div className="space-y-2 leading-none">
-            <Label htmlFor="agreeToTerms" className="dark:text-gray-200 text-gray-700">
+            <Label
+              htmlFor="agreeToTerms"
+              className="dark:text-gray-200 text-gray-700"
+            >
               I agree to the terms and conditions
             </Label>
             <p className="text-sm dark:text-gray-300 text-gray-600">
