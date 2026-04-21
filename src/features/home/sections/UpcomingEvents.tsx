@@ -556,7 +556,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
                   <div className="flex flex-row gap-3 mt-auto">
                     {ev.registrationLink && (
                       <a
-                        href={ev.registrationLink}
+                        href={"https://www.commudle.com/communities/d4-community/events"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1 group flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#fd7d6e] hover:bg-[#f06b5c] text-white font-bold text-sm tracking-wide transition-all active:scale-[0.97] shadow-lg shadow-[#fd7d6e]/20"
