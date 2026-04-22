@@ -14,6 +14,7 @@ import {
   Wifi,
   Users,
 } from "lucide-react";
+import { EventSchema } from "@/schema";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -59,29 +60,29 @@ function writeCache(data: Event[]) {
 
 function decodeHtmlEntities(text: string): string {
   const entities: { [key: string]: string } = {
-    '&ldquo;': '"',
-    '&rdquo;': '"',
-    '&lsquo;': "'",
-    '&rsquo;': "'",
-    '&amp;': '&',
-    '&lt;': '<',
-    '&gt;': '>',
-    '&quot;': '"',
-    '&#39;': "'",
-    '&nbsp;': ' ',
-    '&mdash;': '—',
-    '&ndash;': '–',
-    '&hellip;': '…',
-    '&copy;': '©',
-    '&reg;': '®',
-    '&trade;': '™',
+    "&ldquo;": '"',
+    "&rdquo;": '"',
+    "&lsquo;": "'",
+    "&rsquo;": "'",
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#39;": "'",
+    "&nbsp;": " ",
+    "&mdash;": "—",
+    "&ndash;": "–",
+    "&hellip;": "…",
+    "&copy;": "©",
+    "&reg;": "®",
+    "&trade;": "™",
   };
-  
+
   return text.replace(/&[a-zA-Z0-9#]+;/g, (match) => {
-    if (match.startsWith('&#x')) {
+    if (match.startsWith("&#x")) {
       const code = parseInt(match.slice(3, -1), 16);
       return String.fromCharCode(code);
-    } else if (match.startsWith('&#')) {
+    } else if (match.startsWith("&#")) {
       const code = parseInt(match.slice(2, -1), 10);
       return String.fromCharCode(code);
     }
@@ -132,30 +133,36 @@ function fmtTime(iso?: string) {
 function getRegistrationLink(event: any): string {
   if (event.description) {
     const decodedDesc = decodeHtmlEntities(event.description);
-    const regMatch = decodedDesc.match(/https?:\/\/[^\s"'<>]*(?:register|signup|sign-up|form|apply|devfolio)[^\s"'<>]*/i);
+    const regMatch = decodedDesc.match(
+      /https?:\/\/[^\s"'<>]*(?:register|signup|sign-up|form|apply|devfolio)[^\s"'<>]*/i,
+    );
     if (regMatch) return regMatch[0];
   }
-  
+
   if (event.slug) {
     return `https://commudle.com/events/${event.slug}/register`;
   }
-  
+
   return "";
 }
 
 function getLearnMoreLink(event: any): string {
   if (event.description) {
     const decodedDesc = decodeHtmlEntities(event.description);
-    const allLinks = [...decodedDesc.matchAll(/https?:\/\/[^\s"'<>]+/g)].map((m) => m[0]);
+    const allLinks = [...decodedDesc.matchAll(/https?:\/\/[^\s"'<>]+/g)].map(
+      (m) => m[0],
+    );
     const regLink = getRegistrationLink(event);
-    const learnLink = allLinks.find((l) => l !== regLink && !/register|signup|apply/i.test(l));
+    const learnLink = allLinks.find(
+      (l) => l !== regLink && !/register|signup|apply/i.test(l),
+    );
     if (learnLink) return learnLink;
   }
-  
+
   if (event.slug) {
     return `https://commudle.com/events/${event.slug}`;
   }
-  
+
   return "";
 }
 
@@ -166,7 +173,15 @@ const FALLBACK =
 
 // ─── EventImage ───────────────────────────────────────────────────────────────
 
-function EventImage({ src, alt, id }: { src: string; alt: string; id: number }) {
+function EventImage({
+  src,
+  alt,
+  id,
+}: {
+  src: string;
+  alt: string;
+  id: number;
+}) {
   const [imgSrc, setImgSrc] = useState(src || FALLBACK);
   const [ready, setReady] = useState(false);
 
@@ -346,11 +361,11 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
   // ── Auto-rotate ───────────────────────────────────────────────────────────
   const next = useCallback(
     () => setIdx((i) => (i + 1) % events.length),
-    [events.length]
+    [events.length],
   );
   const prev = useCallback(
     () => setIdx((i) => (i - 1 + events.length) % events.length),
-    [events.length]
+    [events.length],
   );
 
   const startTimer = useCallback(() => {
@@ -385,7 +400,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
     <section
       className={cn(
         "w-full max-w-7xl mx-auto px-4 lg:px-0 pt-4 sm:pt-12 md:pt-20 pb-12 md:pb-20",
-        className
+        className,
       )}
     >
       {/* ── Section header ── */}
@@ -393,7 +408,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
       <div className="mb-10 md:mb-12 text-center gap-3">
         <div>
           <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight text-center">
-            Upcoming {" "}
+            Upcoming{" "}
             <span className="text-gray-400 dark:text-white/30">Events.</span>
           </h2>
         </div>
@@ -410,7 +425,9 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
       {/* ── Error ── */}
       {!loading && error && (
         <div className="rounded-3xl border border-red-300 dark:border-red-900/30 bg-red-50 dark:bg-red-950/20 px-6 py-12 text-center">
-          <p className="text-red-600 dark:text-red-400 font-medium text-sm">{error}</p>
+          <p className="text-red-600 dark:text-red-400 font-medium text-sm">
+            {error}
+          </p>
           <button
             onClick={() => {
               sessionStorage.removeItem(CACHE_KEY);
@@ -429,10 +446,19 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
       {/* ── Event card ── */}
       {!loading && !error && ev && (
         <div className="relative rounded-3xl bg-white dark:bg-neutral-950 border border-gray-200 dark:border-white/[0.07] overflow-hidden">
-
+          <EventSchema
+            event={{
+              title: ev.title,
+              description: ev.description,
+              date: ev.date,
+              location: ev.location,
+              imageUrl: ev.imageUrl,
+              registrationLink: ev.registrationLink,
+              mode: ev.eventType,
+            }}
+          />
           {/* ════ DESKTOP ════ */}
           <div className="hidden md:grid md:grid-cols-[1fr_400px] lg:grid-cols-[1fr_440px]">
-
             {/* Left: Image panel */}
             <div className="relative flex flex-col p-4 lg:p-6 bg-gray-50 dark:bg-[#0a0a0a]">
               {/* Subtle dot grid */}
@@ -473,7 +499,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
                           "rounded-full transition-all duration-300",
                           i === idx
                             ? "w-6 h-[5px] bg-[#fd7d6e]"
-                            : "w-[5px] h-[5px] bg-gray-400 dark:bg-white/20 hover:bg-gray-600 dark:hover:bg-white/40"
+                            : "w-[5px] h-[5px] bg-gray-400 dark:bg-white/20 hover:bg-gray-600 dark:hover:bg-white/40",
                         )}
                       />
                     ))}
@@ -532,7 +558,9 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
                     <div className="flex items-start gap-3">
                       <Calendar className="w-4 h-4 text-[#fd7d6e] mt-0.5 shrink-0" />
                       <div>
-                        <p className="text-gray-800 dark:text-white/70 text-sm font-semibold">{ev.date}</p>
+                        <p className="text-gray-800 dark:text-white/70 text-sm font-semibold">
+                          {ev.date}
+                        </p>
                         {ev.startTime && ev.endTime && (
                           <p className="text-gray-500 dark:text-white/30 text-xs mt-0.5 flex items-center gap-1">
                             <Clock className="w-3 h-3" />
@@ -556,7 +584,9 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
                   <div className="flex flex-row gap-3 mt-auto">
                     {ev.registrationLink && (
                       <a
-                        href={"https://www.commudle.com/communities/d4-community/events"}
+                        href={
+                          "https://www.commudle.com/communities/d4-community/events"
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1 group flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#fd7d6e] hover:bg-[#f06b5c] text-white font-bold text-sm tracking-wide transition-all active:scale-[0.97] shadow-lg shadow-[#fd7d6e]/20"
@@ -639,7 +669,9 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
                 <div className="flex flex-col gap-2.5 py-3.5 border-y border-gray-200 dark:border-white/[0.06]">
                   <div className="flex items-center gap-2.5">
                     <Calendar className="w-4 h-4 text-[#fd7d6e] shrink-0" />
-                    <span className="text-gray-800 dark:text-white/65 text-sm font-semibold">{ev.date}</span>
+                    <span className="text-gray-800 dark:text-white/65 text-sm font-semibold">
+                      {ev.date}
+                    </span>
                   </div>
                   {ev.startTime && ev.endTime && (
                     <div className="flex items-center gap-2.5">
@@ -651,7 +683,9 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
                   )}
                   <div className="flex items-start gap-2.5">
                     <MapPin className="w-4 h-4 text-[#fd7d6e] shrink-0 mt-0.5" />
-                    <span className="text-gray-800 dark:text-white/65 text-sm font-semibold">{ev.location}</span>
+                    <span className="text-gray-800 dark:text-white/65 text-sm font-semibold">
+                      {ev.location}
+                    </span>
                   </div>
                 </div>
 
@@ -697,7 +731,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
                             "rounded-full transition-all duration-300",
                             i === idx
                               ? "w-6 h-[5px] bg-[#fd7d6e]"
-                              : "w-[5px] h-[5px] bg-gray-400 dark:bg-white/20"
+                              : "w-[5px] h-[5px] bg-gray-400 dark:bg-white/20",
                           )}
                         />
                       ))}
@@ -721,7 +755,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
         </div>
       )}
       <p className="mt-2 md:mt-4 text-center">
-      {!loading && events.length > 0 && (
+        {!loading && events.length > 0 && (
           <span className="text-xs text-gray-500 dark:text-white/30 font-semibold tracking-wide">
             {events.length} event{events.length !== 1 ? "s" : ""} upcoming
           </span>

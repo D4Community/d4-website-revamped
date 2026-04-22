@@ -13,6 +13,7 @@ import {
   Users as UsersIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EventSchema } from "@/schema";
 
 /* ===================== TYPES ===================== */
 
@@ -44,8 +45,10 @@ export function EventCarousel({ className }: { className?: string }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [animate, setAnimate] = useState(true);
-  
-  const [activeCardId, setActiveCardId] = useState<string | number | null>(null);
+
+  const [activeCardId, setActiveCardId] = useState<string | number | null>(
+    null,
+  );
 
   /* ===================== DATA FETCHING ===================== */
   useEffect(() => {
@@ -60,43 +63,49 @@ export function EventCarousel({ className }: { className?: string }) {
 
         if (commudleRes.status === "fulfilled" && commudleRes.value.ok) {
           const data = await commudleRes.value.json();
-          const mapped: EventItem[] = (data?.data?.values || []).map((item: any) => ({
-            id: `c-${item.id}`,
-            title: item.name || "Untitled Session",
-            description: item.tagline || "",
-            imageUrl: item.header_image_path || "/placeholder.png",
-            category: "Meetup" as const,
-            mode: (item.event_type === "online" ? "Virtual" : "In-Person") as "Virtual" | "In-Person",
-            date: item.start_time
-              ? new Date(item.start_time).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
-              : "TBD",
-            location: item.event_locations?.[0]?.name || "Online",
-          }));
+          const mapped: EventItem[] = (data?.data?.values || []).map(
+            (item: any) => ({
+              id: `c-${item.id}`,
+              title: item.name || "Untitled Session",
+              description: item.tagline || "",
+              imageUrl: item.header_image_path || "/placeholder.png",
+              category: "Meetup" as const,
+              mode: (item.event_type === "online" ? "Virtual" : "In-Person") as
+                | "Virtual"
+                | "In-Person",
+              date: item.start_time
+                ? new Date(item.start_time).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                : "TBD",
+              location: item.event_locations?.[0]?.name || "Online",
+            }),
+          );
           allItems = [...allItems, ...mapped];
         }
 
         if (devfolioRes.status === "fulfilled" && devfolioRes.value.ok) {
           const data = await devfolioRes.value.json();
-          const mapped: EventItem[] = (Array.isArray(data) ? data : []).map((item: any) => ({
-            id: `d-${item.id}`,
-            title: item.name || "Hackathon",
-            description: item.tagline || "Build the future",
-            imageUrl: item.cover_img || "/placeholder.png",
-            category: "Hackathon" as const,
-            mode: (item.location?.toLowerCase().includes("online")
-              ? "Virtual"
-              : "In-Person") as "Virtual" | "In-Person",
-            date: item.starts_at
-              ? new Date(item.starts_at).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
-              : "Upcoming",
-            location: item.location || "Remote",
-          }));
+          const mapped: EventItem[] = (Array.isArray(data) ? data : []).map(
+            (item: any) => ({
+              id: `d-${item.id}`,
+              title: item.name || "Hackathon",
+              description: item.tagline || "Build the future",
+              imageUrl: item.cover_img || "/placeholder.png",
+              category: "Hackathon" as const,
+              mode: (item.location?.toLowerCase().includes("online")
+                ? "Virtual"
+                : "In-Person") as "Virtual" | "In-Person",
+              date: item.starts_at
+                ? new Date(item.starts_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                : "Upcoming",
+              location: item.location || "Remote",
+            }),
+          );
           allItems = [...allItems, ...mapped];
         }
 
@@ -203,7 +212,12 @@ export function EventCarousel({ className }: { className?: string }) {
     );
 
   return (
-    <div className={cn("max-w-7xl mx-auto pt-4 sm:pt-12 md:pt-20 pb-12", className)}>
+    <div
+      className={cn(
+        "max-w-7xl mx-auto pt-4 sm:pt-12 md:pt-20 pb-12",
+        className,
+      )}
+    >
       <div className="mb-10 md:mb-12 text-center gap-3">
         <div>
           <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight text-center">
@@ -218,8 +232,8 @@ export function EventCarousel({ className }: { className?: string }) {
         className="overflow-hidden relative"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => {
-            setPaused(false);
-            // Don't clear immediately on mouse leave to allow click logic to persist
+          setPaused(false);
+          // Don't clear immediately on mouse leave to allow click logic to persist
         }}
       >
         <motion.div
@@ -240,6 +254,16 @@ export function EventCarousel({ className }: { className?: string }) {
                 className="px-4 shrink-0"
                 onClick={() => handleCardClick(uniqueId)}
               >
+                <EventSchema
+                  event={{
+                    title: item.title,
+                    description: item.description,
+                    date: item.date || "",
+                    location: item.location,
+                    imageUrl: item.imageUrl,
+                    mode: item.mode,
+                  }}
+                />
                 <motion.div className="group relative bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-[2rem] overflow-hidden flex flex-col h-[500px] transition-all duration-500 hover:border-[#fd7d6e]/30">
                   <div className="relative aspect-[4/3] bg-zinc-50 dark:bg-zinc-900/50 p-4">
                     <Image
@@ -295,11 +319,16 @@ export function EventCarousel({ className }: { className?: string }) {
                     <div
                       onClick={(e) => {
                         e.stopPropagation();
-                        window.open("https://www.commudle.com/communities/d4-community/events", "_blank");
+                        window.open(
+                          "https://www.commudle.com/communities/d4-community/events",
+                          "_blank",
+                        );
                       }}
                       className={cn(
-                          "absolute inset-x-0 bottom-0 p-8 bg-white dark:bg-zinc-950 transition-transform duration-300 ease-out border-t border-zinc-100 dark:border-zinc-900 flex items-center justify-between cursor-pointer",
-                          activeCardId === uniqueId ? "translate-y-0" : "translate-y-full group-hover:translate-y-0"
+                        "absolute inset-x-0 bottom-0 p-8 bg-white dark:bg-zinc-950 transition-transform duration-300 ease-out border-t border-zinc-100 dark:border-zinc-900 flex items-center justify-between cursor-pointer",
+                        activeCardId === uniqueId
+                          ? "translate-y-0"
+                          : "translate-y-full group-hover:translate-y-0",
                       )}
                     >
                       <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#fd7d6e]">
