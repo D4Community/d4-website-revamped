@@ -369,14 +369,14 @@ export function EventCarousel({ className }: { className?: string }) {
                       </span>
 
                       {/* Category badge */}
-                      <span
+                      {/* <span
                         className={cn(
                           "text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-md border flex items-center gap-1.5 w-fit",
                           categoryStyle(item.category),
                         )}
                       >
                         {item.category}
-                      </span>
+                      </span> */}
                     </div>
                   </div>
 
