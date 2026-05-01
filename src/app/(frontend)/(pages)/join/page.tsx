@@ -216,7 +216,7 @@ export default function JoinCommunityPage() {
                   <div className="relative group">
                     <input 
                       type="email" 
-                      placeholder="dev@example.com"
+                      placeholder="dev@d4community.com"
                       className={`w-full bg-background border ${errors.email ? 'border-red-500' : 'border-input'} rounded-2xl px-6 py-4 outline-none focus:border-[#fd7d6e] transition-all`}
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -243,7 +243,7 @@ export default function JoinCommunityPage() {
                       <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Full Name *</p>
                       <input 
                         className={`w-full bg-background border ${errors.name ? 'border-red-500' : 'border-input'} rounded-xl px-4 py-3 text-sm outline-none focus:border-[#fd7d6e]`}
-                        placeholder="John Doe"
+                        placeholder="Iti Tiwari"
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                       />
