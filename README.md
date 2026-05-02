@@ -1,12 +1,8 @@
-<<<<<<< Ayush/past-events
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app)
-=======
 # D4 Community: Website Revamped
->>>>>>> master
 
 The official digital gateway for the **D4 Community**. This platform is a high-performance, visually immersive web application designed to unite developers, designers, and tech leaders. It combines high-end 3D visuals with a robust headless CMS to deliver a world-class community experience.
 
-**[ Live Website](https://d4community.com)** | **[ X (Twitter)](https://x.com/d4community)** | **[ LinkedIn](https://www.linkedin.com/company/d4community)**
+**[Live Website](https://d4community.com)** | **[X (Twitter)](https://x.com/d4community)** | **[LinkedIn](https://www.linkedin.com/company/d4community)**
 
 ---
 
@@ -15,26 +11,26 @@ The official digital gateway for the **D4 Community**. This platform is a high-p
 This project pushes the boundaries of the modern web using **Next.js 16** and **React 19**.
 
 ### Visuals & UI
-* **3D Elements**: Powered by `Three.js`, `@react-three/fiber`, and `@react-three/drei`. We use these for interactive scenes and immersive backgrounds.
-* **Interactive Globe**: Utilizing `Cobe`, `d3-geo`, and `react-simple-maps` for lightweight, high-performance geographic visualizations of our global community.
+* **3D Elements**: Powered by `Three.js`, `@react-three/fiber`, and `@react-three/drei` for interactive scenes and immersive backgrounds.
+* **Interactive Globe**: Utilizing `Cobe`, `d3-geo`, and `react-simple-maps` for lightweight, high-performance geographic visualizations.
 * **Styling**: Built with **Tailwind CSS v4** and `class-variance-authority` (CVA) for scalable, atomic design.
 * **Motion**: Orchestrated by **Framer Motion** for UI transitions and **Lenis** for smooth momentum scrolling.
 
 ### Core Engine
-* **Headless CMS**: **Sanity v5** manages all dynamic content (Events, Blogs, Team members), allowing non-developers to update the site in real-time.
+* **Headless CMS**: **Sanity v5** manages all dynamic content (Events, Blogs, Team members), allowing real-time updates.
 * **State Management**: Optimized React 19 hooks and `react-use-measure` for responsive, layout-aware components.
 * **Form Logic**: `React Hook Form` paired with `Zod` for type-safe schema validation.
 
 ### Backend & Utilities
-* **Document Generation**: `@react-pdf/renderer` and `pdfkit` for generating dynamic event certificates or invoices on the fly.
+* **Document Generation**: `@react-pdf/renderer` and `pdfkit` for generating dynamic event certificates or invoices.
 * **Mailing**: `Nodemailer` for transactional emails and community notifications.
-* **Integrations**: `googleapis` for calendar/drive sync and `react-tweet` for embedding community feedback directly.
+* **Integrations**: `googleapis` for calendar/drive sync and `react-tweet` for embedding community feedback.
 
 ---
 
 ## File Structure
 
-The project follows a modular, feature-based directory structure to keep the codebase maintainable as it grows:
+The project follows a modular, feature-based directory structure:
 
 ```text
 ├── app/                  # Next.js App Router (Routing, Layouts, API Endpoints)
@@ -60,7 +56,7 @@ The project follows a modular, feature-based directory structure to keep the cod
 
 ### Prerequisites
 * **Node.js**: 20.x or higher
-* **Package Manager**: `npm` (Standard)
+* **Package Manager**: `npm`
 
 ### Installation
 
@@ -110,8 +106,4 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ---
 
-<<<<<<< Ayush/past-events
-Say, [Hello D4👋](https://www.d4community.com/connect)
-=======
-**D4 Community** - *Empowering builders to create the exceptional.*
->>>>>>> master
+**[Say Hello D4👋](https://www.d4community.com/connect)** — *Empowering builders to create the exceptional.*
