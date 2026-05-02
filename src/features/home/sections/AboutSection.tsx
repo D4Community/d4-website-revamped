@@ -65,6 +65,15 @@ const mapData = {
       topic: "AI as Your CTO Co‑Founder: Build Smarter, Not Harder",
     },
     {
+      lat: 50.2649,
+      lng: 19.0238,
+      city: "Katowice",
+      country: "Poland",
+      name: "Brygida Fiejdasz",
+      role: "Senior Frontend Developer @ Avenga",
+      topic: "Console.log is Not a Strategy - Mastering AI and Hidden DevTools Gems",
+    },
+    {
       lat: 28.5355,
       lng: 77.391,
       city: "Noida",
@@ -490,7 +499,9 @@ export default function AboutSection() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   // FIX: Store container bg in ref so wheel handler always reads latest value
   const containerBgRef = useRef(containerBg);
-  useEffect(() => { containerBgRef.current = containerBg; }, [containerBg]);
+  useEffect(() => {
+    containerBgRef.current = containerBg;
+  }, [containerBg]);
 
   const isDraggingGlobe = useRef(false);
   const lastMousePos = useRef<{ x: number; y: number } | null>(null);
@@ -500,7 +511,9 @@ export default function AboutSection() {
   const lastPinchDistance = useRef<number | null>(null);
   // FIX: track current viewMode in ref for wheel handler without stale closure
   const viewModeRef = useRef<ViewMode>(viewMode);
-  useEffect(() => { viewModeRef.current = viewMode; }, [viewMode]);
+  useEffect(() => {
+    viewModeRef.current = viewMode;
+  }, [viewMode]);
 
   // ─── Data Logic ───
   const cityGroups = useMemo(() => {
@@ -573,7 +586,8 @@ export default function AboutSection() {
   const startAutoRotate = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     const tick = (now: number) => {
-      if (now - lastFrameTime.current >= 33) { // ~30fps for smooth but not heavy
+      if (now - lastFrameTime.current >= 33) {
+        // ~30fps for smooth but not heavy
         lastFrameTime.current = now;
         rotationRef.current = [
           rotationRef.current[0] + 0.4,
