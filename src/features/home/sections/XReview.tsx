@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Component, ErrorInfo, ReactNode } from "react";
 import { Tweet } from "react-tweet";
 import { useRouter } from "next/navigation";
 
@@ -19,6 +19,35 @@ const TWEET_IDS = [
 ];
 
 const SCROLL_ITEMS = [...TWEET_IDS, ...TWEET_IDS, ...TWEET_IDS];
+
+/* ===================== SAFETY BOUNDARY ===================== */
+interface ErrorBoundaryProps {
+  children: ReactNode;
+  fallback: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class TweetErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  public state: ErrorBoundaryState = { hasError: false };
+
+  public static getDerivedStateFromError(_: Error): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("X/Tweet structural rendering exception caught safely:", error, errorInfo);
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
 
 /* ===================== HOOK ===================== */
 function useMarqueeHover(direction: "up" | "down", duration = 60) {
@@ -83,7 +112,32 @@ function TweetCard({ id }: { id: string }) {
   return (
     <div className="w-full mb-2">
       <div className="origin-top transition-transform duration-500">
-        <Tweet id={id} />
+        <TweetErrorBoundary
+          fallback={
+            <div className="w-full p-5 rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-zinc-900 shadow-sm flex flex-col justify-between min-h-[140px]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-neutral-800 animate-pulse" />
+                <div className="space-y-1 flex-1">
+                  <div className="w-24 h-3 bg-gray-100 dark:bg-neutral-800 rounded animate-pulse" />
+                  <div className="w-16 h-2 bg-gray-100 dark:bg-neutral-800 rounded animate-pulse" />
+                </div>
+              </div>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 italic my-3">
+                Review platform layout modified by host.
+              </p>
+              <a
+                href={`https://x.com/i/status/${id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-500 dark:text-blue-400 font-medium hover:underline self-start"
+              >
+                View original post on X →
+              </a>
+            </div>
+          }
+        >
+          <Tweet id={id} />
+        </TweetErrorBoundary>
       </div>
     </div>
   );

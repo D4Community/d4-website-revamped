@@ -425,14 +425,12 @@ function useDarkMode() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // Set immediately on mount
     setIsDark(isDarkMode());
 
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const handleMqChange = () => setIsDark(isDarkMode());
     mq.addEventListener("change", handleMqChange);
 
-    // Watch for class changes on <html> (Tailwind dark mode toggle)
     const observer = new MutationObserver(() => setIsDark(isDarkMode()));
     observer.observe(document.documentElement, {
       attributes: true,
@@ -453,7 +451,6 @@ function useMapTheme(isDark: boolean) {
     landFill: isDark ? "#1c1c1e" : "#e8e8e8",
     countryStroke: isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.2)",
     countryStrokeWidth: isDark ? 0.6 : 0.5,
-    // FIX: ocean/container bg now properly tied to isDark
     oceanFill: isDark ? "#0a0a0a" : "#dde8f0",
     containerBg: isDark ? "#080808" : "#dde8f0",
     sphereStroke: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
@@ -483,6 +480,9 @@ export default function AboutSection() {
     activeIdx: number;
   } | null>(null);
 
+  // Added mounting state flag to avoid hydration variances
+  const [mounted, setMounted] = useState(false);
+
   const isDark = useDarkMode();
   const theme = useMapTheme(isDark);
   const {
@@ -497,7 +497,6 @@ export default function AboutSection() {
   } = theme;
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  // FIX: Store container bg in ref so wheel handler always reads latest value
   const containerBgRef = useRef(containerBg);
   useEffect(() => {
     containerBgRef.current = containerBg;
@@ -509,11 +508,16 @@ export default function AboutSection() {
   const autoRotateRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastPinchDistance = useRef<number | null>(null);
-  // FIX: track current viewMode in ref for wheel handler without stale closure
   const viewModeRef = useRef<ViewMode>(viewMode);
+  
   useEffect(() => {
     viewModeRef.current = viewMode;
   }, [viewMode]);
+
+  // Handle client initialization mount trigger
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // ─── Data Logic ───
   const cityGroups = useMemo(() => {
@@ -579,7 +583,6 @@ export default function AboutSection() {
   }, [cityGroups, selectedRegion]);
 
   // ─── Auto-rotate ───
-  // FIX: Use rAF + throttle instead of setInterval every 50ms for smooth rotation
   const rafRef = useRef<number | null>(null);
   const lastFrameTime = useRef<number>(0);
 
@@ -587,7 +590,6 @@ export default function AboutSection() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     const tick = (now: number) => {
       if (now - lastFrameTime.current >= 33) {
-        // ~30fps for smooth but not heavy
         lastFrameTime.current = now;
         rotationRef.current = [
           rotationRef.current[0] + 0.4,
@@ -606,7 +608,6 @@ export default function AboutSection() {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
-    // keep old interval cleanup for safety
     if (autoRotateRef.current) {
       clearInterval(autoRotateRef.current);
       autoRotateRef.current = null;
@@ -788,14 +789,11 @@ export default function AboutSection() {
     return () => el.removeEventListener("touchmove", handler);
   }, []);
 
-  // FIX: Only zoom when pointer is actually over the map/globe area
-  // Use a native wheel listener on the container so we can check containment
   useEffect(() => {
     const container = mapInnerRef.current;
     if (!container) return;
 
     const handler = (e: WheelEvent) => {
-      // Only handle if the event target is inside our map container
       if (!container.contains(e.target as Node)) return;
       e.preventDefault();
 
@@ -813,7 +811,6 @@ export default function AboutSection() {
       }
     };
 
-    // passive: false so preventDefault() works
     container.addEventListener("wheel", handler, { passive: false });
     return () => container.removeEventListener("wheel", handler);
   }, []);
@@ -1047,7 +1044,6 @@ export default function AboutSection() {
           </div>
         </div>
 
-        {/* FIX: Main map container — background now uses containerBg which is reactive to isDark */}
         <div
           className="relative border border-neutral-200 dark:border-white/15 rounded-[2.5rem] overflow-hidden shadow-3xl select-none"
           style={{ background: containerBg }}
@@ -1089,229 +1085,229 @@ export default function AboutSection() {
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            // FIX: Removed onWheel from React synthetic events — using native listener above
-            // so we can properly preventDefault() and check containment
           >
-            <ComposableMap
-              projection={
-                viewMode === "globe" ? "geoOrthographic" : "geoMercator"
-              }
-              projectionConfig={{
-                scale: viewMode === "globe" ? globeScale : 160 * position.zoom,
-                rotate: viewMode === "globe" ? rotation : [0, 0, 0],
-                center: viewMode === "map" ? position.coordinates : [0, 0],
-              }}
-              style={{
-                width: "100%",
-                height: "100%",
-                pointerEvents: viewMode === "globe" ? "none" : "auto",
-              }}
-            >
-              {viewMode === "map" ? (
-                /* ─── MAP MODE ─── */
-                <ZoomableGroup
-                  center={position.coordinates}
-                  zoom={position.zoom}
-                  onMoveEnd={({ coordinates, zoom }) =>
-                    setPosition({ coordinates, zoom })
-                  }
-                  filterZoomEvent={() => {
-                    // Disable built-in zoom — we handle it ourselves via native wheel listener
-                    if (
-                      typeof window !== "undefined" &&
-                      ("ontouchstart" in window || navigator.maxTouchPoints > 0)
-                    ) {
+            {/* FIX: Map components now only load on the client after mounting */}
+            {mounted && (
+              <ComposableMap
+                projection={
+                  viewMode === "globe" ? "geoOrthographic" : "geoMercator"
+                }
+                projectionConfig={{
+                  scale: viewMode === "globe" ? globeScale : 160 * position.zoom,
+                  rotate: viewMode === "globe" ? rotation : [0, 0, 0],
+                  center: viewMode === "map" ? position.coordinates : [0, 0],
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  pointerEvents: viewMode === "globe" ? "none" : "auto",
+                }}
+              >
+                {viewMode === "map" ? (
+                  /* ─── MAP MODE ─── */
+                  <ZoomableGroup
+                    center={position.coordinates}
+                    zoom={position.zoom}
+                    onMoveEnd={({ coordinates, zoom }) =>
+                      setPosition({ coordinates, zoom })
+                    }
+                    filterZoomEvent={() => {
+                      if (
+                        typeof window !== "undefined" &&
+                        ("ontouchstart" in window || navigator.maxTouchPoints > 0)
+                      ) {
+                        return false;
+                      }
                       return false;
-                    }
-                    return false; // always false — we own zoom
-                  }}
-                >
-                  <Geographies geography={geoUrl}>
-                    {({ geographies }) =>
-                      geographies.map((geo) => {
-                        const isSelected = selectedRegion?.includes(
-                          geo.properties.name,
-                        );
-                        return (
-                          <Geography
-                            key={geo.rsmKey}
-                            geography={geo}
-                            className="outline-none transition-all duration-200"
-                            fill={isSelected ? "#3b82f6" : landFill}
-                            stroke={countryStroke}
-                            strokeWidth={countryStrokeWidth}
-                            style={{
-                              default: {
-                                outline: "none",
-                                fill: isSelected ? "#3b82f6" : landFill,
-                                stroke: countryStroke,
-                                strokeWidth: countryStrokeWidth,
-                              },
-                              hover: {
-                                outline: "none",
-                                fill: isSelected ? "#3b82f6" : hoverFill,
-                                stroke: countryStroke,
-                                strokeWidth: countryStrokeWidth,
-                              },
-                              pressed: {
-                                outline: "none",
-                                fill: isSelected ? "#3b82f6" : landFill,
-                                stroke: countryStroke,
-                                strokeWidth: countryStrokeWidth,
-                              },
-                            }}
-                          />
-                        );
-                      })
-                    }
-                  </Geographies>
+                    }}
+                  >
+                    <Geographies geography={geoUrl}>
+                      {({ geographies }) =>
+                        geographies.map((geo) => {
+                          const isSelected = selectedRegion?.includes(
+                            geo.properties.name,
+                          );
+                          return (
+                            <Geography
+                              key={geo.rsmKey}
+                              geography={geo}
+                              className="outline-none transition-all duration-200"
+                              fill={isSelected ? "#3b82f6" : landFill}
+                              stroke={countryStroke}
+                              strokeWidth={countryStrokeWidth}
+                              style={{
+                                default: {
+                                  outline: "none",
+                                  fill: isSelected ? "#3b82f6" : landFill,
+                                  stroke: countryStroke,
+                                  strokeWidth: countryStrokeWidth,
+                                },
+                                hover: {
+                                  outline: "none",
+                                  fill: isSelected ? "#3b82f6" : hoverFill,
+                                  stroke: countryStroke,
+                                  strokeWidth: countryStrokeWidth,
+                                },
+                                pressed: {
+                                  outline: "none",
+                                  fill: isSelected ? "#3b82f6" : landFill,
+                                  stroke: countryStroke,
+                                  strokeWidth: countryStrokeWidth,
+                                },
+                              }}
+                            />
+                          );
+                        })
+                      }
+                    </Geographies>
 
-                  {filteredGroups.map((group) => {
-                    const color = getTypeColor(group.items[0].type);
-                    const isActive = popup?.group.id === group.id;
-                    return (
-                      <Marker
-                        key={group.id}
-                        coordinates={[group.lng, group.lat]}
-                      >
-                        <g
-                          style={{ pointerEvents: "visiblePainted" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMarkerInteraction(group, e);
-                          }}
-                          onMouseEnter={(e) =>
-                            window.innerWidth >= 768 &&
-                            handleMarkerInteraction(group, e)
-                          }
-                          onMouseLeave={() =>
-                            window.innerWidth >= 768 && handleMarkerLeave()
-                          }
-                          className="cursor-pointer"
+                    {filteredGroups.map((group) => {
+                      const color = getTypeColor(group.items[0].type);
+                      const isActive = popup?.group.id === group.id;
+                      return (
+                        <Marker
+                          key={group.id}
+                          coordinates={[group.lng, group.lat]}
                         >
-                          <circle r={18} fill="transparent" />
-                          <circle
-                            r={isActive ? 12 : 5}
-                            fill={color}
-                            opacity={0.2}
-                            className="animate-pulse"
-                          />
-                          <circle
-                            r={isActive ? 6 : 3.5}
-                            fill={color}
-                            stroke={markerStroke}
-                            strokeWidth={1}
-                          />
-                        </g>
-                      </Marker>
-                    );
-                  })}
-                </ZoomableGroup>
-              ) : (
-                /* ─── GLOBE MODE ─── */
-                <g>
-                  <Sphere
-                    id="rsm-sphere"
-                    fill={oceanFill}
-                    stroke={sphereStroke}
-                    strokeWidth={0.8}
-                  />
-
-                  <Geographies geography={geoUrl}>
-                    {({ geographies }) =>
-                      geographies.map((geo) => {
-                        const isSelected = selectedRegion?.includes(
-                          geo.properties.name,
-                        );
-                        return (
-                          <Geography
-                            key={geo.rsmKey}
-                            geography={geo}
-                            className="outline-none"
-                            fill={isSelected ? "#3b82f6" : landFill}
-                            stroke={countryStroke}
-                            strokeWidth={countryStrokeWidth}
-                            style={{
-                              default: {
-                                outline: "none",
-                                fill: isSelected ? "#3b82f6" : landFill,
-                                stroke: countryStroke,
-                                strokeWidth: countryStrokeWidth,
-                              },
-                              hover: {
-                                outline: "none",
-                                fill: isSelected ? "#3b82f6" : landFill,
-                                stroke: countryStroke,
-                                strokeWidth: countryStrokeWidth,
-                              },
-                              pressed: {
-                                outline: "none",
-                                fill: isSelected ? "#3b82f6" : landFill,
-                                stroke: countryStroke,
-                                strokeWidth: countryStrokeWidth,
-                              },
+                          <g
+                            style={{ pointerEvents: "visiblePainted" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMarkerInteraction(group, e);
                             }}
-                          />
-                        );
-                      })
-                    }
-                  </Geographies>
+                            onMouseEnter={(e) =>
+                              window.innerWidth >= 768 &&
+                              handleMarkerInteraction(group, e)
+                            }
+                            onMouseLeave={() =>
+                              window.innerWidth >= 768 && handleMarkerLeave()
+                            }
+                            className="cursor-pointer"
+                          >
+                            <circle r={18} fill="transparent" />
+                            <circle
+                              r={isActive ? 12 : 5}
+                              fill={color}
+                              opacity={0.2}
+                              className="animate-pulse"
+                            />
+                            <circle
+                              r={isActive ? 6 : 3.5}
+                              fill={color}
+                              stroke={markerStroke}
+                              strokeWidth={1}
+                            />
+                          </g>
+                        </Marker>
+                      );
+                    })}
+                  </ZoomableGroup>
+                ) : (
+                  /* ─── GLOBE MODE ─── */
+                  <g>
+                    <Sphere
+                      id="rsm-sphere"
+                      fill={oceanFill}
+                      stroke={sphereStroke}
+                      strokeWidth={0.8}
+                    />
 
-                  {filteredGroups.map((group) => {
-                    if (!isPointVisible(group.lng, group.lat, rotation))
-                      return null;
+                    <Geographies geography={geoUrl}>
+                      {({ geographies }) =>
+                        geographies.map((geo) => {
+                          const isSelected = selectedRegion?.includes(
+                            geo.properties.name,
+                          );
+                          return (
+                            <Geography
+                              key={geo.rsmKey}
+                              geography={geo}
+                              className="outline-none"
+                              fill={isSelected ? "#3b82f6" : landFill}
+                              stroke={countryStroke}
+                              strokeWidth={countryStrokeWidth}
+                              style={{
+                                default: {
+                                  outline: "none",
+                                  fill: isSelected ? "#3b82f6" : landFill,
+                                  stroke: countryStroke,
+                                  strokeWidth: countryStrokeWidth,
+                                },
+                                hover: {
+                                  outline: "none",
+                                  fill: isSelected ? "#3b82f6" : landFill,
+                                  stroke: countryStroke,
+                                  strokeWidth: countryStrokeWidth,
+                                },
+                                pressed: {
+                                  outline: "none",
+                                  fill: isSelected ? "#3b82f6" : landFill,
+                                  stroke: countryStroke,
+                                  strokeWidth: countryStrokeWidth,
+                                },
+                              }}
+                            />
+                          );
+                        })
+                      }
+                    </Geographies>
 
-                    const color = getTypeColor(group.items[0].type);
-                    const isActive = popup?.group.id === group.id;
-                    return (
-                      <Marker
-                        key={group.id}
-                        coordinates={[group.lng, group.lat]}
-                      >
-                        <g
-                          style={{ pointerEvents: "visiblePainted" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMarkerInteraction(
-                              group,
-                              e as unknown as React.MouseEvent<SVGGElement>,
-                            );
-                          }}
-                          onMouseEnter={(e) => {
-                            if (window.innerWidth >= 768)
+                    {filteredGroups.map((group) => {
+                      if (!isPointVisible(group.lng, group.lat, rotation))
+                        return null;
+
+                      const color = getTypeColor(group.items[0].type);
+                      const isActive = popup?.group.id === group.id;
+                      return (
+                        <Marker
+                          key={group.id}
+                          coordinates={[group.lng, group.lat]}
+                        >
+                          <g
+                            style={{ pointerEvents: "visiblePainted" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
                               handleMarkerInteraction(
                                 group,
                                 e as unknown as React.MouseEvent<SVGGElement>,
                               );
-                          }}
-                          onMouseLeave={() =>
-                            window.innerWidth >= 768 && handleMarkerLeave()
-                          }
-                          className="cursor-pointer"
-                        >
-                          <circle
-                            r={18}
-                            fill="transparent"
-                            style={{ pointerEvents: "visiblePainted" }}
-                          />
-                          <circle
-                            r={isActive ? 12 : 5}
-                            fill={color}
-                            opacity={0.25}
-                          />
-                          <circle
-                            r={isActive ? 6 : 3.5}
-                            fill={color}
-                            stroke={markerStroke}
-                            strokeWidth={1}
-                          />
-                        </g>
-                      </Marker>
-                    );
-                  })}
-                </g>
-              )}
-            </ComposableMap>
+                            }}
+                            onMouseEnter={(e) => {
+                              if (window.innerWidth >= 768)
+                                handleMarkerInteraction(
+                                  group,
+                                  e as unknown as React.MouseEvent<SVGGElement>,
+                                );
+                            }}
+                            onMouseLeave={() =>
+                              window.innerWidth >= 768 && handleMarkerLeave()
+                            }
+                            className="cursor-pointer"
+                          >
+                            <circle
+                              r={18}
+                              fill="transparent"
+                              style={{ pointerEvents: "visiblePainted" }}
+                            />
+                            <circle
+                              r={isActive ? 12 : 5}
+                              fill={color}
+                              opacity={0.2}
+                            />
+                            <circle
+                              r={isActive ? 6 : 3.5}
+                              fill={color}
+                              stroke={markerStroke}
+                              strokeWidth={1}
+                            />
+                          </g>
+                        </Marker>
+                      );
+                    })}
+                  </g>
+                )}
+              </ComposableMap>
+            )}
           </div>
 
           {/* ─── Zoom controls ─── */}
