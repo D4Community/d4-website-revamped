@@ -1,10 +1,13 @@
 interface EventSchemaProps {
   event: {
-    title: string;
-    description: string;
-    date: string;       // Used for startDate (Expects ISO format)
-    endDate?: string;   // Optional ISO string
+    title?: string;
+    name?: string;        // Added fallback support for EventSchemaData
+    description?: string;
+    date?: string;        // Added fallback support
+    startDate?: string;   // Added fallback support for EventSchemaData
+    endDate?: string;
     location?: string;
+    locationName?: string;
     imageUrl?: string;
     registrationLink?: string;
     mode?: string; 
@@ -13,19 +16,25 @@ interface EventSchemaProps {
 }
 
 export default function EventSchema({ event }: EventSchemaProps) {
+  if (!event) return null;
+
+  // Normalize inputs to support both naming patterns seamlessly
+  const eventTitle = event.title || event.name;
+  const rawDate = event.date || event.startDate;
+
   // 1. CRITICAL GUARD: Stop immediately if essential metadata parameters are absent
-  if (!event || !event.title || !event.date) {
+  if (!eventTitle || !rawDate) {
     return null;
   }
 
   const isVirtual = event.mode?.toLowerCase().includes("virtual") || false;
   
   // Safe ISO Date extraction
-  const eventDate = new Date(event.date);
+  const eventDate = new Date(rawDate);
   const isValidDate = !isNaN(eventDate.getTime());
 
   if (!isValidDate) {
-    return null; // Suppresses "Date/time not in ISO 8601 format" issues cleanly
+    return null; // Suppresses "Date/time not in ISO 8601 format" cleanly
   }
 
   const isPast = eventDate < new Date();
@@ -39,18 +48,18 @@ export default function EventSchema({ event }: EventSchemaProps) {
     endDateISO = new Date(endDateISO).toISOString();
   }
 
-  // 3. FIX 'image': Absolute path fallbacks avoid missing warning issues
-  const fallbackImg = "https://d4community.com/og-image.png"; 
+  // 3. FIX 'image': Absolute path fallbacks avoid missing warning issues (Updated with www.)
+  const fallbackImg = "https://www.d4community.com/og-image.png"; 
   const schemaImage = event.imageUrl && event.imageUrl.trim() !== "" && !event.imageUrl.startsWith("data:")
     ? event.imageUrl
     : fallbackImg;
 
-  const eventUrl = event.registrationLink || "https://d4community.com";
+  const eventUrl = event.registrationLink || "https://www.d4community.com";
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Event",
-    "name": event.title,
+    "name": eventTitle,
     "description": event.description || "Join us for this community event hosted by D4 Community.",
     "startDate": eventDate.toISOString(), 
     "endDate": endDateISO,
@@ -65,10 +74,11 @@ export default function EventSchema({ event }: EventSchemaProps) {
       "url": eventUrl
     } : {
       "@type": "Place",
-      "name": event.location || "TBD",
+      "name": event.location || event.locationName || "TBD",
       "address": {
         "@type": "PostalAddress",
-        "addressLocality": event.location || "Multiple Locations",
+        "addressLocality": event.location || event.locationName || "Multiple Locations",
+        "addressCountry": "IN" // Prevents address identification warnings
       }
     },
 
@@ -86,13 +96,13 @@ export default function EventSchema({ event }: EventSchemaProps) {
     "performer": {
       "@type": "Organization",
       "name": event.performerName || "D4 Community",
-      "url": "https://d4community.com"
+      "url": "https://www.d4community.com"
     },
 
     "organizer": {
       "@type": "Organization",
       "name": "D4 Community",
-      "url": "https://d4community.com"
+      "url": "https://www.d4community.com"
     }
   };
 
@@ -104,4 +114,17 @@ export default function EventSchema({ event }: EventSchemaProps) {
       }}
     />
   );
+}
+
+// Keep your export structure intact below
+export interface EventSchemaData {
+  name: string;
+  description: string;
+  startDate: string; 
+  endDate?: string;
+  locationName: string;
+  locationAddress?: string;
+  url: string;
+  imageUrl?: string;
+  eventType?: "online" | "offline";
 }
