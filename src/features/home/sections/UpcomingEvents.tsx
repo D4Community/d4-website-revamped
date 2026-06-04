@@ -24,6 +24,8 @@ interface Event {
   description: string;
   imageUrl: string;
   date: string;
+  rawStartDate?: string; // Added for Schema compliance
+  rawEndDate?: string;   // Added for Schema compliance
   location: string;
   startTime?: string;
   endTime?: string;
@@ -63,7 +65,7 @@ function decodeHtmlEntities(text: string): string {
     "&ldquo;": '"',
     "&rdquo;": '"',
     "&lsquo;": "'",
-    "&rsquo;": "'",
+    "&raquo;": "'",
     "&amp;": "&",
     "&lt;": "<",
     "&gt;": ">",
@@ -337,6 +339,8 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
             description: parseDescription(item.description),
             imageUrl: item.header_image_path || "",
             date: fmtDate(item.start_time),
+            rawStartDate: item.start_time || undefined, // Preserved raw ISO string
+            rawEndDate: item.end_time || undefined,     // Preserved raw ISO string
             location: item.event_locations?.[0]?.name || "Location TBD",
             startTime: fmtTime(item.start_time),
             endTime: fmtTime(item.end_time),
@@ -404,7 +408,6 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
       )}
     >
       {/* ── Section header ── */}
-      {/* <div className="mb-10 md:mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3"> */}
       <div className="mb-10 md:mb-12 text-center gap-3">
         <div>
           <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight text-center">
@@ -412,11 +415,6 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
             <span className="text-gray-400 dark:text-white/30">Events.</span>
           </h2>
         </div>
-        {/* {!loading && events.length > 0 && (
-          <span className="text-xs text-gray-500 dark:text-white/30 font-semibold tracking-wide">
-            {events.length} event{events.length !== 1 ? "s" : ""} upcoming
-          </span>
-        )} */}
       </div>
 
       {/* ── Loading ── */}
@@ -446,11 +444,13 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
       {/* ── Event card ── */}
       {!loading && !error && ev && (
         <div className="relative rounded-3xl bg-white dark:bg-neutral-950 border border-gray-200 dark:border-white/[0.07] overflow-hidden">
+          {/* Formatted absolute data parameters sent cleanly to schema layer */}
           <EventSchema
             event={{
               title: ev.title,
               description: ev.description,
-              date: ev.date,
+              date: ev.rawStartDate || "", 
+              endDate: ev.rawEndDate,
               location: ev.location,
               imageUrl: ev.imageUrl,
               registrationLink: ev.registrationLink,
@@ -584,9 +584,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
                   <div className="flex flex-row gap-3 mt-auto">
                     {ev.registrationLink && (
                       <a
-                        href={
-                          "https://www.commudle.com/communities/d4-community/events"
-                        }
+                        href={ev.registrationLink}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1 group flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#fd7d6e] hover:bg-[#f06b5c] text-white font-bold text-sm tracking-wide transition-all active:scale-[0.97] shadow-lg shadow-[#fd7d6e]/20"

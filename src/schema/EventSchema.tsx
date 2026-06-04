@@ -2,55 +2,59 @@ interface EventSchemaProps {
   event: {
     title: string;
     description: string;
-    date: string;       // Used for startDate (Expects ISO format: YYYY-MM-DD)
-    endDate?: string;   // Optional: clear the endDate warning
+    date: string;       // Used for startDate (Expects ISO format)
+    endDate?: string;   // Optional ISO string
     location?: string;
     imageUrl?: string;
     registrationLink?: string;
     mode?: string; 
-    performerName?: string; // Optional: clear the performer warning
+    performerName?: string;
   };
 }
 
 export default function EventSchema({ event }: EventSchemaProps) {
-  // 1. CRITICAL GUARD: If event data is missing or incomplete, do not render broken schema
+  // 1. CRITICAL GUARD: Stop immediately if essential metadata parameters are absent
   if (!event || !event.title || !event.date) {
     return null;
   }
 
   const isVirtual = event.mode?.toLowerCase().includes("virtual") || false;
   
-  // Parse start date
+  // Safe ISO Date extraction
   const eventDate = new Date(event.date);
   const isValidDate = !isNaN(eventDate.getTime());
 
   if (!isValidDate) {
-    console.warn(`EventSchema: Invalid startDate format for "${event.title}"`);
-    return null; // Prevents "Date/time not in ISO 8601 format" error
+    return null; // Suppresses "Date/time not in ISO 8601 format" issues cleanly
   }
 
   const isPast = eventDate < new Date();
 
-  // 2. FIX 'endDate': If missing, automatically fallback to 2 hours after startDate
+  // 2. FIX 'endDate': Fallback cleanly to +2 hours later if parameter is blank
   let endDateISO = event.endDate;
-  if (!endDateISO) {
-    const calculatedEndDate = new Date(eventDate.getTime() + 2 * 60 * 60 * 1000); // +2 hours
+  if (!endDateISO || isNaN(Date.parse(endDateISO))) {
+    const calculatedEndDate = new Date(eventDate.getTime() + 2 * 60 * 60 * 1000);
     endDateISO = calculatedEndDate.toISOString();
+  } else {
+    endDateISO = new Date(endDateISO).toISOString();
   }
+
+  // 3. FIX 'image': Absolute path fallbacks avoid missing warning issues
+  const fallbackImg = "https://d4community.com/og-image.png"; 
+  const schemaImage = event.imageUrl && event.imageUrl.trim() !== "" && !event.imageUrl.startsWith("data:")
+    ? event.imageUrl
+    : fallbackImg;
+
+  const eventUrl = event.registrationLink || "https://d4community.com";
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Event",
     "name": event.title,
     "description": event.description || "Join us for this community event hosted by D4 Community.",
-    "startDate": eventDate.toISOString(), // Ensures strict ISO 8601 formatting
+    "startDate": eventDate.toISOString(), 
     "endDate": endDateISO,
-    
-    // 3. FIX 'image': Ensure it never defaults to an empty string
-    "image": event.imageUrl && event.imageUrl.trim() !== "" 
-      ? event.imageUrl 
-      : "https://d4community.com/og-image.png",
-      
+    "image": schemaImage,
     "eventStatus": "https://schema.org/EventScheduled",
     "eventAttendanceMode": isVirtual 
       ? "https://schema.org/OnlineEventAttendanceMode" 
@@ -58,7 +62,7 @@ export default function EventSchema({ event }: EventSchemaProps) {
     
     "location": isVirtual ? {
       "@type": "VirtualLocation",
-      "url": event.registrationLink || "https://d4community.com"
+      "url": eventUrl
     } : {
       "@type": "Place",
       "name": event.location || "TBD",
@@ -68,17 +72,17 @@ export default function EventSchema({ event }: EventSchemaProps) {
       }
     },
 
-    // 4. FIX 'offers': Formatted explicitly to keep GSC happy
+    // 4. FIX 'offers' & 'validFrom': Fully established free pricing layout
     "offers": {
       "@type": "Offer",
-      "url": event.registrationLink || "https://d4community.com",
+      "url": eventUrl,
       "price": "0",
       "priceCurrency": "INR",
       "availability": isPast ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
-      "validFrom": eventDate.toISOString() // Clears the potential validFrom warning
+      "validFrom": new Date(eventDate.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString() // Set to 30 days prior
     },
 
-    // 5. FIX 'performer': Added to clear the performer warning
+    // 5. FIX 'performer': Structured clearly to clear warnings completely
     "performer": {
       "@type": "Organization",
       "name": event.performerName || "D4 Community",
