@@ -24,7 +24,6 @@ interface EventItem {
   category: "Hackathon" | "Meetup" | "Workshop" | "Event";
   mode: "In-Person" | "Virtual";
   date?: string;
-  /** Raw ISO timestamp used for sorting — not displayed */
   rawDate?: string;
   location?: string;
   externalUrl?: string;
@@ -40,14 +39,12 @@ const LUMA_API_URL = "/api/luma-events";
 
 /* ===================== HELPERS ===================== */
 
-/** Parse any date string → ms epoch (NaN-safe). */
 function toEpoch(dateStr?: string): number {
   if (!dateStr) return 0;
   const ms = Date.parse(dateStr);
   return isNaN(ms) ? 0 : ms;
 }
 
-/** Format an ISO string to "Apr 23" style. */
 function fmtDate(iso?: string): string {
   if (!iso) return "TBD";
   const d = new Date(iso);
@@ -128,15 +125,6 @@ export function EventCarousel({ className }: { className?: string }) {
         /* ---------- Luma ---------- */
         if (lumaRes.status === "fulfilled" && lumaRes.value.ok) {
           const data = await lumaRes.value.json();
-
-          /**
-           * Luma response shape (observed):
-           * { entries: [ { event: {...}, hosts: [...] }, ... ] }
-           *
-           * Each event object typically contains:
-           *   api_id, name, cover_url, start_at, end_at, geo_address_info,
-           *   geo_latitude, geo_longitude, url, description, zoom_meeting_url
-           */
           const entries: any[] = data?.entries ?? data?.data?.entries ?? [];
 
           const mapped: EventItem[] = entries.map((entry: any) => {
@@ -172,7 +160,6 @@ export function EventCarousel({ className }: { className?: string }) {
 
         /* ---------- Sort newest → oldest ---------- */
         allItems.sort((a, b) => toEpoch(b.rawDate) - toEpoch(a.rawDate));
-
         setItems(allItems.slice(0, 20));
       } catch (err) {
         console.error(err);
@@ -261,21 +248,6 @@ export function EventCarousel({ className }: { className?: string }) {
     return () => clearInterval(interval);
   }, [paused, handleNext, total]);
 
-  /* =================== CATEGORY BADGE COLOR =================== */
-  const categoryStyle = (cat: EventItem["category"]) => {
-    switch (cat) {
-      case "Hackathon":
-        return "bg-violet-500/10 text-violet-500 border-violet-500/20";
-      case "Meetup":
-        return "bg-amber-500/10 text-amber-500 border-amber-500/20";
-      case "Workshop":
-        return "bg-sky-500/10 text-sky-500 border-sky-500/20";
-      case "Event":
-      default:
-        return "bg-pink-500/10 text-pink-500 border-pink-500/20";
-    }
-  };
-
   if (loading)
     return (
       <div className="h-96 flex items-center justify-center text-zinc-500 animate-pulse uppercase tracking-[0.4em] text-[10px] font-black">
@@ -284,12 +256,7 @@ export function EventCarousel({ className }: { className?: string }) {
     );
 
   return (
-    <div
-      className={cn(
-        "max-w-7xl mx-auto pt-4 sm:pt-12 md:pt-20 pb-12",
-        className,
-      )}
-    >
+    <div className={cn("max-w-7xl mx-auto pt-4 sm:pt-12 md:pt-20 pb-12", className)}>
       <div className="mb-10 md:mb-12 text-center gap-3">
         <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight text-center">
           Past{" "}
@@ -325,14 +292,16 @@ export function EventCarousel({ className }: { className?: string }) {
                 className="px-4 shrink-0"
                 onClick={() => handleCardClick(uniqueId)}
               >
+                {/* Fixed parameters passed safely down into the schema element below */}
                 <EventSchema
                   event={{
                     title: item.title,
                     description: item.description,
-                    date: item.date || "",
+                    date: item.rawDate || "", 
                     location: item.location,
                     imageUrl: item.imageUrl,
                     mode: item.mode,
+                    registrationLink: linkUrl,
                   }}
                 />
 
@@ -344,8 +313,7 @@ export function EventCarousel({ className }: { className?: string }) {
                       src={item.imageUrl}
                       alt={item.title}
                       onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src =
-                          "/placeholder.png";
+                        e.currentTarget.src = "/placeholder.png";
                       }}
                       className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
                     />
@@ -367,16 +335,6 @@ export function EventCarousel({ className }: { className?: string }) {
                         )}
                         {item.mode}
                       </span>
-
-                      {/* Category badge */}
-                      {/* <span
-                        className={cn(
-                          "text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-md border flex items-center gap-1.5 w-fit",
-                          categoryStyle(item.category),
-                        )}
-                      >
-                        {item.category}
-                      </span> */}
                     </div>
                   </div>
 

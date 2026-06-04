@@ -111,35 +111,34 @@
 import { MetadataRoute } from "next";
 import { client } from "@/sanity/lib/client";
 
-// 1. Ensure BASE_URL is handled correctly even if the env var is missing during build
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://d4community.com";
+// Enforce consistency. Changed default fallback to 'www' based on your Search Console
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.d4community.com";
 
 /**
- * We use 'force-dynamic' or 'revalidate' to ensure 
- * Next.js knows how to handle this route.
+ * We use 'revalidate' to ensure Next.js knows how to cache and refresh this route.
  */
 export const revalidate = 3600; // Revalidate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // --- Static Routes ---
   const staticPages: MetadataRoute.Sitemap = [
-    { url: BASE_URL, lastModified: new Date(), priority: 1, changeFrequency: "daily" },
-    { url: `${BASE_URL}/about`, lastModified: new Date(), priority: 0.8 },
-    { url: `${BASE_URL}/contact`, lastModified: new Date(), priority: 0.8 },
-    { url: `${BASE_URL}/code-of-conduct`, lastModified: new Date(), priority: 0.8 },
-    { url: `${BASE_URL}/events`, lastModified: new Date(), priority: 0.8 },
-    { url: `${BASE_URL}/team`, lastModified: new Date(), priority: 0.8 },
-    { url: `${BASE_URL}/terms`, lastModified: new Date(), priority: 0.8 },
-    { url: `${BASE_URL}/privacy-policy`, lastModified: new Date(), priority: 0.8 },
-    { url: `${BASE_URL}/join`, lastModified: new Date(), priority: 0.8 },
-    { url: `${BASE_URL}/gallery`, lastModified: new Date(), priority: 0.8 },
-    { url: `${BASE_URL}/twitter-reviews`, lastModified: new Date(), priority: 0.8 },
-    { url: `${BASE_URL}/reviews`, lastModified: new Date(), priority: 0.8 },
+    { url: BASE_URL, lastModified: new Date(), priority: 1.0, changeFrequency: "daily" },
+    { url: `${BASE_URL}/about`, lastModified: new Date(), priority: 0.8, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/contact`, lastModified: new Date(), priority: 0.8, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/code-of-conduct`, lastModified: new Date(), priority: 0.8, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/events`, lastModified: new Date(), priority: 0.8, changeFrequency: "daily" },
+    { url: `${BASE_URL}/team`, lastModified: new Date(), priority: 0.8, changeFrequency: "weekly" },
+    { url: `${BASE_URL}/terms`, lastModified: new Date(), priority: 0.8, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/privacy-policy`, lastModified: new Date(), priority: 0.8, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/join`, lastModified: new Date(), priority: 0.8, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/gallery`, lastModified: new Date(), priority: 0.8, changeFrequency: "weekly" },
+    { url: `${BASE_URL}/twitter-reviews`, lastModified: new Date(), priority: 0.8, changeFrequency: "weekly" },
+    { url: `${BASE_URL}/reviews`, lastModified: new Date(), priority: 0.8, changeFrequency: "weekly" },
   ];
 
   try {
-    // 2. Fetch dynamic slugs from Sanity
-    // Added useCdn: false to ensure we get fresh data during build if needed
+    // Fetch dynamic slugs from Sanity
+    // useCdn: false ensures fresh data during on-demand or periodic revalidation builds
     const dynamicData = await client.fetch<{ slug: string; type: string; updated: string }[]>(
       `*[(_type == "event" || _type == "teamMember") && defined(slug.current)]{
         "slug": slug.current,
@@ -147,7 +146,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         "updated": _updatedAt
       }`,
       {},
-      { next: { revalidate: 3600 } } // Tags the fetch for Next.js cache
+      { next: { revalidate: 3600 } } 
     );
 
     const dynamicRoutes: MetadataRoute.Sitemap = (dynamicData || []).map((item) => {
@@ -163,7 +162,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [...staticPages, ...dynamicRoutes];
 
   } catch (error) {
-    // This ensures that even if Sanity fails, your build SUCCEEDS with static pages
+    // Fallback: If Sanity fails, the build still succeeds with static pages
     console.error("CRITICAL: Sitemap dynamic fetch failed:", error);
     return staticPages;
   }
