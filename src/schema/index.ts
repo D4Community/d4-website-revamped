@@ -19,3 +19,6 @@ export type { FAQPageType } from "./faq-registry";
 
 // New Event exports
 export { default as EventSchema } from "./EventSchema";
+
+// Add this line alongside your other exports to register the component
+export { default as OrgSchema } from "./org-schema";

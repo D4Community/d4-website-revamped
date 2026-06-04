@@ -46,7 +46,7 @@ const AboutPage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen relative overflow-hidden bg-slate-950 text-white">
+    <div className="flex flex-col min-h-screen relative overflow-hidden text-white">
       {/* Injecting Structured JSON-LD Data for Google Bots natively */}
       <script
         type="application/ld+json"

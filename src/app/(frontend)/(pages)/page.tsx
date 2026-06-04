@@ -1,4 +1,5 @@
 import { HomePage } from "@/features/home/page";
+import OrgSchema from "@/schema/org-schema";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -43,4 +44,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default HomePage;
+export default function Page() {
+  return (
+    <>
+      {/* Structural Schema Data */}
+      <OrgSchema />
+      
+      {/* Main Content Layout */}
+      <HomePage />
+    </>
+  );
+}

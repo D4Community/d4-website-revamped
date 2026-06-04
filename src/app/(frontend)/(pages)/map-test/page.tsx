@@ -649,7 +649,7 @@ export default function AboutSection() {
   };
 
   return (
-    <section className="w-full mt-16 md:mt-24 px-4 py-12 sm:py-16 md:py-20 overflow-hidden bg-white dark:bg-neutral-950">
+    <section className="w-full mt-16 md:mt-24 px-4 py-12 sm:py-16 md:py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Heading */}
         <div className="text-center mb-2 md:mb-4">
