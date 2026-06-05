@@ -106,4 +106,4 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ---
 
-**[Say Hello D4👋](https://www.d4community.com/connect)** — *Empowering builders to create the exceptional.*
+**[Say Hello D4👋](https://www.d4community.com/connect)** - *Empowering builders to create the exceptional.*
