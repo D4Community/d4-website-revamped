@@ -1,4 +1,4 @@
-# D4 Community: Website Revamped
+# D4 Community: Official Website 
 
 The official digital gateway for the **D4 Community**. This platform is a high-performance, visually immersive web application designed to unite developers, designers, and tech leaders. It combines high-end 3D visuals with a robust headless CMS to deliver a world-class community experience.
 
