@@ -3,14 +3,14 @@ import OrgSchema from "@/schema/org-schema";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Gallery | D4 Community",
-  description: "Browse photos from our events, meetups, and hackathons.",
+  title: "D4 Community Gallery | Event Photos & Highlights", 
+  description: "Explore our D4 Community photo gallery and events.",
   alternates: {
     canonical: "https://www.d4community.com/gallery",
   },
   openGraph: {
-    title: "D4 Community Gallery",
-    description: "Browse photos from our events, meetups, and hackathons.",
+    title: "D4 Community Gallery | Event Photos & Highlights",
+    description: "Explore our D4 Community photo gallery and events.",
     url: "https://www.d4community.com/gallery",
     siteName: "D4 Community",
     type: "website",

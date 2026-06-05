@@ -3,14 +3,14 @@ import OrgSchema from "@/schema/org-schema";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | D4 Community",
-  description: "Read the official D4 Community privacy policy here.", 
+  title: "D4 Community Privacy Policy | Data Safety & Terms",
+  description: "Learn how the D4 Community protects your data privacy.",
   alternates: {
     canonical: "https://www.d4community.com/privacy-policy",
   },
   openGraph: {
-    title: "D4 Community Privacy Policy",
-    description: "Read the official D4 Community privacy policy here.",
+    title: "D4 Community Privacy Policy | Data Safety & Terms",
+    description: "Learn how the D4 Community protects your data privacy.",
     url: "https://www.d4community.com/privacy-policy",
     siteName: "D4 Community",
     type: "website",
