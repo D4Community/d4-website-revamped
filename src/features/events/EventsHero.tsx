@@ -8,7 +8,7 @@ export function EventsHero({ className }: { className?: string }) {
   return (
     <section
       className={cn(
-        "relative w-full bg-white dark:bg-black pt-32 pb-16 px-6 lg:px-12",
+        "relative w-full bg-white dark:bg-black pt-32 pb-32 px-6 lg:px-12",
         className,
       )}
     >
