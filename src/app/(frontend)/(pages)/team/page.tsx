@@ -45,6 +45,22 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
+  // Complete data-map layout array structured from your primary sitemap routing configuration
+  const internalLinks = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+    { name: "Code of Conduct", href: "/code-of-conduct" },
+    { name: "Events", href: "/events" },
+    { name: "Team", href: "/team" },
+    { name: "Terms", href: "/terms" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Join Us", href: "/join" },
+    { name: "Gallery", href: "/gallery" },
+    { name: "Twitter Reviews", href: "/twitter-reviews" },
+    { name: "Reviews", href: "/reviews" },
+  ];
+
   return (
     <>
       {/* Structural Corporate Schema Identification */}
@@ -52,6 +68,18 @@ export default function Page() {
       
       {/* Visual Home Page Layout View */}
       <TeamPage />
+
+      {/* Semantic Structural Link Matrix Container.
+        'sr-only' isolates this markup structure block completely from graphic rendering viewports,
+        enabling programmatic search crawlers to scan cross-route links cleanly.
+      */}
+      <nav className="sr-only" aria-hidden="false" aria-label="Hidden Navigation Map">
+        {internalLinks.map((link) => (
+          <a key={link.href} href={link.href}>
+            {link.name}
+          </a>
+        ))}
+      </nav>
     </>
   );
 }
