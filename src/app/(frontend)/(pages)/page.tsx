@@ -72,6 +72,47 @@ export const metadata: Metadata = {
     "Learning Community",
     "Learn and Build Community",
     "Learn and grow together community",
+    "Biggest Developer Community in Punjab",
+    "Biggest Community in Punjab",
+    "Biggest Developer Community in Delhi",
+    "Biggest Community in Delhi",
+    "Biggest Developer Community in NCR",
+    "Biggest Community in NCR",
+    "Biggest Developer Community in Pune",
+    "Biggest Community in Pune",
+    "Biggest Developer Community in Gurugram",
+    "Biggest Community in Gurugram",
+    "Biggest Developer Community in Noida",
+    "Biggest Community in Noida",
+    "Biggest Developer Community in Chandigarh",
+    "Biggest Community in Chandigarh",
+    "Biggest Developer Community in Mohali",
+    "Biggest Community in Mohali",
+    "Biggest Developer Community in Bengaluru",
+    "Biggest Community in Bengaluru",
+    "Biggest Developer Community in Hyderabad",
+    "Biggest Community in Hyderabad",
+    "Meet-ups",
+    "Community",
+    "Developers Community",
+    "Developer Community",
+    "Tech Community",
+    "Hackathon",
+    "Seminar",
+    "Google for developers",
+    "Google Developer Groups",
+    "MongoDB User Group",
+    "gdg",
+    "MUG",
+    "Learn",
+    "D4",
+    "Discite Develop Debug Deploy",
+    "Develop",
+    "React",
+    "DevOps",
+    "Cloud",
+    "ios",
+    "Android",
   ],
   alternates: {
     canonical: "https://www.d4community.com/",
@@ -131,7 +172,11 @@ export default function Page() {
         'sr-only' hides this elements block completely from the browser canvas layout,
         retaining standard path discovery graphs strictly for search engine indexers.
       */}
-      <nav className="sr-only" aria-hidden="false" aria-label="Hidden Navigation Map">
+      <nav
+        className="sr-only"
+        aria-hidden="false"
+        aria-label="Hidden Navigation Map"
+      >
         {internalLinks.map((link) => (
           <a key={link.href} href={link.href}>
             {link.name}
