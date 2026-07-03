@@ -38,8 +38,7 @@ export default function Page() {
   return (
     <>
       <OrgSchema />
-      <FAQSchema page="join-faq" />
-      <FAQSchema page="faq" />
+      <FAQSchema page={["join-faq", "faq"]} />
       <CodeOfConduct />
       
       <nav className="sr-only" aria-hidden="false" aria-label="Hidden Navigation Map">

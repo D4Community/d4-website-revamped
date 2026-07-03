@@ -7,8 +7,7 @@ const ContactPage = () => {
   return (
     <>
       <OrgSchema />
-      <FAQSchema page="join-faq" />
-      <FAQSchema page="faq" />
+      <FAQSchema page={["join-faq", "faq"]} />
       <D4ContactPage />
     </>
   )

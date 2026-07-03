@@ -67,8 +67,7 @@ export default async function HtmlSitemapPage() {
   return (
     <>
       <OrgSchema />
-      <FAQSchema page="join-faq" />
-      <FAQSchema page="faq" />
+      <FAQSchema page={["join-faq", "faq"]} />
       <main className="max-w-6xl mx-auto px-4 py-12 sm:px-6 lg:py-16">
         <div className="border-b border-gray-200 pb-5 mb-10">
           <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
