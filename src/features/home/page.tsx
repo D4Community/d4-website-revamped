@@ -13,8 +13,7 @@ import { FAQSchema } from "@/schema";
 export const HomePage = () => {
   return (
     <main className="flex flex-col min-h-screen">
-      <FAQSchema page="join-faq" />
-      <FAQSchema page="faq" />
+      <FAQSchema page={["join-faq", "faq"]} />
       <HeroSection />
       <FeatureSection />
       <CommunityPartners />

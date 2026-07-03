@@ -21,6 +21,7 @@ import {
   Instagram,
   Twitter,
 } from "lucide-react";
+import { title } from "process";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -1085,54 +1086,71 @@ export const siteConfig = {
     ),
   },
   socials: [
-    { name: "LinkedIn",  href: "https://linkedin.com/company/d4community", icon: Linkedin  },
-    { name: "X",         href: "https://x.com/d4community",                icon: Twitter   },
-    { name: "Instagram", href: "https://instagram.com/d4community",         icon: Instagram },
-    { name: "GitHub",    href: "https://github.com/d4community",            icon: Github    },
-    { name: "YouTube",   href: "https://youtube.com/d4_community",          icon: Youtube   },
-    { name: "Facebook",  href: "https://facebook.com/d4community",          icon: Facebook  },
+    {
+      name: "LinkedIn",
+      href: "https://linkedin.com/company/d4community",
+      icon: Linkedin,
+    },
+    { name: "X", href: "https://x.com/d4community", icon: Twitter },
+    {
+      name: "Instagram",
+      href: "https://instagram.com/d4community",
+      icon: Instagram,
+    },
+    { name: "GitHub", href: "https://github.com/d4community", icon: Github },
+    {
+      name: "YouTube",
+      href: "https://youtube.com/d4_community",
+      icon: Youtube,
+    },
+    {
+      name: "Facebook",
+      href: "https://facebook.com/d4community",
+      icon: Facebook,
+    },
   ],
   footerLinks: [
     {
       title: "Company",
       links: [
-        { id: 1, title: "About",   url: "/about"   },
-        { id: 3, title: "Team",    url: "/team"    },
-        { id: 4, title: "Events",  url: "/events"  },
+        { id: 1, title: "About", url: "/about" },
+        { id: 3, title: "Team", url: "/team" },
+        { id: 4, title: "Events", url: "/events" },
         { id: 9, title: "Gallery", url: "/gallery" },
-        { id: 8, title: "Join",    url: "/join"    },
+        { id: 8, title: "Join", url: "/join" },
         { id: 2, title: "Contact", url: "/contact" },
+        { id: 11, title: "X Reviews", url: "/twitter-reviews" },
       ],
     },
     {
       title: "Resources",
       links: [
         { id: 5, title: "Code Of Conduct", url: "/code-of-conduct" },
-        { id: 6, title: "Privacy Policy",  url: "/privacy-policy"  },
-        { id: 7, title: "Terms of Use",    url: "/terms"           },
-        { id: 10, title: "Sitemap",             url: "/sitemap"    },
+        { id: 6, title: "Privacy Policy", url: "/privacy-policy" },
+        { id: 7, title: "Terms of Use", url: "/terms" },
+        { id: 10, title: "Sitemap", url: "/sitemap" },
       ],
     },
   ],
 };
- 
+
 export type SiteConfig = typeof siteConfig;
- 
+
 /* ─── footer ─────────────────────────────────────────────── */
 export const Footer = () => {
   const [isTablet, setIsTablet] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
- 
+
   useEffect(() => {
     const tabletMq = window.matchMedia("(max-width: 1024px)");
     const mobileMq = window.matchMedia("(max-width: 576px)");
- 
+
     setIsTablet(tabletMq.matches);
     setIsMobile(mobileMq.matches);
- 
+
     const onTablet = (e: MediaQueryListEvent) => setIsTablet(e.matches);
     const onMobile = (e: MediaQueryListEvent) => setIsMobile(e.matches);
- 
+
     tabletMq.addEventListener("change", onTablet);
     mobileMq.addEventListener("change", onMobile);
     return () => {
@@ -1140,7 +1158,7 @@ export const Footer = () => {
       mobileMq.removeEventListener("change", onMobile);
     };
   }, []);
- 
+
   return (
     <footer
       id="footer"
@@ -1153,10 +1171,8 @@ export const Footer = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 md:gap-12">
- 
           {/* ── Brand column ── */}
           <div className="lg:col-span-7 flex flex-col items-start gap-y-6">
- 
             {/* Logo + mobile tagline */}
             <div className="flex flex-col items-start gap-y-1">
               <Link href="/" className="flex items-center gap-2">
@@ -1167,17 +1183,21 @@ export const Footer = () => {
                 India's open-source community for passionate developers.
               </p> */}
               <p className="text-sm text-muted-foreground md:hidden">
-                D4 Community is an inclusive, open-source initiative driven by passionate individuals from diverse backgrounds
+                D4 Community is an inclusive, open-source initiative driven by
+                passionate individuals from diverse backgrounds
               </p>
             </div>
- 
+
             {/* Divider — mobile only */}
             <div className="w-full h-[1px] bg-border md:hidden" />
- 
+
             {/* Nav links — mobile only (right after logo) */}
             <div className="w-full flex flex-row flex-wrap gap-x-10 gap-y-8 md:hidden">
               {siteConfig.footerLinks.map((column, columnIndex) => (
-                <ul key={columnIndex} className="flex flex-col gap-y-3 min-w-[120px]">
+                <ul
+                  key={columnIndex}
+                  className="flex flex-col gap-y-3 min-w-[120px]"
+                >
                   <li className="mb-1 text-xs font-bold uppercase tracking-wider text-primary/80">
                     {column.title}
                   </li>
@@ -1193,12 +1213,12 @@ export const Footer = () => {
                 </ul>
               ))}
             </div>
- 
+
             {/* Description */}
             <h2 className="mt-6 mb-2 sm:mt-2 text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-[#1a1a1a] dark:text-white max-w-[100vw] lg:max-w-lg">
               {siteConfig.hero.description}
             </h2>
- 
+
             {/* Socials */}
             <div className="flex flex-wrap items-center gap-5">
               {siteConfig.socials.map((social) => (
@@ -1216,11 +1236,14 @@ export const Footer = () => {
             </div>
             <div className="w-full h-[1px] bg-border md:hidden" />
           </div>
- 
+
           {/* ── Nav links — md+ right column ── */}
           <div className="lg:col-span-5 hidden md:flex flex-row flex-wrap gap-x-10 gap-y-8 md:justify-end">
             {siteConfig.footerLinks.map((column, columnIndex) => (
-              <ul key={columnIndex} className="flex flex-col gap-y-3 min-w-[120px]">
+              <ul
+                key={columnIndex}
+                className="flex flex-col gap-y-3 min-w-[120px]"
+              >
                 <li className="mb-1 text-xs font-bold uppercase tracking-wider text-primary/80">
                   {column.title}
                 </li>
@@ -1238,7 +1261,7 @@ export const Footer = () => {
           </div>
         </div>
       </div>
- 
+
       {/* ── Flickering grid banner ──
           On ≤576px: hidden entirely — no reveal effect, no clipping, footer is fully visible.
           On sm+: shown with normal gradient fade.

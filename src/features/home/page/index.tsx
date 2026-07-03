@@ -13,8 +13,7 @@ export const HomePage = () => {
   return (
     <>
       <OrgSchema />
-      <FAQSchema page="join-faq" />
-      <FAQSchema page="faq" />
+      <FAQSchema page={["join-faq", "faq"]} />
       <main className="flex flex-col min-h-screen">
         <HeroSection />
         <div>

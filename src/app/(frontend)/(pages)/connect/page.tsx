@@ -39,8 +39,7 @@ export default function ContactPage() {
     <>
       {/* Structural Schema Data */}
       <OrgSchema />
-      <FAQSchema page="join-faq" />
-      <FAQSchema page="faq" />
+      <FAQSchema page={["join-faq", "faq"]} />
       
       {/* Visual Form Component */}
       <D4ContactForm />
