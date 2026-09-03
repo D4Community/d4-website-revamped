@@ -48,7 +48,7 @@ export const coreTeamData = [
     image: "#"
   },
   {
-    name: "Himani",
+    name: "Himani Verma",
     role: "Web & Tech Support",
     linkedin: "https://www.linkedin.com/in/himani-verma-91532530b",
     image: "#"
@@ -78,7 +78,7 @@ export const coreTeamData = [
     image: "#"
   },
   {
-    name: "Khwaish",
+    name: "Khwaish Chikersal",
     role: "Anchor & Content Writer",
     linkedin: "https://www.linkedin.com/in/khwaish-chikersal-79285327b",
     image: "#"
