@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export const LayoutTextFlip = ({
@@ -20,39 +20,37 @@ export const LayoutTextFlip = ({
     }, duration);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [duration, words.length]);
 
   return (
     <>
-      <motion.span
-        layoutId="subtext"
-        className="text-2xl font-bold tracking-tight drop-shadow-lg md:text-4xl"
-      >
+      {/* Fixed static text without motion layout shift */}
+      <span className="text-2xl font-bold tracking-tight drop-shadow-lg md:text-4xl shrink-0">
         {text}
-      </motion.span>
+      </span>
 
-      <motion.span
-        layout
-        className="relative w-fit overflow-hidden rounded-md border border-transparent bg-white px-4 py-2 font-sans text-2xl font-bold tracking-tight text-black shadow-sm ring shadow-black/10 ring-black/10 drop-shadow-lg md:text-4xl dark:bg-neutral-900 dark:text-white dark:shadow-sm dark:ring-1 dark:shadow-white/10 dark:ring-white/10"
-      >
-        <AnimatePresence mode="popLayout">
+      {/* Reserved container dimensions with fixed min-width to avoid shifting 'text' */}
+      <span className="relative inline-flex items-center justify-center min-w-[150px] md:min-w-[190px] h-[52px] md:h-[60px] overflow-hidden rounded-md border border-transparent bg-white px-4 py-2 font-sans text-2xl font-bold tracking-tight text-black shadow-sm ring shadow-black/10 ring-black/10 drop-shadow-lg md:text-4xl dark:bg-neutral-900 dark:text-white dark:shadow-sm dark:ring-1 dark:shadow-white/10 dark:ring-white/10">
+        <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
             key={currentIndex}
-            initial={{ y: -40, filter: "blur(10px)" }}
+            initial={{ y: -40, filter: "blur(10px)", opacity: 0 }}
             animate={{
               y: 0,
               filter: "blur(0px)",
+              opacity: 1,
             }}
-            exit={{ y: 50, filter: "blur(10px)", opacity: 0 }}
+            exit={{ y: 40, filter: "blur(10px)", opacity: 0 }}
             transition={{
-              duration: 0.5,
+              duration: 0.4,
+              ease: "easeOut",
             }}
-            className={cn("inline-block whitespace-nowrap")}
+            className={cn("inline-block whitespace-nowrap text-center")}
           >
             {words[currentIndex]}
           </motion.span>
         </AnimatePresence>
-      </motion.span>
+      </span>
     </>
   );
 };

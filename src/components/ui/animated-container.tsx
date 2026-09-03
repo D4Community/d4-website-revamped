@@ -1,4 +1,7 @@
+"use client";
+
 import { motion, useReducedMotion } from "framer-motion";
+import React from "react";
 
 type ViewAnimationProps = {
   delay?: number;
@@ -8,21 +11,23 @@ type ViewAnimationProps = {
 
 export default function AnimatedContainer({
   className,
-  delay = 0.1,
+  delay = 0,
   children,
 }: ViewAnimationProps) {
   const shouldReduceMotion = useReducedMotion();
 
   if (shouldReduceMotion) {
-    return children;
+    return <div className={className}>{children}</div>;
   }
 
   return (
     <motion.div
-      initial={{ translateY: -8, opacity: 0 }}
+      initial={{ translateY: 12, opacity: 0 }}
       whileInView={{ translateY: 0, opacity: 1 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ delay, duration: 0.5, ease: "easeOut" }}
+      // '100px' pre-triggers the animation before the element fully rolls into view
+      viewport={{ once: true, margin: "100px" }}
+      // Accelerated duration (0.3s) and smoother spring-like ease
+      transition={{ delay, duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
       className={className}
     >
       {children}

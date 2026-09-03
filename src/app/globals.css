@@ -1,10 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-  /* Configure your theme variables here */
+  /* Theme variable bindings */
   --font-display: "Inter", "sans-serif";
   --color-primary-500: oklch(0.84 0.18 117.33);
   --spacing: 0.25rem;
@@ -46,9 +46,24 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
+  --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1 var(--delay, 0ms);
+
+  @keyframes cell-ripple {
+    0% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0.4;
+    }
+  }
 }
 
 :root {
+  color-scheme: light;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -84,6 +99,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -121,26 +137,20 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html,
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
+    /* Prevents layout transition flashes on theme toggle */
+    transition: background-color 0s, color 0s;
   }
 }
 
-@theme inline {
-  --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1
-  var(--delay, 0ms);
- 
-  @keyframes cell-ripple {
-    0% {
-      opacity: 0.4;
-    }
-    50% {
-      opacity: 0.8;
-    }
-    100% {
-      opacity: 0.4;
-    }
-  }
+/* ─── Disable all CSS transitions during dark mode toggle ─────────────── */
+.no-transitions *,
+.no-transitions *::before,
+.no-transitions *::after {
+  transition: none !important;
 }
 
 .event-image {
@@ -150,18 +160,21 @@
 
 /* ─── Infinite slider (pure CSS, GPU-composited) ─────────────── */
 @keyframes slider-scroll-left {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
 }
 @keyframes slider-scroll-right {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
 }
+
 .slider-track-left {
   animation: slider-scroll-left var(--slider-duration) linear infinite;
+  will-change: transform;
 }
 .slider-track-right {
   animation: slider-scroll-right var(--slider-duration) linear infinite;
+  will-change: transform;
 }
 .slider-wrapper:hover .slider-track-left,
 .slider-wrapper:hover .slider-track-right {
