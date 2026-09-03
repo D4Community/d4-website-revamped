@@ -1,7 +1,7 @@
 "use client";
+
 import { FeatureCard } from "@/components/grid-feature-cards";
 import AnimatedContainer from "@/components/ui/animated-container";
-import { motion, useReducedMotion } from "framer-motion";
 import { Cpu, Users, GraduationCap, Building } from "lucide-react";
 
 const features = [
@@ -15,7 +15,6 @@ const features = [
     icon: Cpu,
     description: "Tech Partners",
   },
-
   {
     title: "7000+",
     icon: GraduationCap,
@@ -32,7 +31,8 @@ const FeatureSection = () => {
   return (
     <section className="py-8 md:py-20">
       <div className="mx-auto w-full max-w-5xl space-y-8 px-4">
-        <AnimatedContainer className="mx-auto text-center">
+        {/* Trigger title immediately */}
+        <AnimatedContainer className="mx-auto text-center" delay={0}>
           <h2 className="text-3xl font-bold tracking-wide text-balance md:text-4xl lg:text-5xl xl:font-extrabold">
             Building. Connecting. Growing.
           </h2>
@@ -42,9 +42,10 @@ const FeatureSection = () => {
           </p>
         </AnimatedContainer>
 
+        {/* Lowered delay from 0.4s to 0.1s for fast entry */}
         <AnimatedContainer
-          delay={0.4}
-          className="grid grid-cols-1 divide-x divide-y divide-dashed border border-dashed sm:grid-cols-2"
+          delay={0.1}
+          className="grid grid-cols-1 border border-dashed sm:grid-cols-2"
         >
           {features.map((feature, i) => (
             <FeatureCard key={i} feature={feature} />

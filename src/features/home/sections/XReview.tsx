@@ -1,9 +1,9 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import React, { useState, useEffect, useRef, Component, ErrorInfo, ReactNode } from "react";
+import React, { Component, ErrorInfo, ReactNode } from "react";
 import { Tweet } from "react-tweet";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 /* ===================== DATA ===================== */
 const TWEET_IDS = [
@@ -18,7 +18,8 @@ const TWEET_IDS = [
   "2027693668795355561",
 ];
 
-const SCROLL_ITEMS = [...TWEET_IDS, ...TWEET_IDS, ...TWEET_IDS];
+// Duplicate items twice to form a seamless infinite CSS loop
+const SCROLL_ITEMS = [...TWEET_IDS, ...TWEET_IDS];
 
 /* ===================== SAFETY BOUNDARY ===================== */
 interface ErrorBoundaryProps {
@@ -49,66 +50,8 @@ class TweetErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryStat
   }
 }
 
-/* ===================== HOOK ===================== */
-function useMarqueeHover(direction: "up" | "down", duration = 60) {
-  const colRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number | null>(null);
-  const frozenY = useRef<number>(0);
-  const isHovered = useRef(false);
-
-  const animate = () => {
-    if (!colRef.current || isHovered.current) return;
-
-    const totalH = colRef.current.scrollHeight / 3;
-    if (totalH === 0) return;
-
-    const pxPerMs = totalH / (duration * 1000);
-    let last = performance.now();
-
-    const tick = (now: number) => {
-      if (isHovered.current || !colRef.current) return;
-      const delta = now - last;
-      last = now;
-      const step = pxPerMs * delta;
-
-      if (direction === "up") {
-        frozenY.current -= step;
-        if (frozenY.current <= -totalH) frozenY.current += totalH;
-      } else {
-        frozenY.current += step;
-        if (frozenY.current >= 0) frozenY.current -= totalH;
-      }
-
-      colRef.current.style.transform = `translate3d(0, ${frozenY.current}px, 0)`;
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-  };
-
-  useEffect(() => {
-    const observer = new ResizeObserver(() => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      animate();
-    });
-    if (colRef.current) observer.observe(colRef.current);
-    return () => {
-      observer.disconnect();
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, [duration, direction]);
-
-  return {
-    colRef,
-    onMouseEnter: () => (isHovered.current = true),
-    onMouseLeave: () => {
-      isHovered.current = false;
-      animate();
-    },
-  };
-}
-
 /* ===================== SUB-COMPONENTS ===================== */
-function TweetCard({ id }: { id: string }) {
+const TweetCard = React.memo(function TweetCard({ id }: { id: string }) {
   return (
     <div className="w-full mb-2">
       <div className="origin-top transition-transform duration-500">
@@ -141,7 +84,7 @@ function TweetCard({ id }: { id: string }) {
       </div>
     </div>
   );
-}
+});
 
 function MarqueeColumn({
   direction,
@@ -152,18 +95,14 @@ function MarqueeColumn({
   duration: number;
   className?: string;
 }) {
-  const { colRef, onMouseEnter, onMouseLeave } = useMarqueeHover(
-    direction,
-    duration,
-  );
+  const animClass = direction === "up" ? "animate-marquee-up" : "animate-marquee-down";
 
   return (
-    <div
-      className={`h-full overflow-hidden min-w-0 flex-1 ${className}`}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      <div ref={colRef} className="flex flex-col will-change-transform">
+    <div className={`h-full overflow-hidden min-w-0 flex-1 group ${className}`}>
+      <div
+        className={`flex flex-col will-change-transform ${animClass} group-hover:[animation-play-state:paused]`}
+        style={{ animationDuration: `${duration}s` }}
+      >
         {SCROLL_ITEMS.map((id, i) => (
           <TweetCard key={`${direction}-${id}-${i}`} id={id} />
         ))}
@@ -174,14 +113,6 @@ function MarqueeColumn({
 
 /* ===================== MAIN PAGE ===================== */
 export default function XReviews() {
-  const [mounted, setMounted] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  if (!mounted) return null;
-
   return (
     <main className="min-h-screen flex items-center justify-center">
       <section className="relative w-full max-w-7xl h-[89vh] flex flex-col overflow-hidden p-4 md:p-6">
@@ -204,27 +135,27 @@ export default function XReviews() {
         {/* Marquee Grid */}
         <div className="relative flex-1 min-h-0 w-full overflow-hidden">
           <div className="flex gap-x-2 h-full">
-            {/* Column 1 — always visible, flush left (no px on parent) */}
-            <MarqueeColumn direction="up" duration={160} />
+            {/* Column 1 — always visible */}
+            <MarqueeColumn direction="up" duration={120} />
 
             {/* Column 2 — sm+ */}
             <MarqueeColumn
               direction="down"
-              duration={190}
+              duration={140}
               className="hidden sm:block"
             />
 
             {/* Column 3 — md+ */}
             <MarqueeColumn
               direction="up"
-              duration={180}
+              duration={130}
               className="hidden md:block"
             />
 
-            {/* Column 4 — lg+, flush right */}
+            {/* Column 4 — lg+ */}
             <MarqueeColumn
               direction="down"
-              duration={160}
+              duration={120}
               className="hidden lg:block"
             />
           </div>
@@ -235,19 +166,44 @@ export default function XReviews() {
 
           {/* ACTION BUTTON */}
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 w-max">
-            <button
-              onClick={() => router.push("/twitter-reviews")}
-              className="whitespace-nowrap px-6 sm:px-8 py-4 sm:py-4 rounded-full text-white font-bold text-sm md:text-base tracking-widest uppercase transition-transform shadow-2xl"
+            <Link
+              href="/twitter-reviews"
+              className="inline-block whitespace-nowrap px-6 sm:px-8 py-4 sm:py-4 rounded-full text-white font-bold text-sm md:text-base tracking-widest uppercase transition-transform hover:scale-105 active:scale-95 shadow-2xl"
               style={{
                 background: "linear-gradient(to right, #fd7d6e, #ff9a8b)",
               }}
             >
               Explore More Stories
-              {/* <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /> */}
-            </button>
+            </Link>
           </div>
         </div>
       </section>
+
+      {/* GPU Hardware Accelerated Smooth Marquee Animations */}
+      <style jsx global>{`
+        @keyframes marquee-up {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(0, -50%, 0);
+          }
+        }
+        @keyframes marquee-down {
+          0% {
+            transform: translate3d(0, -50%, 0);
+          }
+          100% {
+            transform: translate3d(0, 0, 0);
+          }
+        }
+        .animate-marquee-up {
+          animation: marquee-up linear infinite;
+        }
+        .animate-marquee-down {
+          animation: marquee-down linear infinite;
+        }
+      `}</style>
     </main>
   );
 }

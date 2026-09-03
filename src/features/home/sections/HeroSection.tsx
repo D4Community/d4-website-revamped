@@ -4,7 +4,6 @@ import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect
 import { Button } from "@/components/ui/button";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import { MoveRight, Users, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -17,10 +16,13 @@ const HeroSection = () => {
 
       <div className="container mx-auto relative">
         <div className="flex gap-8 py-36 lg:py-40 items-center justify-center flex-col">
-          
           <div className="relative z-10">
             <Link href="/events">
-              <Button variant="secondary" size="sm" className="gap-4">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="gap-4 cursor-pointer"
+              >
                 <Sparkles className="w-4 h-4 text-primary" />
                 View our upcoming events
                 <MoveRight className="w-4 h-4" />
@@ -28,13 +30,14 @@ const HeroSection = () => {
             </Link>
           </div>
 
-          <div className="flex gap-4 flex-col">
-            <motion.div className="relative z-10 mx-4 my-4 flex flex-col items-center justify-center gap-4 text-center sm:mx-0 sm:mb-0 sm:flex-row">
+          <div className="flex gap-4 flex-col items-center">
+            {/* Stable header container preventing text movement */}
+            <div className="relative z-10 mx-4 my-4 flex flex-col items-center justify-center gap-3 text-center sm:mx-0 sm:mb-0 sm:flex-row sm:items-center">
               <LayoutTextFlip
                 text="Welcome to D4"
                 words={["Discite", "Develop", "Debug", "Deploy"]}
               />
-            </motion.div>
+            </div>
 
             <p className="relative z-10 text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center">
               D4 Community is an inclusive, open-source initiative driven by
@@ -45,13 +48,10 @@ const HeroSection = () => {
           </div>
 
           <div className="relative z-10 flex flex-row gap-3">
-            <Button
-              size="lg"
-              className="gap-4"
-              variant="outline"
-              onClick={() => router.push("/join")}
-            >
-              Join Community <Users className="w-4 h-4" />
+            <Button asChild size="lg" variant="outline" className="gap-4 cursor-pointer">
+              <Link href="/join">
+                Join Community <Users className="w-4 h-4" />
+              </Link>
             </Button>
 
             <Button asChild size="lg" className="gap-4">
@@ -64,7 +64,6 @@ const HeroSection = () => {
               </Link>
             </Button>
           </div>
-
         </div>
       </div>
     </div>
