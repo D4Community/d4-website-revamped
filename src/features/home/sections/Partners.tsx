@@ -151,6 +151,7 @@ function PartnerLogo({ partner }: { partner: typeof ALL_PARTNERS[0] }) {
           src={partner.logo}
           alt={partner.name}
           fill
+          sizes="(max-width: 768px) 56px, (max-width: 1024px) 64px, 80px"
           className={cn(
             "object-contain grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105",
             partner.darkLogo && "dark:hidden"
@@ -161,6 +162,7 @@ function PartnerLogo({ partner }: { partner: typeof ALL_PARTNERS[0] }) {
             src={partner.darkLogo}
             alt={partner.name}
             fill
+            sizes="(max-width: 768px) 56px, (max-width: 1024px) 64px, 80px"
             className="hidden dark:block object-contain grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
           />
         )}
