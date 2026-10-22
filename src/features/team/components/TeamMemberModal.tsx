@@ -174,7 +174,7 @@ export const TeamMemberModal = () => {
         if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
         copyTimeoutRef.current = setTimeout(() => setCopiedEmail(false), 2000);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const theme = useMemo(() => {
@@ -210,12 +210,6 @@ export const TeamMemberModal = () => {
         icon: Github,
       },
       {
-        key: "instagram",
-        label: "Instagram",
-        url: selectedMember.instagram,
-        icon: Instagram,
-      },
-      {
         key: "twitter",
         label: "Twitter / X",
         url: selectedMember.twitter,
@@ -232,6 +226,12 @@ export const TeamMemberModal = () => {
         label: "Portfolio / Web",
         url: selectedMember.portfolio || selectedMember.website,
         icon: Globe,
+      },
+      {
+        key: "instagram",
+        label: "Instagram",
+        url: selectedMember.instagram,
+        icon: Instagram,
       },
     ].filter((item) => isUsableUrl(item.url));
   }, [selectedMember]);
