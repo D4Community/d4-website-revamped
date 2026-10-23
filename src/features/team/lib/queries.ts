@@ -17,7 +17,7 @@ export function memberImageUrl(
   if (!image || typeof image !== "object") return null;
   const asset = (image as { asset?: unknown }).asset;
   if (!asset) return null;
-  let builder = urlFor(image as SanityImageSource).width(width);
+  let builder = urlFor(image as SanityImageSource).width(width).auto('format').fit('crop');
   if (typeof height === "number") builder = builder.height(height);
   return builder.url();
 }

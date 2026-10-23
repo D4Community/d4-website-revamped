@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import ReactDOM from "react-dom";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -90,12 +91,35 @@ const getGroupTheme = (member: TeamMember) => {
 export const TeamMemberModal = () => {
   const { selectedMember, closeModal } = useTeamModal();
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
   const descId = useId();
 
-  // Focus management
+  const copyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Mount check for safe portal rendering
+  useEffect(() => {
+    setMounted(true);
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
+  // Coordinate navbar visibility via class without conflicting with TeamModalContext scroll lock
+  useEffect(() => {
+    if (!selectedMember) {
+      document.body.classList.remove("team-modal-active");
+      return;
+    }
+    document.body.classList.add("team-modal-active");
+    return () => {
+      document.body.classList.remove("team-modal-active");
+    };
+  }, [selectedMember]);
+
+  // Focus management & keyboard accessibility
   useEffect(() => {
     if (!selectedMember) {
       setCopiedEmail(false);
@@ -106,7 +130,12 @@ export const TeamMemberModal = () => {
       closeBtnRef.current?.focus();
     }, 30);
 
-    const handleTabKey = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeModal();
+        return;
+      }
+
       if (e.key !== "Tab" || !modalRef.current) return;
       const focusable = modalRef.current.querySelectorAll<HTMLElement>(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -129,19 +158,24 @@ export const TeamMemberModal = () => {
       }
     };
 
-    window.addEventListener("keydown", handleTabKey);
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("keydown", handleTabKey);
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedMember]);
+  }, [selectedMember, closeModal]);
 
-  const handleCopyEmail = (email: string) => {
-    navigator.clipboard.writeText(email).then(() => {
-      setCopiedEmail(true);
-      setTimeout(() => setCopiedEmail(false), 2000);
-    });
-  };
+  const handleCopyEmail = useCallback((email: string) => {
+    if (!navigator?.clipboard) return;
+    navigator.clipboard
+      .writeText(email)
+      .then(() => {
+        setCopiedEmail(true);
+        if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+        copyTimeoutRef.current = setTimeout(() => setCopiedEmail(false), 2000);
+      })
+      .catch(() => { });
+  }, []);
 
   const theme = useMemo(() => {
     if (!selectedMember) return null;
@@ -176,12 +210,6 @@ export const TeamMemberModal = () => {
         icon: Github,
       },
       {
-        key: "instagram",
-        label: "Instagram",
-        url: selectedMember.instagram,
-        icon: Instagram,
-      },
-      {
         key: "twitter",
         label: "Twitter / X",
         url: selectedMember.twitter,
@@ -199,6 +227,12 @@ export const TeamMemberModal = () => {
         url: selectedMember.portfolio || selectedMember.website,
         icon: Globe,
       },
+      {
+        key: "instagram",
+        label: "Instagram",
+        url: selectedMember.instagram,
+        icon: Instagram,
+      },
     ].filter((item) => isUsableUrl(item.url));
   }, [selectedMember]);
 
@@ -206,7 +240,9 @@ export const TeamMemberModal = () => {
     selectedMember?.email && selectedMember.email.includes("@")
   );
 
-  return (
+  if (!mounted) return null;
+
+  return ReactDOM.createPortal(
     <AnimatePresence>
       {selectedMember && theme && (
         <motion.div
@@ -215,7 +251,7 @@ export const TeamMemberModal = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15, ease: "easeOut" }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto bg-black/85"
+          className="fixed inset-0 z-[99999] overflow-y-auto bg-black/90 backdrop-blur-md p-3 sm:p-5"
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
@@ -225,204 +261,216 @@ export const TeamMemberModal = () => {
           }}
           style={{ willChange: "opacity" }}
         >
-          {/* Modal Container: website exact black background with zero blue hue */}
-          <motion.div
-            ref={modalRef}
-            initial={{ opacity: 0, scale: 0.96, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 8 }}
-            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-lg md:max-w-xl my-auto overflow-hidden rounded-3xl border border-border/80 bg-background text-foreground shadow-2xl z-10 focus:outline-none"
-            style={{
-              willChange: "transform, opacity",
-              transform: "translateZ(0)",
+          {/* Scrollable centering wrapper */}
+          <div
+            className="min-h-full w-full flex items-center justify-center py-3 sm:py-6"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeModal();
             }}
-            onClick={(e) => e.stopPropagation()}
           >
-            {/* Top Decorative Header Strip with Grid Pattern */}
-            <div className="relative h-28 sm:h-32 w-full overflow-hidden bg-secondary/30 border-b border-border/70">
-              {/* Static subtle dot pattern */}
-              <div
-                className="absolute inset-0 opacity-15 pointer-events-none"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
-                  backgroundSize: "20px 20px",
-                }}
-              />
-
-              {/* D4 Community Badge */}
-              <div className="absolute top-4 left-5 flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-background/80 text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground z-10 shadow-xs">
-                <Image
-                  src="/d4logo.webp"
-                  alt="D4"
-                  width={14}
-                  height={14}
-                  className="w-3.5 h-3.5 object-contain"
-                />
-                <span>D4 Community</span>
-              </div>
-
-              {/* Close Button */}
-              <button
-                ref={closeBtnRef}
-                type="button"
-                onClick={closeModal}
-                className="absolute top-3.5 right-4 z-20 inline-flex items-center justify-center w-9 h-9 rounded-full bg-secondary/80 hover:bg-secondary border border-border text-muted-foreground hover:text-foreground transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50"
-                aria-label="Close profile modal"
-              >
-                <X className="w-4.5 h-4.5" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="relative px-6 sm:px-8 pb-7 pt-0">
-              {/* Profile Avatar & Primary Info */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5 -mt-14 sm:-mt-16 mb-6">
-                {/* Avatar Photo */}
+            {/* Modal Container: Compact on mobile so it never gets cut off */}
+            <motion.div
+              ref={modalRef}
+              initial={{ opacity: 0, scale: 0.96, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 8 }}
+              transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-[340px] xs:max-w-sm sm:max-w-md md:max-w-xl my-auto overflow-hidden rounded-2xl sm:rounded-3xl border border-border/80 bg-background text-foreground shadow-2xl z-10 focus:outline-none"
+              style={{
+                willChange: "transform, opacity",
+                transform: "translateZ(0)",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Top Decorative Header Strip: Compact height on mobile */}
+              <div className="relative h-16 sm:h-26 md:h-30 w-full overflow-hidden bg-secondary/30 border-b border-border/70">
+                {/* Static subtle dot pattern */}
                 <div
-                  className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-border shadow-2xl shrink-0 bg-secondary/40"
-                >
+                  className="absolute inset-0 opacity-15 pointer-events-none"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
+                    backgroundSize: "20px 20px",
+                  }}
+                />
+
+                {/* D4 Community Badge */}
+                <div className="absolute top-2.5 sm:top-4 left-3 sm:left-5 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-border bg-background/80 text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground z-10 shadow-xs">
                   <Image
-                    src={avatarSrc}
-                    alt={selectedMember.name}
-                    fill
-                    sizes="(max-width: 640px) 112px, 128px"
-                    className="object-cover object-top"
-                    priority
-                    unoptimized={isDicebear}
+                    src="/d4logo.webp"
+                    alt="D4"
+                    width={14}
+                    height={14}
+                    className="w-3.5 h-3.5 object-contain"
+                    style={{ width: "auto", height: "auto" }}
                   />
+                  <span>D4 Community</span>
                 </div>
 
-                {/* Name & Role */}
-                <div className="flex flex-col items-center sm:items-start text-center sm:text-left flex-grow min-w-0">
-                  <div
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-wider mb-2 font-mono ${theme.badgeColor}`}
-                  >
-                    <theme.icon className="w-3 h-3" />
-                    <span>{theme.name}</span>
-                  </div>
-
-                  <h2
-                    id={titleId}
-                    className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight"
-                  >
-                    {selectedMember.name}
-                  </h2>
-
-                  <p className="text-sm sm:text-base font-medium text-muted-foreground mt-1">
-                    {selectedMember.designation}
-                  </p>
-                </div>
+                {/* Close Button */}
+                <button
+                  ref={closeBtnRef}
+                  type="button"
+                  onClick={closeModal}
+                  className="absolute top-2 sm:top-3.5 right-2.5 sm:right-4 z-30 inline-flex items-center justify-center w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-full bg-secondary/90 hover:bg-secondary border border-border text-muted-foreground hover:text-foreground transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  aria-label="Close profile modal"
+                >
+                  <X className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                </button>
               </div>
 
-              {/* Short Bio (Hidden if empty) */}
-              {selectedMember.description && (
-                <div className="mb-5 p-4 sm:p-5 rounded-2xl bg-secondary/30 border border-border/70">
-                  <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    About
-                  </div>
-                  <p
-                    id={descId}
-                    className="text-sm leading-relaxed text-foreground/90 whitespace-pre-line"
+              {/* Modal Body */}
+              <div className="relative px-3.5 sm:px-6 md:px-8 pb-4 sm:pb-7 pt-0">
+                {/* Profile Avatar & Primary Info */}
+                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-3 sm:gap-5 -mt-9 sm:-mt-14 md:-mt-16 mb-3 sm:mb-6">
+                  {/* Avatar Photo */}
+                  <div
+                    className="relative w-18 h-18 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-border shadow-2xl shrink-0 bg-secondary/40"
                   >
-                    {selectedMember.description}
-                  </p>
-                </div>
-              )}
+                    <Image
+                      src={avatarSrc}
+                      alt={selectedMember.name}
+                      fill
+                      sizes="(max-width: 640px) 72px, 128px"
+                      className="object-cover object-top"
+                      priority
+                      unoptimized
+                    />
+                  </div>
 
-              {/* Email Contact (Hidden if empty) */}
-              {hasEmail && (
-                <div className="mb-5 p-3.5 sm:p-4 rounded-2xl bg-secondary/30 border border-border/70 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
+                  {/* Name & Role */}
+                  <div className="flex flex-col items-center sm:items-start text-center sm:text-left flex-grow min-w-0">
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-border bg-secondary/50 text-foreground"
+                      className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1.5 sm:mb-2 font-mono ${theme.badgeColor}`}
                     >
-                      <Mail className="w-4.5 h-4.5 text-primary" />
+                      <theme.icon className="w-3 h-3" />
+                      <span>{theme.name}</span>
                     </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-                        Direct Email
-                      </span>
+
+                    <h2
+                      id={titleId}
+                      className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-foreground leading-tight"
+                    >
+                      {selectedMember.name}
+                    </h2>
+
+                    <p className="text-xs sm:text-sm md:text-base font-medium text-muted-foreground mt-0.5 sm:mt-1">
+                      {selectedMember.designation}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Short Bio (Hidden if empty) */}
+                {selectedMember.description && (
+                  <div className="mb-3.5 sm:mb-5 p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-secondary/30 border border-border/70">
+                    <div className="text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                      About
+                    </div>
+                    <p
+                      id={descId}
+                      className="text-xs sm:text-sm leading-relaxed text-foreground/90 whitespace-pre-line max-h-32 sm:max-h-48 overflow-y-auto"
+                    >
+                      {selectedMember.description}
+                    </p>
+                  </div>
+                )}
+
+                {/* Email Contact (Hidden if empty) */}
+                {hasEmail && (
+                  <div className="mb-3.5 sm:mb-5 p-2 sm:p-4 rounded-xl sm:rounded-2xl bg-secondary/30 border border-border/70 flex items-center justify-between gap-2 sm:gap-3">
+                    {/* Left (Desktop only): Mail icon + Direct Email title + clickable email */}
+                    <div className="hidden sm:flex items-center gap-3 min-w-0">
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-border bg-secondary/50 text-foreground"
+                      >
+                        <Mail className="w-4.5 h-4.5 text-primary" />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+                          Direct Email
+                        </span>
+                        <a
+                          href={`mailto:${selectedMember.email}`}
+                          className="text-sm font-semibold text-foreground hover:underline truncate"
+                          title={selectedMember.email}
+                        >
+                          {selectedMember.email}
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Action buttons: on mobile only show Copy & Send buttons side-by-side; on desktop aligned right */}
+                    <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex sm:items-center sm:gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleCopyEmail(selectedMember.email as string)
+                        }
+                        className="inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-xs font-medium text-foreground transition-colors cursor-pointer"
+                        aria-label="Copy email address"
+                        title="Copy email"
+                      >
+                        {copiedEmail ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-green-500" />
+                            <span className="text-green-500 font-semibold text-xs">
+                              Copied
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            <span className="text-xs">Copy</span>
+                          </>
+                        )}
+                      </button>
+
                       <a
                         href={`mailto:${selectedMember.email}`}
-                        className="text-sm font-semibold text-foreground hover:underline truncate"
-                        title={selectedMember.email}
+                        className="inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:px-3 sm:py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity"
                       >
-                        {selectedMember.email}
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>Send Mail</span>
                       </a>
                     </div>
                   </div>
+                )}
 
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleCopyEmail(selectedMember.email as string)
-                      }
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-xs font-medium text-foreground transition-colors cursor-pointer"
-                      aria-label="Copy email address"
-                      title="Copy email"
-                    >
-                      {copiedEmail ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-green-500" />
-                          <span className="text-green-500 font-semibold">
-                            Copied
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">Copy</span>
-                        </>
-                      )}
-                    </button>
-
-                    <a
-                      href={`mailto:${selectedMember.email}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity"
-                    >
-                      <Mail className="w-3.5 h-3.5" />
-                      <span>Send Mail</span>
-                    </a>
+                {/* Social Links (Hidden if none) */}
+                {socialProfiles.length > 0 && (
+                  <div>
+                    <div className="text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mb-2 sm:mb-3">
+                      Connect & Socials
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
+                      {socialProfiles.map((social) => {
+                        const IconComponent = social.icon;
+                        return (
+                          <a
+                            key={social.key}
+                            href={social.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group/social flex items-center gap-2 sm:gap-2.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl bg-secondary/30 border border-border/80 hover:border-border hover:bg-secondary/70 transition-colors duration-150 text-foreground"
+                            aria-label={`${selectedMember.name}'s ${social.label}`}
+                          >
+                            <IconComponent className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 transition-transform duration-150 group-hover/social:scale-110" />
+                            <span className="text-xs font-medium truncate">
+                              {social.label}
+                            </span>
+                            <ExternalLink className="w-3 h-3 ml-auto opacity-40 group-hover/social:opacity-100 transition-opacity" />
+                          </a>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {/* Social Links (Hidden if none) */}
-              {socialProfiles.length > 0 && (
-                <div>
-                  <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                    Connect & Socials
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                    {socialProfiles.map((social) => {
-                      const IconComponent = social.icon;
-                      return (
-                        <a
-                          key={social.key}
-                          href={social.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group/social flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-secondary/30 border border-border/80 hover:border-border hover:bg-secondary/70 transition-colors duration-150 text-foreground"
-                          aria-label={`${selectedMember.name}'s ${social.label}`}
-                        >
-                          <IconComponent className="w-4 h-4 shrink-0 transition-transform duration-150 group-hover/social:scale-110" />
-                          <span className="text-xs font-medium truncate">
-                            {social.label}
-                          </span>
-                          <ExternalLink className="w-3 h-3 ml-auto opacity-40 group-hover/social:opacity-100 transition-opacity" />
-                        </a>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          </motion.div>
+                )}
+              </div>
+            </motion.div>
+          </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };

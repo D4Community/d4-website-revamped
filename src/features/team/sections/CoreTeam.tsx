@@ -86,7 +86,7 @@ export const CoreTeam = ({ core }: { core: TeamMember[] }) => {
                     alt={member.name}
                     width={86}
                     height={86}
-                    unoptimized={avatarSrc.includes("dicebear.com") || avatarSrc.endsWith(".svg")}
+                    unoptimized
                     className="w-full h-full object-cover rounded-xl"
                   />
                 </div>
