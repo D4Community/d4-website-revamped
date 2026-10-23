@@ -9,8 +9,11 @@ import { CommunityPartners } from "./sections/CommunityPartners";
 import { Partners } from "./sections/Partners";
 import XReviews from "./sections/XReview";
 import { FAQSchema } from "@/schema";
+import { getGalleryImages } from "@/features/gallery/queries";
 
-export const HomePage = () => {
+export const HomePage = async () => {
+  const galleryImages = await getGalleryImages(18);
+
   return (
     <main className="flex flex-col min-h-screen">
       <FAQSchema page={["join-faq", "faq"]} />
@@ -27,7 +30,7 @@ export const HomePage = () => {
       <AboutSection />
       {/* <LogosSlider /> */}
       <XReviews />
-      <GallerySection />
+      <GallerySection images={galleryImages} />
       <FAQPage />
     </main>
   );
