@@ -8,8 +8,11 @@ import { GallerySection } from "../sections/GallerySection";
 import { Partners } from "../sections/Partners";
 import OrgSchema from "@/schema/org-schema";
 import { FAQSchema } from "@/schema";
+import { getGalleryImages } from "@/features/gallery/queries";
 
-export const HomePage = () => {
+export const HomePage = async () => {
+  const galleryImages = await getGalleryImages(18);
+
   return (
     <>
       <OrgSchema />
@@ -24,7 +27,7 @@ export const HomePage = () => {
         <AboutSection />
         <FeatureSection />
         <LogosSlider />
-        <GallerySection />
+        <GallerySection images={galleryImages} />
         <FAQPage />
       </main>
     </>
