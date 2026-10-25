@@ -223,3 +223,15 @@ html {
 ::view-transition-new(root) {
   z-index: 99999 !important;
 }
+
+/* Hide navbar completely when team member modal is active to prevent any overlap */
+body.team-modal-active header,
+body.team-modal-active nav,
+body.team-modal-active [data-navbar],
+body.team-modal-active .sticky.top-4,
+body.team-modal-active .fixed.top-3 {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  transition: opacity 0.15s ease-out;
+}

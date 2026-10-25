@@ -63,12 +63,12 @@ export const Leads = ({ leads }: { leads: TeamMember[] }) => {
 
             return (
               <motion.div
-                key={lead._id}
+                key={lead._id || lead.name || index}
                 id={leadSlug}
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
-                className="group relative aspect-[1/1.12] overflow-hidden rounded-2xl border border-white/10 bg-card/40 hover:bg-card/90 p-4 sm:p-5 transition-all duration-300 hover:border-[#f6b26b]/40 hover:shadow-lg flex flex-col items-center justify-center text-center cursor-pointer scroll-mt-24 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#f6b26b]"
+                className="group relative flex flex-col items-center p-3 sm:p-4 md:p-5 rounded-2xl border border-border/80 bg-card/50 hover:bg-card/95 transition-all duration-300 hover:border-[#f6b26b]/50 hover:shadow-xl hover:shadow-[#f6b26b]/5 cursor-pointer overflow-hidden scroll-mt-24 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#f6b26b]"
                 role="button"
                 tabIndex={0}
                 onClick={() => openModal(lead)}
@@ -80,29 +80,43 @@ export const Leads = ({ leads }: { leads: TeamMember[] }) => {
                 }}
                 aria-label={`View ${lead.name}'s profile`}
               >
+                {/* Top Subtle Amber Border Accent on Hover */}
+                <div className="absolute top-0 inset-x-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-transparent via-[#f6b26b] to-transparent" />
+
+                {/* Avatar: Fixed square aspect ratio, never squished on mobile */}
                 <div
-                  className="relative w-[54%] max-w-[120px] aspect-square rounded-2xl text-[#f6b26b] overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:scale-105 shadow-sm mb-3 border border-[#f6b26b]/20"
+                  className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-26 md:h-26 aspect-square rounded-2xl text-[#f6b26b] overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:scale-105 shadow-sm mb-3 border border-[#f6b26b]/25 shrink-0"
                   style={{ backgroundColor: `#f6b26b15` }}
                 >
                   <Image
                     src={avatarSrc}
                     alt={lead.name}
-                    width={120}
-                    height={120}
-                    unoptimized={avatarSrc.includes("dicebear.com") || avatarSrc.endsWith(".svg")}
-                    className="w-full h-full object-cover"
+                    width={110}
+                    height={110}
+                    unoptimized
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
-                <div className="w-full px-1 relative z-10">
-                  <h3 className="text-sm sm:text-base font-bold tracking-tight text-foreground line-clamp-1 group-hover:text-[#f6b26b] transition-colors">
+
+                {/* Name & Designation */}
+                <div className="w-full px-1 relative z-10 flex flex-col items-center flex-grow justify-start">
+                  <h3
+                    className="text-sm sm:text-base font-bold tracking-tight text-foreground line-clamp-1 group-hover:text-[#f6b26b] transition-colors text-center"
+                    title={lead.name}
+                  >
                     {lead.name}
                   </h3>
-                  <p className="text-[11px] sm:text-xs font-medium text-muted-foreground line-clamp-1 mt-0.5">
+                  <p
+                    className="text-[11px] sm:text-xs font-medium text-muted-foreground line-clamp-2 mt-0.5 text-center leading-snug"
+                    title={lead.designation}
+                  >
                     {lead.designation}
                   </p>
                 </div>
+
+                {/* LinkedIn Icon */}
                 {isUsableUrl(lead.linkedin) && (
-                  <div className="mt-2.5 relative z-20">
+                  <div className="mt-2.5 sm:mt-3 relative z-20 shrink-0">
                     <a
                       href={lead.linkedin}
                       className="text-muted-foreground hover:text-[#0077B5] transition-colors inline-block"
@@ -111,7 +125,7 @@ export const Leads = ({ leads }: { leads: TeamMember[] }) => {
                       onClick={(e) => e.stopPropagation()}
                       aria-label={`${lead.name}'s LinkedIn`}
                     >
-                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-secondary/50 border border-border group-hover:border-[#0077B5]/30 group-hover:bg-[#0077B5]/10 transition-all">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-secondary/60 border border-border group-hover:border-[#0077B5]/40 group-hover:bg-[#0077B5]/10 group-hover:text-[#0077B5] transition-all">
                         <Linkedin className="w-4 h-4" />
                       </div>
                     </a>
