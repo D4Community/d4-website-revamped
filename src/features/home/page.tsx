@@ -1,7 +1,6 @@
 import { AboutSection, HeroSection } from "./sections";
 import { EventCarousel } from "./sections/EventCarousel";
 import FeatureSection from "./sections/FeatureSection";
-import LogosSlider from "./sections/LogosSlider";
 import { UpcomingEvents } from "./sections/UpcomingEvents";
 import FAQPage from "./sections/FAQSection";
 import { GallerySection } from "./sections/GallerySection";
@@ -10,11 +9,13 @@ import { Partners } from "./sections/Partners";
 import XReviews from "./sections/XReview";
 import { FAQSchema } from "@/schema";
 import { getCommunityPartners, getPartners } from "@/features/partners/queries";
+import { getGalleryImages } from "@/features/gallery/queries";
 
 export const HomePage = async () => {
-  const [partners, communityPartners] = await Promise.all([
+  const [partners, communityPartners, galleryImages] = await Promise.all([
     getPartners(),
     getCommunityPartners(),
+    getGalleryImages(18)
   ]);
 
   return (
@@ -33,7 +34,7 @@ export const HomePage = async () => {
       <AboutSection />
       {/* <LogosSlider /> */}
       <XReviews />
-      <GallerySection />
+      <GallerySection images={galleryImages} />
       <FAQPage />
     </main>
   );

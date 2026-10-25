@@ -155,7 +155,7 @@ export const CoOrganizers = ({
                           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           className="object-cover object-top transition-all duration-700 group-hover:scale-[1.03]"
                           priority={index < 3}
-                          unoptimized={Boolean(src && (src.includes("dicebear.com") || src.endsWith(".svg")))}
+                          unoptimized
                         />
                       ) : (
                         <div className="absolute inset-0 bg-linear-to-br from-primary/20 via-secondary to-primary/10" />
@@ -183,7 +183,7 @@ export const CoOrganizers = ({
                     </div>
 
                     {member.description && (
-                      <p className="text-muted-foreground leading-relaxed text-sm md:text-[14.5px] mt-3 mb-5">
+                      <p className="text-muted-foreground leading-relaxed text-sm md:text-[14.5px] mt-3 mb-5 line-clamp-4">
                         {member.description}
                       </p>
                     )}

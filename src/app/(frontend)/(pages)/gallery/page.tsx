@@ -1,6 +1,7 @@
 import DetailedGalleryPage from "./gallery";
 import OrgSchema from "@/schema/org-schema";
 import { Metadata } from "next";
+import { getGalleryImages } from "@/features/gallery/queries";
 
 export const metadata: Metadata = {
   title: "D4 Community Gallery | Event Photos & Highlights",
@@ -54,11 +55,13 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function Page() {
+export default async function Page() {
+  const images = await getGalleryImages();
+
   return (
     <>
       <OrgSchema />
-      <DetailedGalleryPage />
+      <DetailedGalleryPage images={images} />
     </>
   );
 }

@@ -148,6 +148,7 @@ function PartnerLogo({ partner }: { partner: PartnerLogo }) {
           src={partner.logo}
           alt={partner.name}
           fill
+          sizes="(max-width: 768px) 56px, (max-width: 1024px) 64px, 80px"
           className="object-contain grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
         />
       </div>
