@@ -4,27 +4,15 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import type { PartnerLogo } from "@/features/partners/queries";
 
-const ALL_PARTNERS = [
-  { id: "v0", name: "v0", logo: "/images/partners/v0w.png", darkLogo: "/images/partners/v0.png" },
-  { id: "n8n", name: "n8n", logo: "/images/partners/n8nw.png", darkLogo: "/images/partners/n8n.png" },
-  { id: "appwrite", name: "Appwrite", logo: "/images/partners/appwrite.png" },
-  { id: "GoogleForDevelopers", name: "Google for Developers", logo: "/images/partners/GoogleForDevelopers.png" },
-  { id: "github", name: "GitHub", logo: "/images/partners/githubW.png", darkLogo: "/images/partners/github.png"  },
-  { id: "mastra", name: "Mastra", logo: "/images/partners/Mastra.svg", darkLogo: "/images/partners/MastraW.svg"  },
-  { id: "requestly", name: "Requestly", logo: "/images/partners/requestly.png" },
-  { id: "devfolio", name: "Devfolio", logo: "/images/partners/devfolio.png" },
-  { id: "commudle", name: "commudle", logo: "/images/partners/commudle.png" },
-  { id: "xyz", name: "XYZ", logo: "/images/partners/xyz.png" },
-  { id: "techRbm", name: "TechRBM", logo: "/images/partners/TechRBM.png" },
-  { id: "niwi", name: "NIWIAI", logo: "/images/partners/niwi.png" },
-  { id: "AppWrk", name: "AppWrk IT Solutions", logo: "/images/partners/appwrk.png" },
-  { id: "osen", name: "OSEN", logo: "/images/partners/osen.png" },
-  { id: "VentureNest", name: "Venture Nest", logo: "/images/partners/VentureNestW.png", darkLogo: "/images/partners/VentureNest.png" },
-  { id: "slay", name: "Slay", logo: "/images/partners/Slay.png" },
-];
-
-export function Partners({ className }: { className?: string }) {
+export function Partners({
+  partners,
+  className,
+}: {
+  partners: PartnerLogo[];
+  className?: string;
+}) {
   const [index, setIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(5);
 
@@ -33,22 +21,31 @@ export function Partners({ className }: { className?: string }) {
       const width = window.innerWidth;
       if (width >= 992) setItemsToShow(5);
       else if (width >= 768) setItemsToShow(4);
-      else setItemsToShow(ALL_PARTNERS.length);
+      else setItemsToShow(Math.max(partners.length, 1));
     };
 
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [partners.length]);
+
+  const pageCount = Math.max(1, Math.ceil(partners.length / itemsToShow));
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % Math.ceil(ALL_PARTNERS.length / itemsToShow));
-    }, 5000); 
-    return () => clearInterval(timer);
-  }, [itemsToShow]);
+    setIndex(0);
+  }, [itemsToShow, partners.length]);
 
-  const currentPartners = ALL_PARTNERS.slice(
+  useEffect(() => {
+    if (partners.length === 0) return;
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % pageCount);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [pageCount, partners.length]);
+
+  if (partners.length === 0) return null;
+
+  const currentPartners = partners.slice(
     index * itemsToShow,
     (index + 1) * itemsToShow
   );
@@ -119,7 +116,7 @@ export function Partners({ className }: { className?: string }) {
         <div className="md:hidden flex w-full">
            <div className="relative flex overflow-x-hidden group">
             <div className="animate-marquee flex items-center whitespace-nowrap py-4">
-              {ALL_PARTNERS.concat(ALL_PARTNERS).map((partner, idx) => (
+              {partners.concat(partners).map((partner, idx) => (
                 <div key={`${partner.id}-${idx}`} className="mx-8">
                   <PartnerLogo partner={partner} />
                 </div>
@@ -143,7 +140,7 @@ export function Partners({ className }: { className?: string }) {
   );
 }
 
-function PartnerLogo({ partner }: { partner: typeof ALL_PARTNERS[0] }) {
+function PartnerLogo({ partner }: { partner: PartnerLogo }) {
   return (
     <div className="flex flex-col items-center justify-center group w-28 md:w-32 lg:w-40 flex-shrink-0">
       <div className="relative w-14 h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mb-3">
@@ -152,20 +149,8 @@ function PartnerLogo({ partner }: { partner: typeof ALL_PARTNERS[0] }) {
           alt={partner.name}
           fill
           sizes="(max-width: 768px) 56px, (max-width: 1024px) 64px, 80px"
-          className={cn(
-            "object-contain grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105",
-            partner.darkLogo && "dark:hidden"
-          )}
+          className="object-contain grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
         />
-        {partner.darkLogo && (
-          <Image
-            src={partner.darkLogo}
-            alt={partner.name}
-            fill
-            sizes="(max-width: 768px) 56px, (max-width: 1024px) 64px, 80px"
-            className="hidden dark:block object-contain grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
-          />
-        )}
       </div>
       <h3 className="text-[10px] md:text-xs font-semibold text-neutral-500 dark:text-neutral-400 truncate w-full text-center">
         {partner.name}
