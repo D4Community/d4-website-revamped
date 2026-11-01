@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
+import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import PolicyNavigation from "./PolicyNavigation";
 import { officialPolicyMarkdown } from "./official-policy";
 
@@ -298,71 +299,104 @@ const renderValueBlocks = (section: PolicySection) => {
 const CodeOfConduct = () => (
   <main id="page-top" className="min-h-screen scroll-smooth bg-background px-4 py-12 text-foreground motion-reduce:scroll-auto sm:px-6 sm:py-16">
     <header className="relative mx-auto mb-12 max-w-7xl overflow-hidden border-b border-border/70 pb-10 sm:mb-14 sm:pb-14">
-      <div className="pointer-events-none absolute right-0 top-8 hidden h-64 w-64 items-center justify-center opacity-70 md:flex" aria-hidden="true">
-        <div className="absolute h-52 w-52 border border-border/70" />
-        <div className="absolute h-36 w-36 rotate-45 border border-[#5ccb5f]/35" />
-        <div className="absolute h-20 w-20 border border-border" />
-        <span className="absolute right-6 top-8 h-2 w-2 bg-[#5ccb5f]" />
+      <BackgroundRippleEffect />
+
+      <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(9rem,0.45fr)] lg:grid-cols-[minmax(0,1fr)_minmax(17rem,0.62fr)] lg:gap-12">
+        <div className="max-w-4xl">
+          <div className="mb-8 inline-flex items-center gap-3 border border-border/70 bg-background/80 px-3 py-2 backdrop-blur-sm">
+            <Image src="/d4logo_black.webp" alt="D4 Community" width={58} height={40} className="h-8 w-auto object-contain dark:hidden" priority />
+            <Image src="/d4logo.webp" alt="D4 Community" width={58} height={40} className="hidden h-8 w-auto object-contain dark:block" priority />
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
+              D4 Community
+            </span>
+          </div>
+
+          {preamble.map((block, index) => {
+            if (block.type === "heading" && block.level === 1) {
+              return (
+                <h1
+                  key={`title-${index}`}
+                  className="mb-5 max-w-4xl text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl md:text-7xl"
+                  dangerouslySetInnerHTML={{ __html: renderInline(block.text) }}
+                />
+              );
+            }
+            return null;
+          })}
+
+          <p className="mb-8 max-w-3xl text-base leading-7 text-foreground/70 sm:text-lg sm:leading-8">
+            D4 Community is committed to creating a respectful, inclusive, safe, and collaborative environment where individuals can learn, contribute, innovate, and grow together.
+          </p>
+
+          {preamble.map((block, index) =>
+            block.type === "paragraph" ? (
+              <p
+                key={`metadata-${index}`}
+                className="mb-2 font-mono text-[10px] leading-5 tracking-wide text-muted-foreground sm:text-xs"
+                dangerouslySetInnerHTML={{ __html: renderParagraph(block.lines, true) }}
+              />
+            ) : null,
+          )}
+
+          <a
+            href="#policy-content"
+            className="mt-7 inline-flex min-h-11 items-center gap-3 border border-border bg-background/80 px-4 py-2.5 text-sm font-semibold backdrop-blur-sm transition-colors hover:border-[#5ccb5f]/55 hover:bg-secondary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5ccb5f]"
+          >
+            Explore the Code
+            <span aria-hidden="true" className="text-[#5ccb5f]">↓</span>
+          </a>
+        </div>
+
+        <div className="pointer-events-none mx-auto hidden aspect-square w-full max-w-[19rem] md:block md:max-w-full lg:max-w-[19rem]" aria-hidden="true">
+          <div className="grid h-full w-full grid-cols-3 grid-rows-3 border border-border/70 bg-background/50 p-3 shadow-[0_24px_80px_-48px_rgba(92,203,95,0.55)] backdrop-blur-sm">
+            {Array.from({ length: 9 }, (_, index) => (
+              <div
+                key={`brand-cell-${index}`}
+                className={`flex items-center justify-center border border-border/50 ${
+                  index === 1 || index === 3 || index === 5 || index === 7
+                    ? "bg-secondary/40"
+                    : "bg-background/30"
+                }`}
+              >
+                {index === 4 ? (
+                  <div className="flex h-full w-full items-center justify-center border border-[#5ccb5f]/40 bg-background/80">
+                    <Image
+                      src="/d4logo_black.webp"
+                      alt=""
+                      width={150}
+                      height={104}
+                      className="h-auto w-4/5 object-contain dark:hidden"
+                    />
+                    <Image
+                      src="/d4logo.webp"
+                      alt=""
+                      width={150}
+                      height={104}
+                      className="hidden h-auto w-4/5 object-contain dark:block"
+                    />
+                  </div>
+                ) : index === 1 || index === 3 || index === 5 || index === 7 ? (
+                  <span className="h-2 w-2 border border-[#5ccb5f]/60 bg-[#5ccb5f]/15" />
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="relative z-10 max-w-4xl">
-        <div className="mb-8 inline-flex items-center gap-3 border border-border/70 bg-card/40 px-3 py-2">
-          <Image src="/d4logo_black.webp" alt="D4 Community" width={58} height={40} className="h-8 w-auto object-contain dark:hidden" priority />
-          <Image src="/d4logo.webp" alt="D4 Community" width={58} height={40} className="hidden h-8 w-auto object-contain dark:block" priority />
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
-            D4 Community
-          </span>
+      <div className="relative z-10 mx-auto mt-8 grid max-w-7xl gap-2 sm:grid-cols-3">
+        <div className="border-l-2 border-[#5ccb5f] bg-background/80 px-4 py-3 backdrop-blur-sm">
+          <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Organization</p>
+          <p className="text-sm font-semibold">D4 Community</p>
         </div>
-
-        {preamble.map((block, index) => {
-          if (block.type === "heading" && block.level === 1) {
-            return (
-              <h1
-                key={`title-${index}`}
-                className="mb-5 max-w-4xl text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl md:text-7xl"
-                dangerouslySetInnerHTML={{ __html: renderInline(block.text) }}
-              />
-            );
-          }
-          return null;
-        })}
-
-        <p className="mb-8 max-w-3xl text-base leading-7 text-foreground/70 sm:text-lg sm:leading-8">
-          D4 Community is committed to creating a respectful, inclusive, safe, and collaborative environment where individuals can learn, contribute, innovate, and grow together.
-        </p>
-
-        <div className="mb-6 grid gap-2 sm:grid-cols-3">
-          <div className="border-l-2 border-[#5ccb5f] bg-secondary/40 px-4 py-3">
-            <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Organization</p>
-            <p className="text-sm font-semibold">D4 Community</p>
-          </div>
-          <div className="border-l border-border bg-secondary/30 px-4 py-3">
-            <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Effective Date</p>
-            <p className="text-sm font-semibold">02 November 2026</p>
-          </div>
-          <div className="border-l border-border bg-secondary/30 px-4 py-3">
-            <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Applicability</p>
-            <p className="text-sm font-semibold">Everyone engaging with D4 Community</p>
-          </div>
+        <div className="border-l border-border bg-background/80 px-4 py-3 backdrop-blur-sm">
+          <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Effective Date</p>
+          <p className="text-sm font-semibold">02 November 2026</p>
         </div>
-
-        {preamble.map((block, index) =>
-          block.type === "paragraph" ? (
-            <p
-              key={`metadata-${index}`}
-              className="mb-2 font-mono text-[10px] leading-5 tracking-wide text-muted-foreground sm:text-xs"
-              dangerouslySetInnerHTML={{ __html: renderParagraph(block.lines, true) }}
-            />
-          ) : null,
-        )}
-
-        <a
-          href="#policy-content"
-          className="mt-7 inline-flex min-h-11 items-center gap-3 border border-border px-4 py-2.5 text-sm font-semibold transition-colors hover:border-[#5ccb5f]/55 hover:bg-secondary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5ccb5f]"
-        >
-          Explore the Code
-          <span aria-hidden="true" className="text-[#5ccb5f]">↓</span>
-        </a>
+        <div className="border-l border-border bg-background/80 px-4 py-3 backdrop-blur-sm">
+          <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Applicability</p>
+          <p className="text-sm font-semibold">Everyone engaging with D4 Community</p>
+        </div>
       </div>
     </header>
 
