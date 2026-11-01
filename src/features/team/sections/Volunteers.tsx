@@ -175,8 +175,8 @@ export const Volunteers = ({ volunteers }: VolunteersProps) => {
               <HeartHandshake className="w-3 h-3" />
               <span>Community</span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#5ccb5f]">
-              Volunteers
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
+              <span className="text-foreground">Our</span> <span className="text-muted-foreground">Volunteers</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl">
               Our incredible volunteers who passionately contribute their time

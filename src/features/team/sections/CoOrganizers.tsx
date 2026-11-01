@@ -83,7 +83,7 @@ export const CoOrganizers = ({
             <span>Organizers</span>
           </div>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
-            Meet the <span className="text-primary">Organizers</span>
+            <span className="text-foreground">Our</span> <span className="text-muted-foreground">Organisers</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl">
             The visionaries and organizers behind D4, dedicated to building a vibrant,
