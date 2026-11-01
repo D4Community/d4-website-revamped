@@ -76,9 +76,17 @@ The project follows a modular, feature-based directory structure:
     ```env
     NEXT_PUBLIC_SANITY_PROJECT_ID=your_id
     NEXT_PUBLIC_SANITY_DATASET=production
-    EMAIL_SERVER_USER=your_email
-    EMAIL_SERVER_PASSWORD=your_password
+    GMAIL_USER=your_email
+    GMAIL_PASS=your_password
     ```
+
+### Host Event application operations
+
+The Host Event API sends applications to the D4 team using the server-only `GMAIL_USER` and `GMAIL_PASS` settings above. Do not expose these values to the browser.
+
+No platform-level rate limiting or bot protection could be verified in this repository. Configure and verify suitable protection in the deployment environment before making the application endpoint publicly available.
+
+The mail provider may accept delivery to one recipient and reject the other. In that case, the API reports a delivery failure; retrying may send a duplicate to the recipient that already accepted the first message.
 
 4.  **Run Development Server**
     ```bash

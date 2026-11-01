@@ -26,6 +26,7 @@ export default async function HtmlSitemapPage() {
     { name: "About Us", href: "/about" },
     { name: "Contact", href: "/contact" },
     { name: "Events Hub", href: "/events" },
+    { name: "Host a D4 Event", href: "/host-event" },
     { name: "Our Team", href: "/team" },
     { name: "Join Community", href: "/join" },
     { name: "Gallery", href: "/gallery" },

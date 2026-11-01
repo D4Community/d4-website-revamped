@@ -1116,6 +1116,7 @@ export const siteConfig = {
         { id: 1, title: "About", url: "/about" },
         { id: 3, title: "Team", url: "/team" },
         { id: 4, title: "Events", url: "/events" },
+        { id: 12, title: "Host an Event", url: "/host-event" },
         { id: 9, title: "Gallery", url: "/gallery" },
         { id: 8, title: "Join", url: "/join" },
         { id: 2, title: "Contact", url: "/contact" },
