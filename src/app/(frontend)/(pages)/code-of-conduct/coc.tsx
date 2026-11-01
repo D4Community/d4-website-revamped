@@ -301,7 +301,7 @@ const CodeOfConduct = () => (
     <header className="relative mx-auto mb-12 max-w-7xl overflow-hidden border-b border-border/70 pb-10 sm:mb-14 sm:pb-14">
       <BackgroundRippleEffect />
 
-      <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(9rem,0.45fr)] lg:grid-cols-[minmax(0,1fr)_minmax(17rem,0.62fr)] lg:gap-12">
+      <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(9rem,0.45fr)] lg:grid-cols-[minmax(0,1fr)_minmax(17rem,0.62fr)] lg:gap-12 xl:grid-cols-[minmax(0,1.75fr)_minmax(17rem,0.62fr)]">
         <div className="max-w-4xl">
           <div className="mb-8 inline-flex items-center gap-3 border border-border/70 bg-background/80 px-3 py-2 backdrop-blur-sm">
             <Image src="/d4logo_black.webp" alt="D4 Community" width={58} height={40} className="h-8 w-auto object-contain dark:hidden" priority />
@@ -317,8 +317,16 @@ const CodeOfConduct = () => (
                 <h1
                   key={`title-${index}`}
                   className="mb-5 max-w-4xl text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl md:text-7xl"
-                  dangerouslySetInnerHTML={{ __html: renderInline(block.text) }}
-                />
+                >
+                  {block.text === "D4 Community — Official Code of Conduct" ? (
+                    <>
+                      <span className="xl:block">D4 Community — Official</span>{" "}
+                      <span className="xl:block">Code of Conduct</span>
+                    </>
+                  ) : (
+                    <span dangerouslySetInnerHTML={{ __html: renderInline(block.text) }} />
+                  )}
+                </h1>
               );
             }
             return null;
@@ -327,16 +335,6 @@ const CodeOfConduct = () => (
           <p className="mb-8 max-w-3xl text-base leading-7 text-foreground/70 sm:text-lg sm:leading-8">
             D4 Community is committed to creating a respectful, inclusive, safe, and collaborative environment where individuals can learn, contribute, innovate, and grow together.
           </p>
-
-          {preamble.map((block, index) =>
-            block.type === "paragraph" ? (
-              <p
-                key={`metadata-${index}`}
-                className="mb-2 font-mono text-[10px] leading-5 tracking-wide text-muted-foreground sm:text-xs"
-                dangerouslySetInnerHTML={{ __html: renderParagraph(block.lines, true) }}
-              />
-            ) : null,
-          )}
 
           <a
             href="#policy-content"
