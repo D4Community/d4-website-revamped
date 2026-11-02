@@ -67,7 +67,7 @@ function restoreEmailConfig() {
 }
 
 function createRequest(body: string, headers: Record<string, string> = {}) {
-  return new Request("http://localhost/api/host-event", {
+  return new Request(new URL("https://host-event.test/api/host-event"), {
     method: "POST",
     headers: { "content-type": "application/json", ...headers },
     body,
