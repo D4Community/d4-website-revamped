@@ -1,41 +1,16 @@
 import { NextResponse } from "next/server";
 import { createHash } from "node:crypto";
 import { headers } from "next/headers";
-import nodemailer from "nodemailer";
-import { google } from "googleapis";
 import { eventHostingRequestSchema } from "@/lib/validations/event-hosting-request";
 import { createEventHostingAcknowledgement, createEventHostingEmail } from "@/lib/email/event-hosting-templates";
+import { createD4MailTransporter } from "@/lib/email-transport";
+import { addEventHostingRequestToGoogleSheets, updateEventHostingNotificationStatus } from "@/lib/google-sheets";
 
 export const runtime = "nodejs";
 const hits = new Map<string, number[]>();
 const idempotency = new Map<string, { at: number; referenceId: string; fingerprint: string }>();
 const fingerprints = new Map<string, { at: number; referenceId: string }>();
 const hour = 60 * 60 * 1000;
-
-async function appendRequest(payload: unknown, referenceId: string, createdAt: Date) {
-  const clientEmail = process.env.GOOGLE_SHEETS_CLIENT_EMAIL;
-  const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, "\n").replace(/"/g, "").trim();
-  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
-  if (!clientEmail || !privateKey || !spreadsheetId) throw new Error("Google Sheets persistence is not configured");
-  const auth = new google.auth.GoogleAuth({ credentials: { client_email: clientEmail, private_key: privateKey }, scopes: ["https://www.googleapis.com/auth/spreadsheets"] });
-  const sheets = google.sheets({ version: "v4", auth });
-  const response = await sheets.spreadsheets.values.append({ spreadsheetId, range: "EventHostingRequests!A:E", valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", requestBody: { values: [[referenceId, createdAt.toISOString(), "pending", JSON.stringify(payload), ""]] } });
-  if (!response.data.updates?.updatedRows) throw new Error("Google Sheets did not confirm the appended request");
-  return response.data.updates.updatedRange || "";
-}
-
-async function updateRequestStatus(range: string, status: string) {
-  if (!range) return;
-  const clientEmail = process.env.GOOGLE_SHEETS_CLIENT_EMAIL;
-  const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, "\n").replace(/"/g, "").trim();
-  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
-  if (!clientEmail || !privateKey || !spreadsheetId) return;
-  const auth = new google.auth.GoogleAuth({ credentials: { client_email: clientEmail, private_key: privateKey }, scopes: ["https://www.googleapis.com/auth/spreadsheets"] });
-  const sheets = google.sheets({ version: "v4", auth });
-  const row = range.match(/!(?:A)(\d+):E\d+$/)?.[1];
-  if (!row) return;
-  await sheets.spreadsheets.values.update({ spreadsheetId, range: `EventHostingRequests!C${row}`, valueInputOption: "RAW", requestBody: { values: [[status]] } });
-}
 
 export async function POST(request: Request) {
   let raw: unknown;
@@ -65,15 +40,35 @@ export async function POST(request: Request) {
   const createdAt = new Date();
   const suffix = Math.random().toString(32).slice(2, 8).toUpperCase().padEnd(6, "0");
   const referenceId = `EHR-${createdAt.toISOString().slice(0,10).replace(/-/g,"")}-${suffix}`;
-    const user = process.env.GMAIL_USER, password = process.env.GMAIL_PASS;
+    const user = process.env.GMAIL_USER;
   const recipient = process.env.RECEIVER_EMAIL || process.env.EVENT_HOSTING_RECIPIENT_EMAIL;
-  let persisted = false, emailed = false, notificationStatus = "failed", sheetRange = "";
-  try { sheetRange = await appendRequest(data, referenceId, createdAt); persisted = true; } catch (error) { console.error("Event hosting persistence failed", { referenceId, errorClass: error instanceof Error ? error.name : "UnknownError" }); }
-  if (!user || !password || !recipient) {
-    console.error("Event hosting mail configuration missing", { referenceId, errorClass: "ConfigurationError" });
+  let persisted = false;
+  let emailed = false;
+  let notificationStatus: "failed" | "sent" = "failed";
+  let sheetRange = "";
+  try {
+    sheetRange = await addEventHostingRequestToGoogleSheets({
+      referenceId,
+      createdAt: createdAt.toISOString(),
+      notificationStatus: "pending",
+      payload: data,
+    });
+    persisted = true;
+  } catch (error) {
+    console.error("Event hosting persistence failed", {
+      referenceId,
+      errorClass: error instanceof Error ? error.name : "UnknownError",
+    });
+  }
+  if (!user || !recipient) {
+    console.error("Event hosting mail configuration missing", {
+      referenceId,
+      errorClass: "ConfigurationError",
+      missing: [!user && "GMAIL_USER", !process.env.GMAIL_PASS && "GMAIL_PASS", !recipient && "RECEIVER_EMAIL or EVENT_HOSTING_RECIPIENT_EMAIL"].filter(Boolean),
+    });
   } else {
     try {
-      const transporter = nodemailer.createTransport({ service: "gmail", auth: { user, pass: password } });
+      const transporter = createD4MailTransporter();
       const template = createEventHostingEmail(data, referenceId, createdAt);
       await transporter.sendMail({ from: `"D4 Community" <${user}>`, to: recipient, replyTo: data.about.email, subject: template.subject, html: template.html, text: template.text });
       emailed = true; notificationStatus = "sent";
@@ -82,7 +77,7 @@ export async function POST(request: Request) {
       }
     } catch (error) { console.error("Event hosting notification failed", { referenceId, errorClass: error instanceof Error ? error.name : "UnknownError" }); }
   }
-  if (persisted) { try { await updateRequestStatus(sheetRange, notificationStatus); } catch (error) { console.error("Event hosting status update failed", { referenceId, errorClass: error instanceof Error ? error.name : "UnknownError" }); } }
+  if (persisted) { try { await updateEventHostingNotificationStatus(sheetRange, notificationStatus); } catch (error) { console.error("Event hosting status update failed", { referenceId, errorClass: error instanceof Error ? error.name : "UnknownError" }); } }
   if (persisted && notificationStatus !== "sent") {
     // Keep the sheet's status record explicit even if the best-effort notification failed.
     console.error("Event hosting request recorded without notification", { referenceId, notificationStatus });
