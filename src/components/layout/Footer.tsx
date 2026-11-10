@@ -4,6 +4,7 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { ClassValue, clsx } from "clsx";
 import * as Color from "color-bits";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, {
   useCallback,
   useEffect,
@@ -1138,6 +1139,7 @@ export type SiteConfig = typeof siteConfig;
 
 /* ─── footer ─────────────────────────────────────────────── */
 export const Footer = () => {
+  const pathname = usePathname();
   const [isTablet, setIsTablet] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -1170,6 +1172,17 @@ export const Footer = () => {
       ].join(" ")}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {pathname !== "/host-an-event" && (
+          <div className="mb-10 flex flex-col gap-5 rounded-2xl border border-border bg-card/50 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <div className="max-w-3xl">
+              <h2 className="text-lg font-semibold text-foreground">Want to Host a D4 Event?</h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Bring the D4 Community experience to your campus or organization. Partner with us to host developer meetups, workshops, hackathons, and other community events.</p>
+            </div>
+            <Link href="/host-an-event" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-border px-5 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              Express Your Interest <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 md:gap-12">
           {/* ── Brand column ── */}
           <div className="lg:col-span-7 flex flex-col items-start gap-y-6">
