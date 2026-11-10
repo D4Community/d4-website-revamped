@@ -1,0 +1,5 @@
+# Event hosting request storage
+
+The `/api/host-an-event` route appends validated requests to the existing Google Sheets integration. Configure a spreadsheet tab named `EventHostingRequests`; the route appends a row with reference ID, creation timestamp, notification status, and the full validated request JSON. The Google service account needs append and update access to that tab. Restrict spreadsheet sharing to the D4 team because submissions contain applicant contact details. Notification status is updated after the team email attempt. If persistence is unavailable but team email succeeds, the request is accepted and the server logs the persistence failure. If neither persistence nor email succeeds, the route returns an error and the form does not show success.
+
+The existing Google Sheets environment variables are `GOOGLE_SHEETS_CLIENT_EMAIL`, `GOOGLE_SHEETS_PRIVATE_KEY`, and `GOOGLE_SHEETS_SPREADSHEET_ID`. Existing mail variables are `GMAIL_USER`, `GMAIL_PASS`, and `RECEIVER_EMAIL`. Optional event hosting variables are listed by name in `.env.example`; no values belong in client code.

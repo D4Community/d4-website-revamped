@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createHash } from "node:crypto";
 import { headers } from "next/headers";
 import nodemailer from "nodemailer";
 import { google } from "googleapis";
@@ -7,7 +8,7 @@ import { createEventHostingAcknowledgement, createEventHostingEmail } from "@/li
 
 export const runtime = "nodejs";
 const hits = new Map<string, number[]>();
-const idempotency = new Map<string, { at: number; referenceId: string }>();
+const idempotency = new Map<string, { at: number; referenceId: string; fingerprint: string }>();
 const fingerprints = new Map<string, { at: number; referenceId: string }>();
 const hour = 60 * 60 * 1000;
 
@@ -55,15 +56,16 @@ export async function POST(request: Request) {
   recent.push(now); hits.set(forwarded, recent);
   for (const [key, record] of idempotency) if (now - record.at > 24 * hour) idempotency.delete(key);
   for (const [key, record] of fingerprints) if (now - record.at > 24 * hour) fingerprints.delete(key);
-  const fingerprint = `${data.about.email.toLowerCase()}|${data.institution.institutionName.toLowerCase()}|${[...data.event.eventTypes].sort().join(",")}`;
+  const content = structuredClone(data) as Record<string, unknown>;
+  delete content.idempotencyKey; delete content.startedAt; delete content.honeypot; delete content.consent;
+  const fingerprint = createHash("sha256").update(JSON.stringify(content)).digest("hex");
   const duplicate = fingerprints.get(fingerprint);
   const priorIdempotency = idempotency.get(data.idempotencyKey);
-  if (priorIdempotency || duplicate) return NextResponse.json({ ok: false, code: "DUPLICATE", referenceId: duplicate?.referenceId || priorIdempotency?.referenceId });
+  if (duplicate || (priorIdempotency?.fingerprint === fingerprint)) return NextResponse.json({ ok: false, code: "DUPLICATE", referenceId: duplicate?.referenceId || priorIdempotency?.referenceId });
   const createdAt = new Date();
   const suffix = Math.random().toString(32).slice(2, 8).toUpperCase().padEnd(6, "0");
   const referenceId = `EHR-${createdAt.toISOString().slice(0,10).replace(/-/g,"")}-${suffix}`;
-  const subject = `New Event Hosting Request – ${data.institution.institutionName}`.replace(/[\r\n]/g, " ").slice(0, 120);
-  const user = process.env.GMAIL_USER, password = process.env.GMAIL_PASS;
+    const user = process.env.GMAIL_USER, password = process.env.GMAIL_PASS;
   const recipient = process.env.RECEIVER_EMAIL || process.env.EVENT_HOSTING_RECIPIENT_EMAIL;
   let persisted = false, emailed = false, notificationStatus = "failed", sheetRange = "";
   try { sheetRange = await appendRequest(data, referenceId, createdAt); persisted = true; } catch (error) { console.error("Event hosting persistence failed", { referenceId, errorClass: error instanceof Error ? error.name : "UnknownError" }); }
@@ -73,7 +75,7 @@ export async function POST(request: Request) {
     try {
       const transporter = nodemailer.createTransport({ service: "gmail", auth: { user, pass: password } });
       const template = createEventHostingEmail(data, referenceId, createdAt);
-      await transporter.sendMail({ from: `"D4 Community" <${user}>`, to: recipient, replyTo: data.about.email, subject, html: template.html, text: template.text });
+      await transporter.sendMail({ from: `"D4 Community" <${user}>`, to: recipient, replyTo: data.about.email, subject: template.subject, html: template.html, text: template.text });
       emailed = true; notificationStatus = "sent";
       if (process.env.EVENT_HOSTING_ACK_ENABLED === "true") {
         try { const ack = createEventHostingAcknowledgement(data, referenceId); await transporter.sendMail({ from: `"D4 Community" <${user}>`, to: data.about.email, ...ack }); } catch (error) { console.error("Event hosting acknowledgement failed", { referenceId, errorClass: error instanceof Error ? error.name : "UnknownError" }); }
@@ -86,6 +88,6 @@ export async function POST(request: Request) {
     console.error("Event hosting request recorded without notification", { referenceId, notificationStatus });
   }
   if (!persisted && !emailed) return NextResponse.json({ ok: false, code: "SERVER" }, { status: 500 });
-  idempotency.set(data.idempotencyKey, { at: now, referenceId }); fingerprints.set(fingerprint, { at: now, referenceId });
+  idempotency.set(data.idempotencyKey, { at: now, referenceId, fingerprint }); fingerprints.set(fingerprint, { at: now, referenceId });
   return NextResponse.json({ ok: true, referenceId });
 }
