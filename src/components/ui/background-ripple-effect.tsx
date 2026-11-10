@@ -1,30 +1,41 @@
 "use client";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export const BackgroundRippleEffect = ({
   rows = 10,
   cols = 27,
   cellSize = 56,
+  interactive = true,
+  borderColor = "var(--cell-border-color)",
+  fillColor = "var(--cell-fill-color)",
+  borderStyle = "solid",
+  cellOpacity = 0.4,
+  className,
 }: {
   rows?: number;
   cols?: number;
   cellSize?: number;
+  interactive?: boolean;
+  borderColor?: string;
+  fillColor?: string;
+  borderStyle?: React.CSSProperties["borderStyle"];
+  cellOpacity?: number;
+  className?: string;
 }) => {
   const [clickedCell, setClickedCell] = useState<{
     row: number;
     col: number;
   } | null>(null);
   const [rippleKey, setRippleKey] = useState(0);
-  const ref = useRef<any>(null);
 
   return (
     <div
-      ref={ref}
       className={cn(
         "absolute inset-0 h-full w-full",
         "[--cell-border-color:var(--color-neutral-300)] [--cell-fill-color:var(--color-neutral-100)] [--cell-shadow-color:var(--color-neutral-500)]",
         "dark:[--cell-border-color:var(--color-neutral-700)] dark:[--cell-fill-color:var(--color-neutral-900)] dark:[--cell-shadow-color:var(--color-neutral-800)]",
+        className,
       )}
     >
       <div className="relative h-auto w-auto overflow-hidden">
@@ -35,14 +46,16 @@ export const BackgroundRippleEffect = ({
           rows={rows}
           cols={cols}
           cellSize={cellSize}
-          borderColor="var(--cell-border-color)"
-          fillColor="var(--cell-fill-color)"
+          borderColor={borderColor}
+          fillColor={fillColor}
+          borderStyle={borderStyle}
+          cellOpacity={cellOpacity}
           clickedCell={clickedCell}
           onCellClick={(row, col) => {
             setClickedCell({ row, col });
             setRippleKey((k) => k + 1);
           }}
-          interactive
+          interactive={interactive}
         />
       </div>
     </div>
@@ -59,6 +72,8 @@ type DivGridProps = {
   clickedCell: { row: number; col: number } | null;
   onCellClick?: (row: number, col: number) => void;
   interactive?: boolean;
+  borderStyle?: React.CSSProperties["borderStyle"];
+  cellOpacity?: number;
 };
 
 type CellStyle = React.CSSProperties & {
@@ -76,6 +91,8 @@ const DivGrid = ({
   clickedCell = null,
   onCellClick = () => {},
   interactive = true,
+  borderStyle = "solid",
+  cellOpacity = 0.4,
 }: DivGridProps) => {
   const cells = useMemo(
     () => Array.from({ length: rows * cols }, (_, idx) => idx),
@@ -120,6 +137,8 @@ const DivGrid = ({
             style={{
               backgroundColor: fillColor,
               borderColor: borderColor,
+              borderStyle,
+              opacity: cellOpacity,
               ...style,
             }}
             onClick={
