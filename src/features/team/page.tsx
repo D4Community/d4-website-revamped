@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { TeamHero, CoOrganizers, Leads, CoreTeam, Volunteers } from './sections';
+import { TeamHero, CoOrganizers, Leads, CoreTeam, Volunteers, Campuses } from './sections';
 import { getTeamMembers, memberImageUrl } from './lib/queries';
 import type { TeamMember } from './lib/types';
 import { TeamModalProvider, TeamMemberModal } from './components';
@@ -15,6 +15,11 @@ export const slugify = (text: string) =>
 const isUsableUrl = (url?: string): url is string =>
   Boolean(url && url !== '#' && url !== '/');
 
+const jobTitleFor = (member: TeamMember & { roleCategory?: string }) => {
+  const title = member.designation || member.roleCategory || '';
+  return member.campus?.name ? `${title}, ${member.campus.name}` : title;
+};
+
 const getSocialLinks = (member: TeamMember): string[] => {
   const links = [
     member.linkedin,
@@ -29,8 +34,9 @@ const getSocialLinks = (member: TeamMember): string[] => {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { organizers = [], coOrganizers = [], leads = [], core = [], volunteers = [] } = await getTeamMembers();
-  const allMembers = [...organizers, ...coOrganizers, ...leads, ...core, ...volunteers];
+  const { organizers = [], coOrganizers = [], leads = [], core = [], volunteers = [], campuses = [] } = await getTeamMembers();
+  const campusMembers = campuses.flatMap((campus) => campus.members);
+  const allMembers = [...organizers, ...coOrganizers, ...leads, ...core, ...volunteers, ...campusMembers];
   const allNames = allMembers.map((m) => m.name);
 
   return {
@@ -55,7 +61,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const TeamPage = async () => {
-  const { organizers = [], coOrganizers = [], leads = [], core = [], volunteers = [] } = await getTeamMembers();
+  const { organizers = [], coOrganizers = [], leads = [], core = [], volunteers = [], campuses = [] } = await getTeamMembers();
 
   const categorisedMembers = [
     ...organizers.map((m) => ({ ...m, roleCategory: 'Organizer / Co-Founder' })),
@@ -63,6 +69,12 @@ const TeamPage = async () => {
     ...leads.map((m) => ({ ...m, roleCategory: 'Team Lead' })),
     ...core.map((m) => ({ ...m, roleCategory: 'Core Team Member' })),
     ...volunteers.map((m) => ({ ...m, roleCategory: 'Volunteer' })),
+    ...campuses.flatMap((campus) =>
+      campus.members.map((member) => ({
+        ...member,
+        roleCategory: member.designation,
+      })),
+    ),
   ];
 
   // First-class Person nodes for search crawlers and AI answer engines
@@ -78,7 +90,7 @@ const TeamPage = async () => {
       'name': member.name,
       'url': profileUrl,
       ...(rawImage ? { 'image': rawImage } : {}),
-      'jobTitle': member.designation || member.roleCategory,
+      'jobTitle': jobTitleFor(member),
       ...(member.description ? { 'description': member.description } : {}),
       'worksFor': { '@id': 'https://www.d4community.com/#organization' },
       'memberOf': { '@id': 'https://www.d4community.com/#organization' },
@@ -141,7 +153,7 @@ const TeamPage = async () => {
           {categorisedMembers.map((member) => (
             <li key={member._id || member.name}>
               <h3>{member.name}</h3>
-              <p>{member.designation || member.roleCategory} at D4 Community</p>
+              <p>{jobTitleFor(member)} at D4 Community</p>
             </li>
           ))}
         </ul>
@@ -151,6 +163,7 @@ const TeamPage = async () => {
         <CoOrganizers organizers={organizers} coOrganizers={coOrganizers} />
         <Leads leads={leads} />
         <CoreTeam core={core} />
+        <Campuses campuses={campuses} />
         <Volunteers volunteers={volunteers} />
         <TeamMemberModal />
       </TeamModalProvider>

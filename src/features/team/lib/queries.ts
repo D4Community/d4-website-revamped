@@ -1,7 +1,8 @@
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import type { SanityImageSource } from "@sanity/image-url";
-import type { TeamMember, TeamMembersBySection } from "./types";
+import { groupCampuses } from "./groupCampuses";
+import type { CampusRef, TeamMember, TeamMembersBySection } from "./types";
 
 /**
  * Safely build a Sanity image URL for a member. Returns `null` when the
@@ -23,77 +24,94 @@ export function memberImageUrl(
 }
 
 /**
- * Fetches every active team member once, then reduces the flat array into the
- * four buckets consumed by the team-page sections.
+ * Fetches active campuses and team members once, then splits members into the
+ * central sections plus one stacked block per campus.
  *
  * Sorted by `orderRank asc, name asc` so editors can pin a person to a slot
  * (e.g. organizer 1 / organizer 2) by tweaking the orderRank field in the
  * teamMember document.
  */
-export async function getTeamMembers(): Promise<TeamMembersBySection> {
-  const empty: TeamMembersBySection = {
-    organizers: [],
-    coOrganizers: [],
-    leads: [],
-    core: [],
-    volunteers: [],
-  };
+interface TeamQueryResult {
+  campuses: CampusRef[];
+  members: TeamMember[];
+}
 
+const emptyTeam = (): TeamMembersBySection => ({
+  organizers: [],
+  coOrganizers: [],
+  leads: [],
+  core: [],
+  volunteers: [],
+  campuses: [],
+});
+
+export async function getTeamMembers(): Promise<TeamMembersBySection> {
   try {
-    const all = await client.fetch<TeamMember[]>(
-      `*[_type == "teamMember" && isActive == true] | order(orderRank asc, name asc) {
-        _id,
-        name,
-        designation,
-        group,
-        description,
-        email,
-        linkedin,
-        github,
-        twitter,
-        medium,
-        portfolio,
-        website,
-        instagram,
-        image{ asset->{_id, url}, hotspot, alt },
-        "slug": slug.current,
-        orderRank,
-        isActive
+    const { campuses, members } = await client.fetch<TeamQueryResult>(
+      `{
+        "campuses": *[_type == "campus" && isActive == true] | order(orderRank asc, name asc) {
+          _id,
+          name,
+          description,
+          "slug": slug.current
+        },
+        "members": *[_type == "teamMember" && isActive == true] | order(orderRank asc, name asc) {
+          _id,
+          name,
+          designation,
+          group,
+          campus->{ _id, name, "slug": slug.current },
+          description,
+          email,
+          linkedin,
+          github,
+          twitter,
+          medium,
+          portfolio,
+          website,
+          instagram,
+          image{ asset->{_id, url}, hotspot, alt },
+          "slug": slug.current,
+          orderRank,
+          isActive
+        }
       }`,
       {},
-      { next: { revalidate: 3600 } },
+      { cache: "no-store" },
     );
 
-    return all.reduce<TeamMembersBySection>(
-      (acc, member) => {
-        const group = member.group?.toLowerCase();
-        switch (group) {
-          case "organizer":
-            acc.organizers.push(member);
-            break;
-          case "co-organizer":
-          case "coorganizer":
-          case "co_organizer":
-            acc.coOrganizers.push(member);
-            break;
-          case "leads":
-          case "lead":
-            acc.leads.push(member);
-            break;
-          case "core":
-            acc.core.push(member);
-            break;
-          case "volunteer":
-          case "volunteers":
-            acc.volunteers.push(member);
-            break;
-        }
-        return acc;
-      },
-      { organizers: [], coOrganizers: [], leads: [], core: [], volunteers: [] },
-    );
+    const sections = (members ?? []).reduce<TeamMembersBySection>((acc, member) => {
+      const group = member.group?.toLowerCase();
+      switch (group) {
+        case "organizer":
+          acc.organizers.push(member);
+          break;
+        case "co-organizer":
+        case "coorganizer":
+        case "co_organizer":
+          acc.coOrganizers.push(member);
+          break;
+        case "leads":
+        case "lead":
+          acc.leads.push(member);
+          break;
+        case "core":
+          acc.core.push(member);
+          break;
+        case "volunteer":
+        case "volunteers":
+          acc.volunteers.push(member);
+          break;
+        default:
+          break;
+      }
+      return acc;
+    }, emptyTeam());
+
+    sections.campuses = groupCampuses(campuses ?? [], members ?? []);
+    return sections;
   } catch (error) {
     console.error("Failed to fetch team members from Sanity:", error);
-    return empty;
+    return emptyTeam();
   }
 }

@@ -10,19 +10,31 @@ import type { SanityImageSource } from "@sanity/image-url";
  *   - "leads"        → Leads
  *   - "core"         → CoreTeam
  *   - "volunteer"    → Volunteers
+ *   - "campus"       → that campus's grid
+ *
+ * A `leads` member with `campus` set is also that campus's header.
  */
 export type TeamMemberGroup =
   | "organizer"
   | "co-organizer"
   | "leads"
   | "core"
-  | "volunteer";
+  | "volunteer"
+  | "campus";
+
+export interface CampusRef {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+}
 
 export interface TeamMember {
   _id: string;
   name: string;
   designation: string;
   group: TeamMemberGroup;
+  campus?: CampusRef | null;
   description?: string;
   email?: string;
   linkedin?: string;
@@ -41,10 +53,17 @@ export interface TeamMember {
   isActive?: boolean;
 }
 
+export interface CampusTeam {
+  campus: CampusRef;
+  leads: TeamMember[];
+  members: TeamMember[];
+}
+
 export interface TeamMembersBySection {
   organizers: TeamMember[];
   coOrganizers: TeamMember[];
   leads: TeamMember[];
   core: TeamMember[];
   volunteers: TeamMember[];
+  campuses: CampusTeam[];
 }

@@ -30,6 +30,7 @@ export default async function TeamSchema() {
     leads = [],
     core = [],
     volunteers = [],
+    campuses = [],
   } = await getTeamMembers();
 
   const allMembers = [
@@ -37,6 +38,12 @@ export default async function TeamSchema() {
     ...leads.map((m) => ({ ...m, roleCategory: "Team Lead" })),
     ...core.map((m) => ({ ...m, roleCategory: "Core Team Member" })),
     ...volunteers.map((m) => ({ ...m, roleCategory: "Volunteer" })),
+    ...campuses.flatMap((campus) =>
+      campus.members.map((member) => ({
+        ...member,
+        roleCategory: member.designation,
+      })),
+    ),
   ];
 
   const personEntities = allMembers.map((member) => {
@@ -52,7 +59,9 @@ export default async function TeamSchema() {
       name: member.name,
       url: profileUrl,
       ...(rawImage ? { image: rawImage } : {}),
-      jobTitle: member.designation || member.roleCategory,
+      jobTitle: member.campus?.name
+        ? `${member.designation || member.roleCategory}, ${member.campus.name}`
+        : member.designation || member.roleCategory,
       ...(member.description ? { description: member.description } : {}),
       worksFor: {
         "@type": "Organization",

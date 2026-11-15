@@ -30,10 +30,25 @@ export const teamMemberType = defineType({
           {title: 'Leads', value: 'leads'},
           {title: 'Core', value: 'core'},
           {title: 'Volunteer', value: 'volunteer'},
+          {title: 'Campus team', value: 'campus'},
         ],
         layout: 'radio',
       },
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'campus',
+      title: 'Campus',
+      type: 'reference',
+      to: [{type: 'campus'}],
+      description: 'Set on a campus lead, or on a campus team member.',
+      hidden: ({document}) => document?.group !== 'campus' && document?.group !== 'leads',
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const group = (context.document as {group?: string})?.group
+          if (group === 'campus' && !value) return 'Campus is required for campus team members'
+          return true
+        }),
     }),
     defineField({
       name: 'description',
@@ -163,15 +178,17 @@ export const teamMemberType = defineType({
       media: 'image',
       group: 'group',
       active: 'isActive',
+      campusName: 'campus.name',
     },
     prepare(selection) {
-      const {title, subtitle, media, group, active} = selection
+      const {title, subtitle, media, group, active, campusName} = selection
       const groupLabel = group ? String(group).toUpperCase() : 'UNASSIGNED'
       const statusLabel = active ? 'Active' : 'Inactive'
+      const campusLabel = campusName ? ` • ${campusName}` : ''
 
       return {
         title,
-        subtitle: `${subtitle || 'No designation'} • ${groupLabel} • ${statusLabel}`,
+        subtitle: `${subtitle || 'No designation'} • ${groupLabel}${campusLabel} • ${statusLabel}`,
         media,
       }
     },

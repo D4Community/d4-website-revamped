@@ -112,6 +112,16 @@ export const Leads = ({ leads }: { leads: TeamMember[] }) => {
                   >
                     {lead.designation}
                   </p>
+                  {lead.campus?.name && lead.campus.slug && (
+                    <a
+                      href={`#campus-${lead.campus.slug}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="mt-1.5 inline-flex max-w-full items-center rounded-full border border-[#f6b26b]/40 bg-[#f6b26b]/10 px-2 py-0.5 text-[10px] font-medium text-[#f6b26b] truncate"
+                      title={lead.campus.name}
+                    >
+                      {lead.campus.name}
+                    </a>
+                  )}
                 </div>
 
                 {/* LinkedIn Icon */}

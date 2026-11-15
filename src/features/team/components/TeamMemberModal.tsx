@@ -72,6 +72,14 @@ const getGroupTheme = (member: TeamMember) => {
     };
   }
 
+  if (group === "campus") {
+    return {
+      name: member.campus?.name || "Campus",
+      badgeColor: "text-[#f6b26b] bg-[#f6b26b]/10 border-[#f6b26b]/30",
+      icon: Star,
+    };
+  }
+
   if (group === "volunteer" || group === "volunteers") {
     return {
       name: "Volunteer",
@@ -357,6 +365,11 @@ export const TeamMemberModal = () => {
                     <p className="text-xs sm:text-sm md:text-base font-medium text-muted-foreground mt-0.5 sm:mt-1">
                       {selectedMember.designation}
                     </p>
+                    {selectedMember.group?.toLowerCase() === "leads" && selectedMember.campus?.name && (
+                      <p className="text-[11px] sm:text-xs text-[#f6b26b] mt-1">
+                        {selectedMember.campus.name}
+                      </p>
+                    )}
                   </div>
                 </div>
 
