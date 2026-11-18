@@ -3,7 +3,7 @@ import OrgSchema from "@/schema/org-schema";
 import TeamSchema from "@/schema/TeamSchema";
 import { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "D4 Community Team | Meet the People Behind D4",

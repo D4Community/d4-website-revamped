@@ -77,7 +77,7 @@ export async function getTeamMembers(): Promise<TeamMembersBySection> {
         }
       }`,
       {},
-      { cache: "no-store" },
+      { next: { revalidate: 3600 } },
     );
 
     const sections = (members ?? []).reduce<TeamMembersBySection>((acc, member) => {
