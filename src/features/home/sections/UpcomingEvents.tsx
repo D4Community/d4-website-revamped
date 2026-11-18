@@ -15,186 +15,9 @@ import {
   Users,
 } from "lucide-react";
 import { EventSchema } from "@/schema";
+import type { UpcomingEvent } from "@/features/events/data";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  date: string;
-  rawStartDate?: string;
-  rawEndDate?: string;
-  location: string;
-  startTime?: string;
-  endTime?: string;
-  participants?: number;
-  eventType?: string;
-  registrationLink?: string;
-  learnMoreLink?: string;
-  slug?: string;
-  komunitySlug?: string;
-  dataFormEntityId?: number;
-}
-
-// ─── Cache ────────────────────────────────────────────────────────────────────
-
-const CACHE_KEY = "upe_v2";
-const CACHE_TTL = 5 * 60 * 1000;
-
-function readCache(): Event[] | null {
-  try {
-    const raw = sessionStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const { data, ts } = JSON.parse(raw);
-    return Date.now() - ts < CACHE_TTL ? data : null;
-  } catch {
-    return null;
-  }
-}
-function writeCache(data: Event[]) {
-  try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() }));
-  } catch {}
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function decodeHtmlEntities(text: string): string {
-  const entities: { [key: string]: string } = {
-    "&ldquo;": '"',
-    "&rdquo;": '"',
-    "&lsquo;": "'",
-    "&raquo;": "'",
-    "&amp;": "&",
-    "&lt;": "<",
-    "&gt;": ">",
-    "&quot;": '"',
-    "&#39;": "'",
-    "&nbsp;": " ",
-    "&mdash;": "—",
-    "&ndash;": "–",
-    "&hellip;": "…",
-    "&copy;": "©",
-    "&reg;": "®",
-    "&trade;": "™",
-  };
-
-  return text.replace(/&[a-zA-Z0-9#]+;/g, (match) => {
-    if (match.startsWith("&#x")) {
-      const code = parseInt(match.slice(3, -1), 16);
-      return String.fromCharCode(code);
-    } else if (match.startsWith("&#")) {
-      const code = parseInt(match.slice(2, -1), 10);
-      return String.fromCharCode(code);
-    }
-    return entities[match] || match;
-  });
-}
-
-function stripHtml(html: string): string {
-  let text = decodeHtmlEntities(html);
-  text = text.replace(/<[^>]*>/g, " ");
-  text = text.replace(/\s+/g, " ").trim();
-  return text;
-}
-
-function parseDescription(raw?: string): string {
-  if (!raw) return "Join us for an exciting community event.";
-  const text = stripHtml(raw);
-  const lines = text.split(/[\n\r]+/).filter((l) => l.trim().length > 20);
-  const para = lines[0]?.trim() || text;
-  if (para.length <= 180) return para;
-  const sentences = para.match(/[^.!?]+[.!?]+/g) || [];
-  let out = "";
-  for (const s of sentences) {
-    if ((out + s).length <= 180) out += s;
-    else break;
-  }
-  return out || para.slice(0, 180) + "…";
-}
-
-function fmtDate(iso?: string) {
-  if (!iso) return "Coming Soon";
-  return new Date(iso).toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function fmtTime(iso?: string) {
-  if (!iso) return undefined;
-  return new Date(iso).toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function extractAttendeeFormId(item: any): number | undefined {
-  if (item.data_form_entity_id) return item.data_form_entity_id;
-
-  const groups =
-    item.event_data_form_entity_groups || item.data_form_entity_groups || [];
-  if (Array.isArray(groups) && groups.length > 0) {
-    const attendeeGroup = groups.find(
-      (g: any) =>
-        g?.registration_type?.name === "attendee" ||
-        g?.name?.toLowerCase().includes("attendee")
-    );
-    if (attendeeGroup?.data_form_entity_id) {
-      return attendeeGroup.data_form_entity_id;
-    }
-    const firstGroupWithId = groups.find((g: any) => g?.data_form_entity_id);
-    if (firstGroupWithId?.data_form_entity_id) {
-      return firstGroupWithId.data_form_entity_id;
-    }
-  }
-  return undefined;
-}
-
-function getRegistrationLink(event: any): string {
-  const formId = event.dataFormEntityId || extractAttendeeFormId(event);
-
-  if (formId) {
-    return `https://www.commudle.com/fill-form/${formId}`;
-  }
-
-  if (event.description) {
-    const decodedDesc = decodeHtmlEntities(event.description);
-    const regMatch = decodedDesc.match(
-      /https?:\/\/[^\s"'<>]*(?:register|signup|sign-up|form|apply|devfolio)[^\s"'>]*/i
-    );
-    if (regMatch) return regMatch[0];
-  }
-
-  if (event.slug) {
-    return `https://commudle.com/communities/d4-community/events/${event.slug}`;
-  }
-
-  return "";
-}
-
-function getLearnMoreLink(event: any): string {
-  if (event.slug) {
-    return `https://commudle.com/communities/d4-community/events/${event.slug}/#details`;
-  }
-
-  if (event.description) {
-    const decodedDesc = decodeHtmlEntities(event.description);
-    const allLinks = [...decodedDesc.matchAll(/https?:\/\/[^\s"'<>]+/g)].map(
-      (m) => m[0]
-    );
-    const learnLink = allLinks.find(
-      (l) => !/register|signup|apply|fill-form/i.test(l)
-    );
-    if (learnLink) return learnLink;
-  }
-
-  return "";
-}
+type Event = UpcomingEvent;
 
 // ─── Fallback SVG ─────────────────────────────────────────────────────────────
 
@@ -269,27 +92,6 @@ function ProgressBar({ duration, id }: { duration: number; id: number }) {
   );
 }
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
-
-function Skeleton() {
-  return (
-    <div className="rounded-3xl bg-white dark:bg-neutral-950 border border-gray-200 dark:border-white/[0.06] overflow-hidden shadow-2xl">
-      <div className="grid md:grid-cols-[1fr_400px]">
-        <div className="p-6 bg-gray-50 dark:bg-black/20 animate-pulse">
-          <div className="w-full aspect-video rounded-xl bg-gray-200 dark:bg-neutral-800" />
-        </div>
-        <div className="p-8 flex flex-col gap-4 animate-pulse">
-          <div className="h-3 w-20 rounded-full bg-gray-200 dark:bg-neutral-800" />
-          <div className="h-7 w-3/4 rounded-lg bg-gray-200 dark:bg-neutral-800" />
-          <div className="h-4 w-full rounded bg-gray-200 dark:bg-neutral-800" />
-          <div className="h-4 w-5/6 rounded bg-gray-200 dark:bg-neutral-800" />
-          <div className="mt-auto h-11 w-full rounded-xl bg-gray-200 dark:bg-neutral-800" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── Empty ────────────────────────────────────────────────────────────────────
 
 function Empty() {
@@ -336,65 +138,14 @@ function NavArrow({
 
 export interface UpcomingEventsProps {
   className?: string;
+  events: Event[];
 }
 
 const AUTO_MS = 7000;
 
-export function UpcomingEvents({ className }: UpcomingEventsProps) {
+export function UpcomingEvents({ className, events }: UpcomingEventsProps) {
   const [idx, setIdx] = useState(0);
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // ── Fetch with cache ──────────────────────────────────────────────────────
-  useEffect(() => {
-    const cached = readCache();
-    if (cached) {
-      setEvents(cached);
-      setLoading(false);
-      return;
-    }
-    (async () => {
-      try {
-        const res = await fetch("/api/upcoming-events");
-        if (!res.ok) throw new Error(`${res.status}`);
-        const data = await res.json();
-        const mapped: Event[] = (data?.data?.values ?? []).map((item: any) => {
-          const attendeeFormId = extractAttendeeFormId(item);
-
-          return {
-            id: item.id,
-            title: decodeHtmlEntities(item.name || "Untitled Event"),
-            description: parseDescription(item.description),
-            imageUrl: item.header_image_path || "",
-            date: fmtDate(item.start_time),
-            rawStartDate: item.start_time || undefined,
-            rawEndDate: item.end_time || undefined,
-            location: item.event_locations?.[0]?.name || "Location TBD",
-            startTime: fmtTime(item.start_time),
-            endTime: fmtTime(item.end_time),
-            participants: item.interested_members_count || undefined,
-            eventType: item.event_type || "online",
-            slug: item.slug,
-            komunitySlug: item.kommunity_slug,
-            dataFormEntityId: attendeeFormId,
-            registrationLink: getRegistrationLink({
-              ...item,
-              dataFormEntityId: attendeeFormId,
-            }),
-            learnMoreLink: getLearnMoreLink(item),
-          };
-        });
-        writeCache(mapped);
-        setEvents(mapped);
-      } catch {
-  setError("Failed to load events. Please try again.");
-} finally {
-  setLoading(false);
-}
-    })();
-  }, []);
 
   // ── Auto-rotate ───────────────────────────────────────────────────────────
   const next = useCallback(
@@ -437,7 +188,7 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
     <section
       aria-labelledby="upcoming-events-heading"
       className={cn(
-        "w-full max-w-7xl mx-auto px-4 lg:px-0 pt-4 sm:pt-12 md:pt-20 pb-12 md:pb-20",
+        "w-full max-w-7xl mx-auto px-4 lg:px-0 pt-4 sm:pt-12 md:pt-20 pb-12 md:pb-20 min-h-[40rem]",
         className
       )}
     >
@@ -454,32 +205,10 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
         </div>
       </div>
 
-      {/* ── Loading ── */}
-      {loading && <Skeleton />}
+      <div className="min-h-[28rem]">
+      {events.length === 0 && <Empty />}
 
-      {/* ── Error ── */}
-      {!loading && error && (
-        <div className="rounded-3xl border border-red-300 dark:border-red-900/30 bg-red-50 dark:bg-red-950/20 px-6 py-12 text-center">
-          <p className="text-red-600 dark:text-red-400 font-medium text-sm">
-            {error}
-          </p>
-          <button
-            onClick={() => {
-              sessionStorage.removeItem(CACHE_KEY);
-              window.location.reload();
-            }}
-            className="mt-4 text-xs text-red-500 hover:text-red-700 dark:text-red-500/70 dark:hover:text-red-400 underline underline-offset-4 transition"
-          >
-            Try again
-          </button>
-        </div>
-      )}
-
-      {/* ── Empty ── */}
-      {!loading && !error && events.length === 0 && <Empty />}
-
-      {/* ── Event card ── */}
-      {!loading && !error && ev && (
+      {ev && (
         <article className="relative rounded-3xl bg-white dark:bg-neutral-950 border border-gray-200 dark:border-white/[0.07] overflow-hidden">
           <EventSchema
             event={{
@@ -786,8 +515,9 @@ export function UpcomingEvents({ className }: UpcomingEventsProps) {
           </div>
         </article>
       )}
+      </div>
       <p className="mt-2 md:mt-4 text-center">
-        {!loading && events.length > 0 && (
+        {events.length > 0 && (
           <span className="text-xs text-gray-500 dark:text-white/30 font-semibold tracking-wide">
             {events.length} event{events.length !== 1 ? "s" : ""} upcoming
           </span>

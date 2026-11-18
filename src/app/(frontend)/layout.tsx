@@ -49,7 +49,7 @@ export default function FrontendLayout({
           {children}
           <CTASection />
         </main>
-        <Footer />
+        {/* <Footer /> */}
       {/* </SmoothScrollProvider> */}
     </ThemeProvider>
   );

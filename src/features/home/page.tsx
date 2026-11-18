@@ -10,12 +10,17 @@ import XReviews from "./sections/XReview";
 import { FAQSchema } from "@/schema";
 import { getCommunityPartners, getPartners } from "@/features/partners/queries";
 import { getGalleryImages } from "@/features/gallery/queries";
+import { getPastEvents, getUpcomingEvents } from "@/features/events/data";
+import { getReviewTweets } from "@/features/reviews/tweets";
 
 export const HomePage = async () => {
-  const [partners, communityPartners, galleryImages] = await Promise.all([
+  const [partners, communityPartners, galleryImages, upcoming, past, tweets] = await Promise.all([
     getPartners(),
     getCommunityPartners(),
-    getGalleryImages(18)
+    getGalleryImages(18),
+    getUpcomingEvents(),
+    getPastEvents(),
+    getReviewTweets(),
   ]);
 
   return (
@@ -26,14 +31,14 @@ export const HomePage = async () => {
       <CommunityPartners partners={communityPartners} />
       <Partners partners={partners} />
       <div>
-        <UpcomingEvents />
+        <UpcomingEvents events={upcoming} />
       </div>
       <div className="py-12">
-        <EventCarousel />
+        <EventCarousel events={past} />
       </div>
       <AboutSection />
       {/* <LogosSlider /> */}
-      <XReviews />
+      <XReviews tweets={tweets} />
       <GallerySection images={galleryImages} />
       <FAQPage />
     </main>

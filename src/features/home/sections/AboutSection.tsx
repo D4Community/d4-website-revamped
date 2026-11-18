@@ -6,16 +6,10 @@ import React, {
   useRef,
   useEffect,
   useCallback,
+  useSyncExternalStore,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Marker,
-  ZoomableGroup,
-  Sphere,
-} from "react-simple-maps";
+import type { MapCanvasProps } from "./globe-map";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -464,24 +458,6 @@ type FilterType = "all" | "speakers" | "leads" | "events";
 type ViewMode = "map" | "globe";
 
 // ─── Pure helpers (module level) ─────────────────────────────────────────────
-function isPointVisible(
-  lng: number,
-  lat: number,
-  rotation: [number, number, number],
-): boolean {
-  const toRad = (d: number) => (d * Math.PI) / 180;
-  const camLng = toRad(-rotation[0]);
-  const camLat = toRad(-rotation[1]);
-  const ptLng = toRad(lng);
-  const ptLat = toRad(lat);
-  const dot =
-    Math.cos(camLat) * Math.cos(ptLat) * Math.cos(ptLng - camLng) +
-    Math.sin(camLat) * Math.sin(ptLat);
-  // FIX: d3's orthographic projection returns null for dot < 0, which made
-  // <Marker> crash near the horizon. Keep a small positive margin.
-  return dot > 0.01;
-}
-
 function calcPopupPos(
   anchorX: number,
   anchorY: number,
@@ -541,39 +517,29 @@ const typeAccent = (type: string) => {
   };
 };
 
-const getTypeColor = (type: string) =>
-  type === "speaker" ? "#3b82f6" : type === "lead" ? "#10b981" : "#f59e0b";
+function readDarkMode() {
+  return (
+    document.documentElement.classList.contains("dark") ||
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+}
 
-// ─── Reactive dark-mode hook ─────────────────────────────────────────────────
+function subscribeToDarkMode(onChange: () => void) {
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  mq.addEventListener("change", onChange);
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+  return () => {
+    mq.removeEventListener("change", onChange);
+    observer.disconnect();
+  };
+}
+
 function useDarkMode() {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const isDarkMode = () => {
-      if (typeof window === "undefined") return false;
-      if (document.documentElement.classList.contains("dark")) return true;
-      return window.matchMedia("(prefers-color-scheme: dark)").matches;
-    };
-
-    setIsDark(isDarkMode());
-
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleMqChange = () => setIsDark(isDarkMode());
-    mq.addEventListener("change", handleMqChange);
-
-    const observer = new MutationObserver(() => setIsDark(isDarkMode()));
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => {
-      mq.removeEventListener("change", handleMqChange);
-      observer.disconnect();
-    };
-  }, []);
-
-  return isDark;
+  return useSyncExternalStore(subscribeToDarkMode, readDarkMode, () => false);
 }
 
 function useMapTheme(isDark: boolean) {
@@ -681,7 +647,7 @@ function PopupDetail({
           <p
             className={`${isMobile ? "text-sm" : "text-[11px]"} text-neutral-800 dark:text-neutral-200 leading-relaxed italic`}
           >
-            "{item.topic}"
+            {`"${item.topic}"`}
           </p>
         </div>
       )}
@@ -760,10 +726,8 @@ export default function AboutSection() {
     activeIdx: number;
   } | null>(null);
 
-  const [mounted, setMounted] = useState(false);
-  // FIX: topojson is fetched ONCE and reused, instead of being re-fetched and
-  // re-parsed by <Geographies> every time the map/globe view remounts.
   const [geoData, setGeoData] = useState<object | null>(null);
+  const [MapView, setMapView] = useState<React.ComponentType<MapCanvasProps> | null>(null);
 
   const isDark = useDarkMode();
   const theme = useMapTheme(isDark);
@@ -796,18 +760,34 @@ export default function AboutSection() {
   }, [viewMode]);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
+    const el = mapContainerRef.current;
+    if (!el) return;
+    let dead = false;
     const ctrl = new AbortController();
-    fetch(geoUrl, { signal: ctrl.signal })
-      .then((r) => r.json())
-      .then((data) => setGeoData(data))
-      .catch(() => {
-        /* ignore (aborted / offline) */
-      });
-    return () => ctrl.abort();
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || dead) return;
+        io.disconnect();
+        import("./globe-map").then((m) => {
+          if (!dead) setMapView(() => m.MapCanvas);
+        });
+        fetch(geoUrl, { signal: ctrl.signal })
+          .then((r) => r.json())
+          .then((data) => {
+            if (!dead) setGeoData(data);
+          })
+          .catch(() => {
+            /* ignore (aborted / offline) */
+          });
+      },
+      { rootMargin: "400px" },
+    );
+    io.observe(el);
+    return () => {
+      dead = true;
+      ctrl.abort();
+      io.disconnect();
+    };
   }, []);
 
   // ─── Data Logic ───
@@ -887,11 +867,12 @@ export default function AboutSection() {
   }, [clearHide]);
 
   // ─── Frame-rate independent auto-rotate & momentum loop ───
-  // React state is only updated at ~30fps (the globe doesn't need 60+ React
-  // renders per second), and nothing is updated while paused / tab hidden.
+  // React state is only updated at ~30fps. The loop does not run while the
+  // globe is off screen or the tab is hidden.
   const rafRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number>(0);
   const sinceRenderRef = useRef<number>(0);
+  const onScreenRef = useRef(false);
 
   const stopAutoRotate = useCallback(() => {
     if (rafRef.current) {
@@ -906,10 +887,15 @@ export default function AboutSection() {
     sinceRenderRef.current = 0;
 
     const tick = (now: number) => {
+      if (document.hidden || !onScreenRef.current) {
+        rafRef.current = null;
+        return;
+      }
+
       const dt = Math.min((now - lastTimeRef.current) / 1000, 0.1);
       lastTimeRef.current = now;
 
-      if (!document.hidden && !isDraggingGlobe.current) {
+      if (!isDraggingGlobe.current) {
         const f = dt * 60; // normalise to "frames at 60fps"
         let changed = false;
         const v = velocityRef.current;
@@ -950,12 +936,29 @@ export default function AboutSection() {
   }, []);
 
   useEffect(() => {
-    if (viewMode === "globe" && !selectedRegion && !popup) {
-      startAutoRotate();
-    } else {
+    const el = mapContainerRef.current;
+    const spinning =
+      viewMode === "globe" && !selectedRegion && !popup;
+
+    const sync = () => {
+      if (spinning && onScreenRef.current && !document.hidden) startAutoRotate();
+      else stopAutoRotate();
+    };
+
+    const io = new IntersectionObserver(([entry]) => {
+      onScreenRef.current = entry.isIntersecting;
+      sync();
+    });
+    if (el) io.observe(el);
+
+    document.addEventListener("visibilitychange", sync);
+    sync();
+
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", sync);
       stopAutoRotate();
-    }
-    return () => stopAutoRotate();
+    };
   }, [viewMode, selectedRegion, popup, startAutoRotate, stopAutoRotate]);
 
   // ─── Smooth Globe Dragging ───
@@ -1319,8 +1322,8 @@ export default function AboutSection() {
             onTouchMove={viewMode === "globe" ? handleTouchMove : undefined}
             onTouchEnd={viewMode === "globe" ? handleTouchEnd : undefined}
           >
-            {mounted && geoData && (
-              <MapCanvas
+            {MapView && geoData && (
+              <MapView
                 viewMode={viewMode}
                 geoData={geoData}
                 globeScale={globeScale}
@@ -1334,7 +1337,9 @@ export default function AboutSection() {
                 countryStrokeWidth={countryStrokeWidth}
                 filteredGroups={filteredGroups}
                 activeGroupId={popup?.group.id ?? null}
-                handleMarkerInteraction={handleMarkerInteraction}
+                handleMarkerInteraction={(group, e) =>
+                  handleMarkerInteraction(group as CityGroup, e)
+                }
                 handleMarkerLeave={handleMarkerLeave}
                 markerStroke={markerStroke}
                 oceanFill={oceanFill}
@@ -1604,196 +1609,3 @@ export default function AboutSection() {
     </section>
   );
 }
-
-// ─── Memoized Isolated Map Canvas Component ──────────────────────────────────
-interface MapCanvasProps {
-  viewMode: ViewMode;
-  geoData: object;
-  globeScale: number;
-  position: { coordinates: [number, number]; zoom: number };
-  rotation: [number, number, number];
-  setPosition: React.Dispatch<
-    React.SetStateAction<{ coordinates: [number, number]; zoom: number }>
-  >;
-  onMoveStart: () => void;
-  selectedCountry: string | null;
-  landFill: string;
-  countryStroke: string;
-  countryStrokeWidth: number;
-  filteredGroups: CityGroup[];
-  activeGroupId: string | null;
-  handleMarkerInteraction: (
-    group: CityGroup,
-    e: React.MouseEvent<SVGGElement>,
-  ) => void;
-  handleMarkerLeave: () => void;
-  markerStroke: string;
-  oceanFill: string;
-  sphereStroke: string;
-  hoverFill: string;
-}
-
-const SELECTED_FILL = "#3b82f6";
-
-const MapCanvas = React.memo(function MapCanvas({
-  viewMode,
-  geoData,
-  globeScale,
-  position,
-  rotation,
-  setPosition,
-  onMoveStart,
-  selectedCountry,
-  landFill,
-  countryStroke,
-  countryStrokeWidth,
-  filteredGroups,
-  activeGroupId,
-  handleMarkerInteraction,
-  handleMarkerLeave,
-  markerStroke,
-  oceanFill,
-  sphereStroke,
-  hoverFill,
-}: MapCanvasProps) {
-  const isGlobe = viewMode === "globe";
-  // keep pins / borders a constant on-screen size while the flat map is zoomed
-  const k = isGlobe ? 1 : position.zoom;
-  const strokeW = countryStrokeWidth / k;
-
-  // Stable style objects: avoids allocating ~177 x 3 new objects per frame
-  const styles = useMemo(() => {
-    const make = (fill: string) => ({
-      outline: "none",
-      fill,
-      stroke: countryStroke,
-      strokeWidth: strokeW,
-    });
-    const land = make(landFill);
-    const selected = make(SELECTED_FILL);
-    const hover = make(isGlobe ? landFill : hoverFill);
-    return {
-      normal: { default: land, hover, pressed: land },
-      selected: { default: selected, hover: selected, pressed: selected },
-    };
-  }, [landFill, hoverFill, countryStroke, strokeW, isGlobe]);
-
-  const renderGeographies = () => (
-    <Geographies geography={geoData}>
-      {({ geographies }) =>
-        geographies.map((geo) => {
-          const isSelected =
-            !!selectedCountry && geo.properties.name === selectedCountry;
-          return (
-            <Geography
-              key={geo.rsmKey}
-              geography={geo}
-              className="outline-none"
-              style={isSelected ? styles.selected : styles.normal}
-            />
-          );
-        })
-      }
-    </Geographies>
-  );
-
-  const renderMarkers = (onlyVisible: boolean) =>
-    filteredGroups.map((group) => {
-      if (onlyVisible && !isPointVisible(group.lng, group.lat, rotation))
-        return null;
-
-      const color = getTypeColor(group.items[0].type);
-      const isActive = activeGroupId === group.id;
-      return (
-        <Marker key={group.id} coordinates={[group.lng, group.lat]}>
-          <g
-            style={{ pointerEvents: "visiblePainted" }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMarkerInteraction(group, e);
-            }}
-            onMouseEnter={(e) => {
-              if (window.innerWidth >= 768) handleMarkerInteraction(group, e);
-            }}
-            onMouseLeave={() => {
-              if (window.innerWidth >= 768) handleMarkerLeave();
-            }}
-            className="cursor-pointer"
-          >
-            <circle
-              r={18 / k}
-              fill="transparent"
-              style={{ pointerEvents: "visiblePainted" }}
-            />
-            <circle
-              r={(isActive ? 12 : 5) / k}
-              fill={color}
-              opacity={0.2}
-              className={isGlobe ? undefined : "animate-pulse"}
-            />
-            <circle
-              r={(isActive ? 6 : 3.5) / k}
-              fill={color}
-              stroke={markerStroke}
-              strokeWidth={1 / k}
-            />
-          </g>
-        </Marker>
-      );
-    });
-
-  return (
-    <ComposableMap
-      projection={isGlobe ? "geoOrthographic" : "geoMercator"}
-      projectionConfig={{
-        // FIX: in map mode the projection scale stays FIXED. Zoom is applied
-        // only by <ZoomableGroup>; before it was applied twice (zoom squared),
-        // which broke centering, marker positions and popup anchors.
-        scale: isGlobe ? globeScale : MAP_BASE_SCALE,
-        rotate: isGlobe ? rotation : [0, 0, 0],
-        center: [0, 0],
-      }}
-      style={{
-        width: "100%",
-        height: "100%",
-        pointerEvents: isGlobe ? "none" : "auto",
-      }}
-    >
-      {!isGlobe ? (
-        /* ─── MAP MODE ─── */
-        <ZoomableGroup
-          center={position.coordinates}
-          zoom={position.zoom}
-          minZoom={MAP_MIN_ZOOM}
-          maxZoom={MAP_MAX_ZOOM}
-          onMoveStart={onMoveStart}
-          onMoveEnd={({ coordinates, zoom }) =>
-            setPosition({ coordinates, zoom })
-          }
-          // FIX: was `() => false`, which disabled ALL d3 pan/zoom (mouse drag
-          // didn't work on desktop). Allow drag + touch + Ctrl/Cmd+wheel only.
-          filterZoomEvent={(e: any) => {
-            if (e.type === "wheel") return !!(e.ctrlKey || e.metaKey);
-            if (e.type === "dblclick") return false;
-            return !e.button;
-          }}
-        >
-          {renderGeographies()}
-          {renderMarkers(false)}
-        </ZoomableGroup>
-      ) : (
-        /* ─── GLOBE MODE ─── */
-        <g>
-          <Sphere
-            id="rsm-sphere"
-            fill={oceanFill}
-            stroke={sphereStroke}
-            strokeWidth={0.8}
-          />
-          {renderGeographies()}
-          {renderMarkers(true)}
-        </g>
-      )}
-    </ComposableMap>
-  );
-});

@@ -1,22 +1,29 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
+import { useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 import type { PartnerLogo } from "@/features/partners/queries";
 
 function PartnerCard({ partner }: { partner: PartnerLogo }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const visible = useInView(ref, { once: true, margin: "0px 64px 0px 64px" });
+
   return (
-    <div className="relative overflow-hidden flex flex-col items-center justify-center w-30 sm:w-35 md:w-40 p-4 rounded-2xl bg-white/5 dark:bg-black/5 border border-white/30 dark:border-gray-800/50">
+    <div ref={ref} className="relative overflow-hidden flex flex-col items-center justify-center w-30 sm:w-35 md:w-40 p-4 rounded-2xl bg-white/5 dark:bg-black/5 border border-white/30 dark:border-gray-800/50">
       <div className="flex flex-col items-center">
         <div className="relative w-12 h-12 sm:w-14 sm:h-14">
-          <Image
-            src={partner.logo}
-            alt={`${partner.name} logo`}
-            fill
-            className="object-contain"
-            sizes="56px"
-          />
+          {visible && (
+            <Image
+              src={partner.logo}
+              alt={`${partner.name} logo`}
+              fill
+              className="object-contain"
+              sizes="56px"
+            />
+          )}
         </div>
         <span className="mt-2 text-xs md:text-sm font-medium text-center text-gray-900 dark:text-white truncate w-full">
           {partner.name}

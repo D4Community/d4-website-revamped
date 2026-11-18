@@ -2,24 +2,10 @@
 
 import { ChevronRight } from "lucide-react";
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { Tweet } from "react-tweet";
+import { EmbeddedTweet } from "react-tweet";
+import { tweetImages } from "@/components/tweet-images";
+import type { ReviewTweet } from "@/features/reviews/tweets";
 import Link from "next/link";
-
-/* ===================== DATA ===================== */
-const TWEET_IDS = [
-  "1942499697538572460",
-  "1896194039843868875",
-  "2046501317418615231",
-  "1954777297166176464",
-  "1964427218274464211",
-  "2045558334762459145",
-  "1896586871121264780",
-  "1896469281317212233",
-  "2027693668795355561",
-];
-
-// Duplicate items twice to form a seamless infinite CSS loop
-const SCROLL_ITEMS = [...TWEET_IDS, ...TWEET_IDS];
 
 /* ===================== SAFETY BOUNDARY ===================== */
 interface ErrorBoundaryProps {
@@ -51,7 +37,8 @@ class TweetErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryStat
 }
 
 /* ===================== SUB-COMPONENTS ===================== */
-const TweetCard = React.memo(function TweetCard({ id }: { id: string }) {
+const TweetCard = React.memo(function TweetCard({ item }: { item: ReviewTweet }) {
+  const { id, tweet } = item;
   return (
     <div className="w-full mb-2">
       <div className="origin-top transition-transform duration-500">
@@ -79,7 +66,18 @@ const TweetCard = React.memo(function TweetCard({ id }: { id: string }) {
             </div>
           }
         >
-          <Tweet id={id} />
+          {tweet ? (
+            <EmbeddedTweet tweet={tweet} components={tweetImages} />
+          ) : (
+            <a
+              href={`https://x.com/i/status/${id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full p-5 text-sm text-neutral-500"
+            >
+              View original post on X →
+            </a>
+          )}
         </TweetErrorBoundary>
       </div>
     </div>
@@ -87,10 +85,12 @@ const TweetCard = React.memo(function TweetCard({ id }: { id: string }) {
 });
 
 function MarqueeColumn({
+  tweets,
   direction,
   duration,
   className = "",
 }: {
+  tweets: ReviewTweet[];
   direction: "up" | "down";
   duration: number;
   className?: string;
@@ -103,8 +103,8 @@ function MarqueeColumn({
         className={`flex flex-col will-change-transform ${animClass} group-hover:[animation-play-state:paused]`}
         style={{ animationDuration: `${duration}s` }}
       >
-        {SCROLL_ITEMS.map((id, i) => (
-          <TweetCard key={`${direction}-${id}-${i}`} id={id} />
+        {[...tweets, ...tweets].map((item, i) => (
+          <TweetCard key={`${direction}-${item.id}-${i}`} item={item} />
         ))}
       </div>
     </div>
@@ -112,7 +112,7 @@ function MarqueeColumn({
 }
 
 /* ===================== MAIN PAGE ===================== */
-export default function XReviews() {
+export default function XReviews({ tweets = [] }: { tweets: ReviewTweet[] }) {
   return (
     <main className="min-h-screen flex items-center justify-center">
       <section className="relative w-full max-w-7xl h-[89vh] flex flex-col overflow-hidden p-4 md:p-6">
@@ -136,10 +136,11 @@ export default function XReviews() {
         <div className="relative flex-1 min-h-0 w-full overflow-hidden">
           <div className="flex gap-x-2 h-full">
             {/* Column 1 — always visible */}
-            <MarqueeColumn direction="up" duration={120} />
+            <MarqueeColumn tweets={tweets} direction="up" duration={120} />
 
             {/* Column 2 — sm+ */}
             <MarqueeColumn
+              tweets={tweets}
               direction="down"
               duration={140}
               className="hidden sm:block"
@@ -147,6 +148,7 @@ export default function XReviews() {
 
             {/* Column 3 — md+ */}
             <MarqueeColumn
+              tweets={tweets}
               direction="up"
               duration={130}
               className="hidden md:block"
@@ -154,6 +156,7 @@ export default function XReviews() {
 
             {/* Column 4 — lg+ */}
             <MarqueeColumn
+              tweets={tweets}
               direction="down"
               duration={120}
               className="hidden lg:block"

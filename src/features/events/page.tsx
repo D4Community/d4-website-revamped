@@ -2,6 +2,7 @@ import React from "react";
 import { EventsHero } from "./EventsHero";
 import { UpcomingEvents } from "../home/sections/UpcomingEvents";
 import { EventCarousel } from "../home/sections/EventCarousel";
+import { getPastEvents, getUpcomingEvents } from "./data";
 
 // Next.js Native Metadata Configuration
 export const metadata = {
@@ -49,7 +50,12 @@ export const metadata = {
   },
 };
 
-const EventsPage = () => {
+const EventsPage = async () => {
+  const [upcoming, past] = await Promise.all([
+    getUpcomingEvents(),
+    getPastEvents(),
+  ]);
+
   const schemaMarkup = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -92,10 +98,10 @@ const EventsPage = () => {
         <EventsHero />
         
         <div id="UpcomingEvents">
-          <UpcomingEvents />
+          <UpcomingEvents events={upcoming} />
         </div>
       </div>
-      <EventCarousel />
+      <EventCarousel events={past} />
     </>
   );
 };

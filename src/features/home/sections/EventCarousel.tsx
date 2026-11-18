@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ChevronLeft,
@@ -13,163 +14,31 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EventSchema } from "@/schema";
+import type { PastEvent } from "@/features/events/data";
 
-/* ===================== TYPES ===================== */
-
-interface EventItem {
-  id: string | number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  category: "Hackathon" | "Meetup" | "Workshop" | "Event";
-  mode: "In-Person" | "Virtual";
-  date?: string;
-  rawDate?: string;
-  location?: string;
-  externalUrl?: string;
-}
-
-/* ===================== CONFIG ===================== */
+type EventItem = PastEvent;
 
 const AUTO_SCROLL_DELAY = 6000;
 const MOBILE_CLOSE_DELAY = 3000;
-const COMMUDLE_API_URL = "/api/commudle-events";
-const DEVFOLIO_API_URL = "/api/devfolio-hackathons";
-const LUMA_API_URL = "/api/luma-events";
-
-/* ===================== HELPERS ===================== */
-
-function toEpoch(dateStr?: string): number {
-  if (!dateStr) return 0;
-  const ms = Date.parse(dateStr);
-  return isNaN(ms) ? 0 : ms;
-}
-
-function fmtDate(iso?: string): string {
-  if (!iso) return "TBD";
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "TBD";
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
 
 /* ===================== COMPONENT ===================== */
 
-export function EventCarousel({ className }: { className?: string }) {
+export function EventCarousel({
+  className,
+  events,
+}: {
+  className?: string;
+  events: EventItem[];
+}) {
+  const items = events;
   const containerRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [items, setItems] = useState<EventItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [cardWidth, setCardWidth] = useState(0);
   const [visibleCards, setVisibleCards] = useState(3);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [animate, setAnimate] = useState(true);
   const [activeCardId, setActiveCardId] = useState<string | number | null>(null);
-
-  /* ===================== DATA FETCHING ===================== */
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        const [commudleRes, devfolioRes, lumaRes] = await Promise.allSettled([
-          fetch(COMMUDLE_API_URL),
-          fetch(DEVFOLIO_API_URL),
-          fetch(LUMA_API_URL),
-        ]);
-
-        let allItems: EventItem[] = [];
-
-        /* ---------- Commudle ---------- */
-        if (commudleRes.status === "fulfilled" && commudleRes.value.ok) {
-          const data = await commudleRes.value.json();
-          const mapped: EventItem[] = (data?.data?.values || []).map(
-            (item: any) => ({
-              id: `c-${item.id}`,
-              title: item.name || "Untitled Session",
-              description: item.tagline || "",
-              imageUrl: item.header_image_path || "/placeholder.png",
-              category: "Meetup" as const,
-              mode: (item.event_type === "online"
-                ? "Virtual"
-                : "In-Person") as "Virtual" | "In-Person",
-              rawDate: item.start_time,
-              date: fmtDate(item.start_time),
-              location: item.event_locations?.[0]?.name || "Online",
-              externalUrl:
-                "https://www.commudle.com/communities/d4-community/events",
-            }),
-          );
-          allItems = [...allItems, ...mapped];
-        }
-
-        /* ---------- Devfolio ---------- */
-        if (devfolioRes.status === "fulfilled" && devfolioRes.value.ok) {
-          const data = await devfolioRes.value.json();
-          const mapped: EventItem[] = (Array.isArray(data) ? data : []).map(
-            (item: any) => ({
-              id: `d-${item.id}`,
-              title: item.name || "Hackathon",
-              description: item.tagline || "Build the future",
-              imageUrl: item.cover_img || "/placeholder.png",
-              category: "Hackathon" as const,
-              mode: (item.location?.toLowerCase().includes("online")
-                ? "Virtual"
-                : "In-Person") as "Virtual" | "In-Person",
-              rawDate: item.starts_at,
-              date: fmtDate(item.starts_at),
-              location: item.location || "Remote",
-            }),
-          );
-          allItems = [...allItems, ...mapped];
-        }
-
-        /* ---------- Luma ---------- */
-        if (lumaRes.status === "fulfilled" && lumaRes.value.ok) {
-          const data = await lumaRes.value.json();
-          const entries: any[] = data?.entries ?? data?.data?.entries ?? [];
-
-          const mapped: EventItem[] = entries.map((entry: any) => {
-            const ev = entry?.event ?? entry;
-            const isVirtual =
-              !ev.geo_address_info?.city_state ||
-              ev.zoom_meeting_url ||
-              ev.meeting_url;
-
-            return {
-              id: `l-${ev.api_id ?? ev.id}`,
-              title: ev.name || "Luma Event",
-              description: ev.description || ev.summary || "",
-              imageUrl: ev.cover_url || ev.image_url || "/placeholder.png",
-              category: "Event" as const,
-              mode: (isVirtual ? "Virtual" : "In-Person") as
-                | "Virtual"
-                | "In-Person",
-              rawDate: ev.start_at,
-              date: fmtDate(ev.start_at),
-              location:
-                ev.geo_address_info?.city_state ||
-                ev.geo_address_info?.address ||
-                "Online",
-              externalUrl: ev.url
-                ? `https://lu.ma/${ev.url}`
-                : "https://lu.ma/user/usr-zPnx2wwYuPhns3S",
-            };
-          });
-
-          allItems = [...allItems, ...mapped];
-        }
-
-        /* ---------- Sort newest → oldest ---------- */
-        allItems.sort((a, b) => toEpoch(b.rawDate) - toEpoch(a.rawDate));
-        setItems(allItems.slice(0, 20));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAllData();
-  }, []);
 
   /* ===================== RESPONSIVE LOGIC ===================== */
   useEffect(() => {
@@ -183,7 +52,7 @@ export function EventCarousel({ className }: { className?: string }) {
     updateLayout();
     window.addEventListener("resize", updateLayout);
     return () => window.removeEventListener("resize", updateLayout);
-  }, [loading, items.length]);
+  }, [items.length]);
 
   const total = items.length;
   const slides =
@@ -248,15 +117,8 @@ export function EventCarousel({ className }: { className?: string }) {
     return () => clearInterval(interval);
   }, [paused, handleNext, total]);
 
-  if (loading)
-    return (
-      <div className="h-96 flex items-center justify-center text-zinc-500 animate-pulse uppercase tracking-[0.4em] text-[10px] font-black">
-        Syncing_Archive...
-      </div>
-    );
-
   return (
-    <div className={cn("max-w-7xl mx-auto pt-4 sm:pt-12 md:pt-20 pb-12", className)}>
+    <div className={cn("max-w-7xl mx-auto min-h-[44rem] pt-4 sm:pt-12 md:pt-20 pb-12", className)}>
       <div className="mb-10 md:mb-12 text-center gap-3">
         <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight text-center">
           Past{" "}
@@ -307,15 +169,18 @@ export function EventCarousel({ className }: { className?: string }) {
 
                 <motion.div className="group relative bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-[2rem] overflow-hidden flex flex-col h-[500px] transition-all duration-500 hover:border-[#fd7d6e]/30">
                   {/* Image */}
-                  <div className="relative aspect-[4/3] bg-zinc-50 dark:bg-zinc-900/50 p-4 flex items-center justify-center overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                  <div className="relative aspect-[361/262] w-full overflow-hidden bg-zinc-50 dark:bg-zinc-900/50">
+                    <Image
                       src={item.imageUrl}
                       alt={item.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 361px"
+                      className="object-contain transition-transform duration-700 group-hover:scale-105"
                       onError={(e) => {
-                        e.currentTarget.src = "/placeholder.png";
+                        if (!e.currentTarget.src.endsWith("/placeholder.png")) {
+                          e.currentTarget.src = "/placeholder.png";
+                        }
                       }}
-                      className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
                     />
 
                     {/* Mode badge */}

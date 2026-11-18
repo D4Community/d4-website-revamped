@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import type { PartnerLogo } from "@/features/partners/queries";
@@ -141,16 +141,21 @@ export function Partners({
 }
 
 function PartnerLogo({ partner }: { partner: PartnerLogo }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const visible = useInView(ref, { once: true, margin: "0px 64px 0px 64px" });
+
   return (
-    <div className="flex flex-col items-center justify-center group w-28 md:w-32 lg:w-40 flex-shrink-0">
+    <div ref={ref} className="flex flex-col items-center justify-center group w-28 md:w-32 lg:w-40 flex-shrink-0">
       <div className="relative w-14 h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mb-3">
-        <Image
-          src={partner.logo}
-          alt={partner.name}
-          fill
-          sizes="(max-width: 768px) 56px, (max-width: 1024px) 64px, 80px"
-          className="object-contain grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
-        />
+        {visible && (
+          <Image
+            src={partner.logo}
+            alt={partner.name}
+            fill
+            sizes="(max-width: 768px) 56px, (max-width: 1024px) 64px, 80px"
+            className="object-contain grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
+          />
+        )}
       </div>
       <h3 className="text-[10px] md:text-xs font-semibold text-neutral-500 dark:text-neutral-400 truncate w-full text-center">
         {partner.name}
