@@ -30,7 +30,7 @@ export const LayoutTextFlip = ({
       </span>
 
       {/* Reserved container dimensions with fixed min-width to avoid shifting 'text' */}
-      <span className="relative inline-flex items-center justify-center min-w-[150px] md:min-w-[190px] h-[52px] md:h-[60px] overflow-hidden rounded-md border border-transparent bg-white px-4 py-2 font-sans text-2xl font-bold tracking-tight text-black shadow-sm ring shadow-black/10 ring-black/10 drop-shadow-lg md:text-4xl dark:bg-neutral-900 dark:text-white dark:shadow-sm dark:ring-1 dark:shadow-white/10 dark:ring-white/10">
+      <BoxedWord className="relative inline-flex items-center justify-center min-w-[150px] md:min-w-[190px] h-[52px] md:h-[60px] overflow-hidden rounded-md border border-transparent bg-white px-4 py-2 font-sans text-2xl font-bold tracking-tight text-black shadow-sm ring shadow-black/10 ring-black/10 drop-shadow-lg md:text-4xl dark:bg-neutral-900 dark:text-white dark:shadow-sm dark:ring-1 dark:shadow-white/10 dark:ring-white/10">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
             key={currentIndex}
@@ -50,7 +50,21 @@ export const LayoutTextFlip = ({
             {words[currentIndex]}
           </motion.span>
         </AnimatePresence>
-      </span>
+      </BoxedWord>
     </>
   );
 };
+
+export function BoxedWord({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span className={cn("inline-flex items-center justify-center", className)}>
+      {children}
+    </span>
+  );
+}

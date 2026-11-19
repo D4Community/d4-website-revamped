@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { createD4MailTransporter } from "@/lib/email-transport";
 import { generateAdminEmail, generateWelcomeEmail, generateCertificateEmail } from "@/lib/email-templates";
 import { addToGoogleSheets, findMemberByEmail } from "@/lib/google-sheets";
 import { generateCertificatePDF } from "@/lib/certificate-generator";
@@ -13,10 +13,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Name and email are required" }, { status: 400 });
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
-    });
+    const transporter = createD4MailTransporter();
 
     // 1. Check if user already exists
     const existingMember = await findMemberByEmail(email);

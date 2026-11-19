@@ -1117,9 +1117,15 @@ export const siteConfig = {
         { id: 3, title: "Team", url: "/team" },
         { id: 4, title: "Events", url: "/events" },
         { id: 9, title: "Gallery", url: "/gallery" },
-        { id: 8, title: "Join", url: "/join" },
         { id: 2, title: "Contact", url: "/contact" },
         { id: 11, title: "X Reviews", url: "/twitter-reviews" },
+      ],
+    },
+    {
+      title: "Get Involved",
+      links: [
+        { id: 8, title: "Join", url: "/join" },
+        { id: 12, title: "Host an Event", url: "/host-an-event" },
       ],
     },
     {
@@ -1139,23 +1145,16 @@ export type SiteConfig = typeof siteConfig;
 /* ─── footer ─────────────────────────────────────────────── */
 export const Footer = () => {
   const [isTablet, setIsTablet] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const tabletMq = window.matchMedia("(max-width: 1024px)");
-    const mobileMq = window.matchMedia("(max-width: 576px)");
-
-    setIsTablet(tabletMq.matches);
-    setIsMobile(mobileMq.matches);
-
     const onTablet = (e: MediaQueryListEvent) => setIsTablet(e.matches);
-    const onMobile = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    const initialUpdate = window.requestAnimationFrame(() => setIsTablet(tabletMq.matches));
 
     tabletMq.addEventListener("change", onTablet);
-    mobileMq.addEventListener("change", onMobile);
     return () => {
+      window.cancelAnimationFrame(initialUpdate);
       tabletMq.removeEventListener("change", onTablet);
-      mobileMq.removeEventListener("change", onMobile);
     };
   }, []);
 
@@ -1170,7 +1169,7 @@ export const Footer = () => {
       ].join(" ")}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 md:gap-12">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-1 md:gap-12 lg:grid-cols-12">
           {/* ── Brand column ── */}
           <div className="lg:col-span-7 flex flex-col items-start gap-y-6">
             {/* Logo + mobile tagline */}
@@ -1192,11 +1191,11 @@ export const Footer = () => {
             <div className="w-full h-[1px] bg-border md:hidden" />
 
             {/* Nav links — mobile only (right after logo) */}
-            <div className="w-full flex flex-row flex-wrap gap-x-10 gap-y-8 md:hidden">
+            <div className="grid w-full grid-cols-3 gap-x-3 gap-y-8 md:hidden">
               {siteConfig.footerLinks.map((column, columnIndex) => (
                 <ul
                   key={columnIndex}
-                  className="flex flex-col gap-y-3 min-w-[120px]"
+                  className="flex min-w-0 flex-col gap-y-3"
                 >
                   <li className="mb-1 text-xs font-bold uppercase tracking-wider text-primary/80">
                     {column.title}
@@ -1238,11 +1237,11 @@ export const Footer = () => {
           </div>
 
           {/* ── Nav links — md+ right column ── */}
-          <div className="lg:col-span-5 hidden md:flex flex-row flex-wrap gap-x-10 gap-y-8 md:justify-end">
+          <div className="hidden md:grid md:grid-cols-3 md:gap-x-6 md:gap-y-8 lg:col-span-5 lg:gap-x-5">
             {siteConfig.footerLinks.map((column, columnIndex) => (
               <ul
                 key={columnIndex}
-                className="flex flex-col gap-y-3 min-w-[120px]"
+                className="flex min-w-0 flex-col gap-y-3"
               >
                 <li className="mb-1 text-xs font-bold uppercase tracking-wider text-primary/80">
                   {column.title}

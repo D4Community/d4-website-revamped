@@ -70,3 +70,50 @@ export async function addToGoogleSheets(data: any) {
     return { success: false, error: error.message };
   }
 }
+export type EventHostingNotificationStatus = "pending" | "sent" | "failed";
+
+export async function addEventHostingRequestToGoogleSheets(data: {
+  referenceId: string;
+  createdAt: string;
+  notificationStatus: EventHostingNotificationStatus;
+  payload: unknown;
+}) {
+  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
+  if (!spreadsheetId) throw new Error("Google Sheets persistence requires GOOGLE_SHEETS_SPREADSHEET_ID.");
+
+  const sheets = await getSheetsInstance();
+  const response = await sheets.spreadsheets.values.append({
+    spreadsheetId,
+    range: "EventHostingRequests!A:E",
+    valueInputOption: "RAW",
+    insertDataOption: "INSERT_ROWS",
+    requestBody: {
+      values: [[data.referenceId, data.createdAt, data.notificationStatus, JSON.stringify(data.payload), ""]],
+    },
+  });
+
+  if (!response.data.updates?.updatedRows) {
+    throw new Error("Google Sheets did not confirm the appended event hosting request.");
+  }
+
+  return response.data.updates.updatedRange || "";
+}
+
+export async function updateEventHostingNotificationStatus(
+  updatedRange: string,
+  notificationStatus: Exclude<EventHostingNotificationStatus, "pending">,
+) {
+  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
+  if (!spreadsheetId) throw new Error("Google Sheets persistence requires GOOGLE_SHEETS_SPREADSHEET_ID.");
+
+  const row = /!A(\d+):E\d+$/.exec(updatedRange)?.[1];
+  if (!row) return;
+
+  const sheets = await getSheetsInstance();
+  await sheets.spreadsheets.values.update({
+    spreadsheetId,
+    range: `EventHostingRequests!C${row}`,
+    valueInputOption: "RAW",
+    requestBody: { values: [[notificationStatus]] },
+  });
+}

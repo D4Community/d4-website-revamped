@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { createD4MailTransporter } from "@/lib/email-transport";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -42,12 +42,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
-      },
+    const transporter = createD4MailTransporter({
       pool: true,
       maxConnections: 1,
     });
